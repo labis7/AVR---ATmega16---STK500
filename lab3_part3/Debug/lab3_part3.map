@@ -11,7 +11,6 @@ Allocating common symbols
 Common symbol       size              file
 
 CR                  0x1               src/main.o
-SPACE               0x1               src/main.o
 flag                0x1               src/main.o
 Stop_Code           0x1               src/main.o
 par1                0x1               src/main.o
@@ -90,8 +89,6 @@ Discarded input sections
  .data          0x00000000        0x0 src/main.o
  .bss           0x00000000        0x0 src/main.o
  .text.Sendmsg  0x00000000        0x6 src/main.o
- .rodata.str1.1
-                0x00000000        0xa src/main.o
  .text.Pause_func
                 0x00000000       0x44 src/main.o
  .text.Normal_program
@@ -297,7 +294,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x1d4
+.text           0x00000000      0x3c8
  *(.vectors)
  .vectors       0x00000000       0x54 L:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega16/avr5/crtatmega16.o
                 0x00000000                __vector_default
@@ -387,21 +384,21 @@ END GROUP
                 0x000000aa       0x14 src/main.o
                 0x000000aa                __vector_13
  .text.Check_Input
-                0x000000be       0x1a src/main.o
+                0x000000be      0x21a src/main.o
                 0x000000be                Check_Input
  .text.__vector_11
-                0x000000d8       0x7c src/main.o
-                0x000000d8                __vector_11
+                0x000002d8       0x7c src/main.o
+                0x000002d8                __vector_11
  .text.init_serial
-                0x00000154       0x2a src/main.o
-                0x00000154                init_serial
- .text.main     0x0000017e       0x52 src/main.o
-                0x0000017e                main
-                0x000001d0                . = ALIGN (0x2)
+                0x00000354       0x2a src/main.o
+                0x00000354                init_serial
+ .text.main     0x0000037e       0x46 src/main.o
+                0x0000037e                main
+                0x000003c4                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000001d0        0x0 l:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x000001d0                _exit
-                0x000001d0                exit
+ .fini9         0x000003c4        0x0 l:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x000003c4                _exit
+                0x000003c4                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -420,59 +417,61 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000001d0        0x4 l:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x000003c4        0x4 l:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x000001d4                _etext = .
+                0x000003c8                _etext = .
 
-.data           0x00800060        0x2 load address 0x000001d4
+.data           0x00800060       0x14 load address 0x000003c8
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
+ .data.SPACE    0x00800060        0x1 src/main.o
+                0x00800060                SPACE
  .data.SpecialInputFlag
-                0x00800060        0x1 src/main.o
-                0x00800060                SpecialInputFlag
+                0x00800061        0x1 src/main.o
+                0x00800061                SpecialInputFlag
  *(.gnu.linkonce.d*)
  *(.rodata)
  *(.rodata*)
+ .rodata.str1.1
+                0x00800062       0x12 src/main.o
  *(.gnu.linkonce.r*)
-                0x00800062                . = ALIGN (0x2)
- *fill*         0x00800061        0x1 
-                0x00800062                _edata = .
-                0x00800062                PROVIDE (__data_end, .)
+                0x00800074                . = ALIGN (0x2)
+                0x00800074                _edata = .
+                0x00800074                PROVIDE (__data_end, .)
 
-.bss            0x00800062      0x20c
-                0x00800062                PROVIDE (__bss_start, .)
+.bss            0x00800074      0x20b
+                0x00800074                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.rxWritePos
-                0x00800062        0x1 src/main.o
-                0x00800062                rxWritePos
+                0x00800074        0x1 src/main.o
+                0x00800074                rxWritePos
  .bss.rxReadPos
-                0x00800063        0x1 src/main.o
-                0x00800063                rxReadPos
+                0x00800075        0x1 src/main.o
+                0x00800075                rxReadPos
  *(COMMON)
- COMMON         0x00800064      0x20a src/main.o
-                0x00800064                CR
-                0x00800065                SPACE
-                0x00800066                flag
-                0x00800067                Stop_Code
-                0x00800068                par1
-                0x00800069                mytxbuffer
-                0x00800169                Number_num
-                0x0080016a                par2
-                0x0080016b                Pause_Code
-                0x0080016c                Space_num
-                0x0080016d                myrxbuffer
-                0x0080026d                Resume_Code
-                0x0080026e                PROVIDE (__bss_end, .)
-                0x000001d4                __data_load_start = LOADADDR (.data)
-                0x000001d6                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x00800076      0x209 src/main.o
+                0x00800076                CR
+                0x00800077                flag
+                0x00800078                Stop_Code
+                0x00800079                par1
+                0x0080007a                mytxbuffer
+                0x0080017a                Number_num
+                0x0080017b                par2
+                0x0080017c                Pause_Code
+                0x0080017d                Space_num
+                0x0080017e                myrxbuffer
+                0x0080027e                Resume_Code
+                0x0080027f                PROVIDE (__bss_end, .)
+                0x000003c8                __data_load_start = LOADADDR (.data)
+                0x000003dc                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x0080026e        0x0
+.noinit         0x0080027f        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x0080026e                _end = .
+                0x0080027f                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
@@ -548,28 +547,28 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0xab0
+.debug_info     0x00000000      0xb09
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x52e L:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega16/avr5/crtatmega16.o
  .debug_info    0x0000052e       0x7c src/ASF/mega/boards/stk600/rcx_x/init.o
- .debug_info    0x000005aa      0x506 src/main.o
+ .debug_info    0x000005aa      0x55f src/main.o
 
-.debug_abbrev   0x00000000      0x775
+.debug_abbrev   0x00000000      0x7a7
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x4e7 L:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega16/avr5/crtatmega16.o
  .debug_abbrev  0x000004e7       0x47 src/ASF/mega/boards/stk600/rcx_x/init.o
- .debug_abbrev  0x0000052e      0x247 src/main.o
+ .debug_abbrev  0x0000052e      0x279 src/main.o
 
-.debug_line     0x00000000      0xa74
+.debug_line     0x00000000      0xbce
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x115 L:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega16/avr5/crtatmega16.o
  .debug_line    0x00000115      0x35e src/ASF/mega/boards/stk600/rcx_x/init.o
- .debug_line    0x00000473      0x601 src/main.o
+ .debug_line    0x00000473      0x75b src/main.o
 
-.debug_frame    0x00000000      0x124
+.debug_frame    0x00000000      0x140
  *(.debug_frame)
  .debug_frame   0x00000000       0x24 src/ASF/mega/boards/stk600/rcx_x/init.o
- .debug_frame   0x00000024      0x100 src/main.o
+ .debug_frame   0x00000024      0x11c src/main.o
 
 .debug_str      0x00000000     0xfdce
  *(.debug_str)
@@ -579,9 +578,9 @@ END GROUP
  .debug_str     0x0000f1e1      0xbed src/main.o
                                0xfd7b (size before relaxing)
 
-.debug_loc      0x00000000      0x2d6
+.debug_loc      0x00000000      0x3ac
  *(.debug_loc)
- .debug_loc     0x00000000      0x2d6 src/main.o
+ .debug_loc     0x00000000      0x3ac src/main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -601,10 +600,10 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000       0x78
+.debug_ranges   0x00000000       0x90
  *(.debug_ranges)
  .debug_ranges  0x00000000       0x10 src/ASF/mega/boards/stk600/rcx_x/init.o
- .debug_ranges  0x00000010       0x68 src/main.o
+ .debug_ranges  0x00000010       0x80 src/main.o
 
 .debug_macro    0x00000000     0x3589
  *(.debug_macro)

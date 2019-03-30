@@ -57,7 +57,8 @@ void Pause_func();
 void Check_Input(char data[]);
 
 //Char definitions of the control inputs
-char SPACE[1];
+//char SPACE[1];
+uint8_t SPACE = 32;
 char CR[1];
 char Pause_Code[1];
 char Resume_Code[1];
@@ -73,7 +74,8 @@ int main (void)
 	sei();
 	
 	//String copy
-	strcpy(SPACE,"\x20");
+	//strcpy(SPACE,"\x20");
+	
 	strcpy(CR,"\xD"); 
 	strcpy(Pause_Code,"\x13"); // ^S	
 	strcpy(Resume_Code,"\x11"); //^Q
@@ -213,48 +215,49 @@ void Check_Input(char data[]){
 	
 	//while(data[rxReadPos] != CR[0]){
 		//
-		flag=0;
+		flag = 0;
 		Space_num = 0;
 		Number_num=0;
 		//process
-		Transmit(myrxbuffer,0,rxWritePos);
+		//Transmit(myrxbuffer,0,rxWritePos);
 		//Checking for AT<CR> command.
 		
 		if((data[rxReadPos] == 65)&&(data[rxReadPos+1] == 84))  // 65 = "A" , 84 = "T"
 		{
-			Transmit("MPIKA",0,strlen("MPIKA"));
+			//Transmit("MPIKA",0,strlen("MPIKA"));
 			if(data[rxReadPos+2] == CR[0]){
 				Transmit("OK\r",0 , strlen("OK\r"));
 				rxReadPos = rxWritePos;
 			}
 			else
-				flag = -1;
+				flag = 1;
 		}
 			//Checking for MW<SP>?<SP>?<CR> and SUM<SP>?<SP>?<CR> command.
 		else if((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 87))		// "M" , "W"
 		{
+			//Transmit("MPIKA",0,strlen("MPIKA"));
 			while(data[rxReadPos] != CR[0])
 			{	
 				if(Space_num == 2)
 				{
-					flag=-1;
+					flag = 1;
 					break;
 				}
 
 				++rxReadPos;
-				if(data[rxReadPos] == SPACE[0])
+				if(data[rxReadPos] == SPACE)
 				{
 					++rxReadPos;
 					++Space_num;
 				}
 				else
 				{
-					flag=-1;
+					flag = 1;
 					break;
 				}
 
 				uint8_t k = 0;
-				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != SPACE[0]))
+				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != SPACE))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
@@ -267,21 +270,21 @@ void Check_Input(char data[]){
 					}
 					else
 					{
-						flag = -1;
+						flag = 1;
 						break;
 					}	
 				}
 
-				if((data[rxReadPos] == SPACE[0]))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
+				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
 					rxReadPos--;
 				if(Number_num == 0)				//if not valid number parameter
 				{
-					flag = -1;
+					flag = 1;
 					break;
 				}
 				if(k > 255)
 				{
-					flag = -1;
+					flag = 1;
 					break;
 				}
 				if(Space_num == 1)
@@ -292,15 +295,17 @@ void Check_Input(char data[]){
 					NULL;
 			}//WHILE LOOP END
 			if((Space_num == 1)||(Space_num == 0))
-				flag = -1;
+				flag = 1;
 		}
 		else
-			flag = -1;
+			flag = 1;
+			
+		
+
+	//Transmit("MPIKA",0,strlen("MPIKA"));
 
 
-
-
-	if(flag == -1)        // Error found, break while loop (rxreadps --> CR)
+	if(flag == 1)        // Error found, break while loop (rxreadps --> CR)
 	{					
 		rxReadPos = rxWritePos;  
 		Transmit("ER\r",0,strlen("ER\r"));
