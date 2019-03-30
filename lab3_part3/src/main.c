@@ -224,7 +224,6 @@ void Check_Input(char data[]){
 		
 		if((data[rxReadPos] == 65)&&(data[rxReadPos+1] == 84))  // 65 = "A" , 84 = "T"
 		{
-			//Transmit("MPIKA",0,strlen("MPIKA"));
 			if(data[rxReadPos+2] == CR[0]){
 				Transmit("OK\r",0 , strlen("OK\r"));
 				rxReadPos = rxWritePos;
@@ -240,24 +239,18 @@ void Check_Input(char data[]){
 			{	
 				if(Space_num == 2)
 				{
-					Transmit("1",0,strlen("1"));
 					flag = 1;
 					break;
 				}
 
 				rxReadPos++;
-				Transmit("\r\nA\r\n",0,strlen("\r\nA\r\n"));
-				Transmit(data,rxReadPos,rxWritePos);
 				if(data[rxReadPos] == SPACE)
 				{
 					++rxReadPos;
-					Transmit("\r\nB\r\n",0,strlen("\r\nA\r\n"));
-					Transmit(data,rxReadPos,rxWritePos);
 					++Space_num;
 				}
 				else
 				{
-					Transmit("2",0,strlen("2"));
 					flag = 1;
 					break;
 				}
@@ -271,13 +264,10 @@ void Check_Input(char data[]){
 						Number_num++;
 
 						k = 10 * k + (data[rxReadPos] - '0');
-						Transmit("\r\nC\r\n",0,strlen("\r\nA\r\n"));
-						Transmit(data,rxReadPos,rxReadPos+1);
 						rxReadPos++;
 					}
 					else
 					{
-						Transmit("3",0,strlen("3"));
 						flag = 1;
 						break;
 					}	
@@ -287,13 +277,11 @@ void Check_Input(char data[]){
 					rxReadPos--;
 				if(Number_num == 0)				//if not valid number parameter
 				{
-					Transmit("4",0,strlen("4"));
 					flag = 1;
 					break;
 				}
 				if(k > 255)
 				{
-					Transmit("5",0,strlen("5"));
 					flag = 1;
 					break;
 				}
@@ -305,7 +293,134 @@ void Check_Input(char data[]){
 					NULL;
 			}//WHILE LOOP END
 			if((Space_num == 1)||(Space_num == 0)){
-				Transmit("6",0,strlen("6"));
+				flag = 1;
+			}
+		}
+		/////////////////////////////////////////// MR ////////////////////////////////////////////////////////////////////
+		else if ((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 82))				// Command : MR		M=77	R=82
+		{
+			rxReadPos++;
+			while(data[rxReadPos] != CR[0])
+			{
+				if(Space_num == 1)
+				{
+					flag = 1;
+					break;
+				}
+
+				rxReadPos++;
+				if(data[rxReadPos] == SPACE)
+				{
+					++rxReadPos;
+					++Space_num;
+				}
+				else
+				{
+					flag = 1;
+					break;
+				}
+				Number_num=0;
+				uint16_t k = 0;
+				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
+				{
+					
+					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
+					{
+						Number_num++;
+
+						k = 10 * k + (data[rxReadPos] - '0');
+						rxReadPos++;
+					}
+					else
+					{
+						flag = 1;
+						break;
+					}
+				}
+
+				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
+				rxReadPos--;
+				if(Number_num == 0)				//if not valid number parameter
+				{
+					flag = 1;
+					break;
+				}
+				if(k > 255)
+				{
+					flag = 1;
+					break;
+				}
+				if(Space_num == 1)
+				par1 = k ;
+				else
+				NULL;
+			}//WHILE LOOP END
+			if((Space_num == 0)){
+				flag = 1;
+			}
+			
+		}
+		//////////////////////////////////////////////// SUM /////////////////////////////////////////////////////
+		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 85) &&(data[rxReadPos + 2] == 77) ){
+			rxReadPos+=2;
+			while(data[rxReadPos] != CR[0])
+			{
+				if(Space_num == 2)
+				{
+					flag = 1;
+					break;
+				}
+
+				rxReadPos++;
+				if(data[rxReadPos] == SPACE)
+				{
+					++rxReadPos;
+					++Space_num;
+				}
+				else
+				{
+					flag = 1;
+					break;
+				}
+				Number_num=0;
+				uint16_t k = 0;
+				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
+				{
+					
+					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
+					{
+						Number_num++;
+
+						k = 10 * k + (data[rxReadPos] - '0');
+						rxReadPos++;
+					}
+					else
+					{
+						flag = 1;
+						break;
+					}
+				}
+
+				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
+				rxReadPos--;
+				if(Number_num == 0)				//if not valid number parameter
+				{
+					flag = 1;
+					break;
+				}
+				if(k > 255)
+				{
+					flag = 1;
+					break;
+				}
+				if(Space_num == 1)
+				par1 = k ;
+				else if(Space_num == 2)
+				par2 = k ;
+				else
+				NULL;
+			}//WHILE LOOP END
+			if((Space_num == 1)||(Space_num == 0)){
 				flag = 1;
 			}
 		}
