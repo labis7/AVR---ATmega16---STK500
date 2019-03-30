@@ -219,7 +219,7 @@ void Check_Input(char data[]){
 		//process
 		Transmit(myrxbuffer,0,rxWritePos);
 		//Checking for AT<CR> command.
-		/*
+		
 		if((data[rxReadPos] == 65)&&(data[rxReadPos+1] == 84))  // 65 = "A" , 84 = "T"
 		{
 			Transmit("MPIKA",0,strlen("MPIKA"));
@@ -308,7 +308,7 @@ void Check_Input(char data[]){
 
 
 	rxReadPos++;		//Ready for the next command (deixnei sto 1o gramma) 
-	*/
+	
 
 				
 }
