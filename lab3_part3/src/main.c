@@ -36,8 +36,8 @@ uint8_t SpecialInputFlag=-1;
 uint8_t flag;
 uint8_t Space_num;
 uint8_t Number_num;
-uint8_t par1;
-uint8_t par2;
+uint16_t par1;
+uint16_t par2;
 
 void init_serial(void);
 void Transmit(char data[],uint8_t x,uint8_t y);
@@ -217,7 +217,7 @@ void Check_Input(char data[]){
 		//
 		flag = 0;
 		Space_num = 0;
-		Number_num=0;
+		
 		//process
 		//Transmit(myrxbuffer,0,rxWritePos);
 		//Checking for AT<CR> command.
@@ -235,41 +235,49 @@ void Check_Input(char data[]){
 			//Checking for MW<SP>?<SP>?<CR> and SUM<SP>?<SP>?<CR> command.
 		else if((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 87))		// "M" , "W"
 		{
-			//Transmit("MPIKA",0,strlen("MPIKA"));
+			rxReadPos++;
 			while(data[rxReadPos] != CR[0])
 			{	
 				if(Space_num == 2)
 				{
+					Transmit("1",0,strlen("1"));
 					flag = 1;
 					break;
 				}
 
-				++rxReadPos;
+				rxReadPos++;
+				Transmit("\r\nA\r\n",0,strlen("\r\nA\r\n"));
+				Transmit(data,rxReadPos,rxWritePos);
 				if(data[rxReadPos] == SPACE)
 				{
 					++rxReadPos;
+					Transmit("\r\nB\r\n",0,strlen("\r\nA\r\n"));
+					Transmit(data,rxReadPos,rxWritePos);
 					++Space_num;
 				}
 				else
 				{
+					Transmit("2",0,strlen("2"));
 					flag = 1;
 					break;
 				}
-
-				uint8_t k = 0;
-				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != SPACE))
+				Number_num=0;
+				uint16_t k = 0;
+				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
 					{
 						Number_num++;
 
-						k = 10 * k + (data[rxReadPos]);
-						Transmit(data[rxReadPos],0,1);
+						k = 10 * k + (data[rxReadPos] - '0');
+						Transmit("\r\nC\r\n",0,strlen("\r\nA\r\n"));
+						Transmit(data,rxReadPos,rxReadPos+1);
 						rxReadPos++;
 					}
 					else
 					{
+						Transmit("3",0,strlen("3"));
 						flag = 1;
 						break;
 					}	
@@ -279,23 +287,27 @@ void Check_Input(char data[]){
 					rxReadPos--;
 				if(Number_num == 0)				//if not valid number parameter
 				{
+					Transmit("4",0,strlen("4"));
 					flag = 1;
 					break;
 				}
 				if(k > 255)
 				{
+					Transmit("5",0,strlen("5"));
 					flag = 1;
 					break;
 				}
 				if(Space_num == 1)
-					par1 = k;
+					par1 = k ;
 				else if(Space_num == 2)
-					par2 = k;
+					par2 = k ;
 				else
 					NULL;
 			}//WHILE LOOP END
-			if((Space_num == 1)||(Space_num == 0))
+			if((Space_num == 1)||(Space_num == 0)){
+				Transmit("6",0,strlen("6"));
 				flag = 1;
+			}
 		}
 		else
 			flag = 1;
@@ -310,6 +322,8 @@ void Check_Input(char data[]){
 		rxReadPos = rxWritePos;  
 		Transmit("ER\r",0,strlen("ER\r"));
 	} 
+	//char Val[10];
+	//Transmit(itoa(par1,Val,16),0,10);
 
 
 	rxReadPos++;		//Ready for the next command (deixnei sto 1o gramma) 
