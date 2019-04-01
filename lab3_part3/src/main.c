@@ -25,6 +25,7 @@
 char mytxbuffer[BUFFER_SIZE];
 uint8_t txReadPos=0;
 uint8_t txWritePos=0;
+uint8_t MEM[256];
 
 uint8_t scan_pointer=0;
 
@@ -36,8 +37,8 @@ uint8_t SpecialInputFlag=-1;
 uint8_t flag;
 uint8_t Space_num;
 uint8_t Number_num;
-uint16_t par1;
-uint16_t par2;
+uint8_t par1;
+uint8_t par2;
 
 void init_serial(void);
 void Transmit(char data[],uint8_t x,uint8_t y);
@@ -286,15 +287,22 @@ void Check_Input(char data[]){
 					break;
 				}
 				if(Space_num == 1)
-					par1 = k ;
+					par1 =(uint8_t) k ;
 				else if(Space_num == 2)
-					par2 = k ;
+					par2 =(uint8_t) k ;
 				else
 					NULL;
 			}//WHILE LOOP END
 			if((Space_num == 1)||(Space_num == 0)){
 				flag = 1;
 			}
+			
+			if (flag != 1)
+			{
+				MEM[par1]=par2;
+				Transmit("OK\r\n",0,strlen("OK\n\r"));
+			}
+			
 		}
 		/////////////////////////////////////////// MR ////////////////////////////////////////////////////////////////////
 		else if ((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 82))				// Command : MR		M=77	R=82
@@ -351,12 +359,23 @@ void Check_Input(char data[]){
 					break;
 				}
 				if(Space_num == 1)
-				par1 = k ;
+				par1 =(uint8_t) k ;
 				else
 				NULL;
 			}//WHILE LOOP END
 			if((Space_num == 0)){
 				flag = 1;
+			}
+			
+			if (flag != 1)
+			{
+				par2 = MEM[par1];
+				//par2=145;
+				char t[3];
+				Transmit(itoa( (par2/(100))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+				Transmit(itoa( (par2/(10))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+				Transmit(itoa( (par2/(1))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+				Transmit("\n\r",0,strlen("\n\r"));
 			}
 			
 		}
@@ -414,9 +433,9 @@ void Check_Input(char data[]){
 					break;
 				}
 				if(Space_num == 1)
-				par1 = k ;
+				par1 =(uint8_t) k ;
 				else if(Space_num == 2)
-				par2 = k ;
+				par2 =(uint8_t)k ;
 				else
 				NULL;
 			}//WHILE LOOP END
@@ -436,7 +455,7 @@ void Check_Input(char data[]){
 	{					
 		rxReadPos = rxWritePos;  
 		Transmit("ER\r",0,strlen("ER\r"));
-	} 
+	}
 	//char Val[10];
 	//Transmit(itoa(par1,Val,16),0,10);
 
