@@ -64,7 +64,7 @@ int main (void)
 	board_init();
 	init_serial();
 	
-	// question 2, accessing RAM
+	// question 2, accessing RAM and determine the position in memory, where the data will be stored.
 	volatile char *a = (char *)malloc(sizeof(char)*10);
 	a=0x0060;
 	
@@ -74,49 +74,51 @@ int main (void)
 	a[3] ='l';
 	a[4] ='o';
 	
+	// question 1 and 3
 	sei();
 	
-	//String copy
-	//strcpy(SPACE,"\x20");
-	
+	// delimiter carriage return
 	strcpy(CR,"\xD"); 
 
-	
+	// Initialization of pointers for buffer
 	rxReadPos=0;
 	rxWritePos=0;
 	
 	
-	/////////
+	// setting the direction of pins
 	DDRB |= (1<<DDB0);
 	DDRB |= (1<<DDB1);
 	DDRB |= (1<<DDB2);
 	DDRB |= (1<<DDB3);
 
-	//
+	// initialization for leds
 	PORTB |= (1<<PORTB0);
 	PORTB |= (1<<PORTB1);
 	PORTB |= (1<<PORTB2);
 	PORTB |= (1<<PORTB3);
 
 	
+	// Pull-up resistor enabled, (with low level INT1 , when button is pushed -> low)
+	PORTD = (1 << PORTD3); 
 	
-	PORTD = (1 << PORTD3); // Pull-up resistor enabled, (with low level INT1 , when button is pushed -> low)
-
+	
 	//MCUCR Default values (for ICS11, ICS10) --> low profil
 
 	GICR = (1 << INT1);		//External Interrupt Request 1 Enable
 	
 	state=0;
 	cliflag=0;
+	
+	// debouncing the button, after a certain time passes we enable again the external interrupt 
 	while(1){
 		if(cliflag == 0)
 		{
-			sei();
+			GICR = (1 << INT1);
 		}
 		else
 		{
-			cli();
-			_delay_ms(4000);
+			GICR &= ~(1 << INT1);
+			_delay_ms(400);
 			cliflag = 0;
 		}
 	}
@@ -129,14 +131,16 @@ int main (void)
 
 
 
-
+/*
+* This function transmits a single byte to the terminal
+*/
 void Sendmsg(char *data){
 	if(UCSRA & (1 << UDRE)) //if UDR is empty(no data transfer at the moment)
 		UDR = data;
 }
 
 
-//////////////////////////////////////////  TRANSMIT  ///////////////////////////////////////////////////////////////////////////////
+// TRANSMIT function : transmits a string
 
 void Transmit(char data[],uint8_t x,uint8_t y){
 	
@@ -149,40 +153,46 @@ void Transmit(char data[],uint8_t x,uint8_t y){
 
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
-	
+ISR (USART_TXC_vect) { //  Interrupts for completed transmit data	
 }
 
 
-
+/*
+*	This function detects and execute the commands
+*   list of commands: 
+*	AT : XOFF/XON protocol
+*	MW : memory write
+*	MR : memory read
+*	SUM: sum the certain data from memory  
+*/
 void Check_Input(char data[]){
 	
 		flag = 0;
 		Space_num = 0;
 		
 		//process
-		//Transmit(myrxbuffer,0,rxWritePos);
-		//Checking for AT<CR> command.
 		
+		// command AT
 		if((data[rxReadPos] == 65)&&(data[rxReadPos+1] == 84))  // 65 = "A" , 84 = "T"
 		{
+			//Checking if user finished entering the command by checking if he typed the <CR> character.
 			if(data[rxReadPos+2] == CR[0]){
-				Transmit("OK\r",0 , strlen("OK\r"));
+				Transmit("\nOK\n\r",0 , strlen("\nOK\n\r"));
 				rxReadPos = rxWritePos;
 			}
 			else
 				flag = 1;
 		}
-			//Checking for MW<SP>?<SP>?<CR> and SUM<SP>?<SP>?<CR> command.
+		//Checking for MW<SP>X<SP>Y<CR> command.
 		else if((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 87))		// "M" , "W"
 		{
 			rxReadPos++;
+			//Checking if user finished entering the command by checking if he typed the <CR> character.
 			while(data[rxReadPos] != CR[0])
 			{	
+				// error checking : too many spaces used
 				if(Space_num == 2)
 				{
 					flag = 1;
@@ -190,6 +200,7 @@ void Check_Input(char data[]){
 				}
 
 				rxReadPos++;
+				//Detecting Spaces
 				if(data[rxReadPos] == SPACE)
 				{
 					++rxReadPos;
@@ -200,8 +211,10 @@ void Check_Input(char data[]){
 					flag = 1;
 					break;
 				}
+				//Detecting 3* digit number and convert to 8 bit integer 
 				Number_num=0;
 				uint16_t k = 0;
+				//check if number exceeds 3 digit or we detect a CR or SPACE 
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
@@ -209,7 +222,7 @@ void Check_Input(char data[]){
 					{
 						Number_num++;
 
-						k = 10 * k + (data[rxReadPos] - '0');
+						k = 10 * k + (data[rxReadPos] - '0');	//conversion to int
 						rxReadPos++;
 					}
 					else
@@ -218,39 +231,43 @@ void Check_Input(char data[]){
 						break;
 					}	
 				}
-
-				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
+				//the above while has broken because we detected a space so we cancel the rxreadpos increase
+				//must be counted in the next loop, as a part of the space detection code
+				if((data[rxReadPos] == SPACE))  
 					rxReadPos--;
 				if(Number_num == 0)				//if not valid number parameter
 				{
 					flag = 1;
 					break;
 				}
-				if(k > 255)
+				if(k > 255)		//if number exceeds the limit (255)
 				{
 					flag = 1;
 					break;
 				}
+				// assigns each parameter to 8 bit integer variable ( X input of the command)
 				if(Space_num == 1)
 					par1 =(uint8_t) k ;
-				else if(Space_num == 2)
+				else if(Space_num == 2)	// Y input of the  command
 					par2 =(uint8_t) k ;
 				else
 					NULL;
-			}//WHILE LOOP END
+			}//WHILE LOOP 
+			// error checking: too few spaces used 
 			if((Space_num == 1)||(Space_num == 0)){
 				flag = 1;
 			}
 			
+			//Command execution
 			if (flag != 1)
 			{
 				MEM[par1]=par2;
-				Transmit("OK\r\n",0,strlen("OK\n\r"));
+				Transmit("\nOK\n\r",0,strlen("\nOK\n\r"));
 			}
 			
 		}
-		/////////////////////////////////////////// MR ////////////////////////////////////////////////////////////////////
-		else if ((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 82))				// Command : MR		M=77	R=82
+		// Command : MR		M=77	R=82
+		else if ((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 82))				
 		{
 			rxReadPos++;
 			while(data[rxReadPos] != CR[0])
@@ -291,9 +308,9 @@ void Check_Input(char data[]){
 					}
 				}
 
-				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
+				if((data[rxReadPos] == SPACE)) 
 				rxReadPos--;
-				if(Number_num == 0)				//if not valid number parameter
+				if(Number_num == 0)				
 				{
 					flag = 1;
 					break;
@@ -315,8 +332,11 @@ void Check_Input(char data[]){
 			if (flag != 1)
 			{
 				par2 = MEM[par1];
-				//par2=145;
 				char t[3];
+				
+				//We use an extra \n before every transmit just for the output to be easily readable 
+				Transmit("\n",0,strlen("\n"));
+				//cropping and converting integer to character
 				Transmit(itoa( (par2/(100))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
 				Transmit(itoa( (par2/(10))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
 				Transmit(itoa( (par2/(1))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
@@ -351,7 +371,7 @@ void Check_Input(char data[]){
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
-					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
+					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	
 					{
 						Number_num++;
 
@@ -365,9 +385,9 @@ void Check_Input(char data[]){
 					}
 				}
 
-				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
+				if((data[rxReadPos] == SPACE))  
 				rxReadPos--;
-				if(Number_num == 0)				//if not valid number parameter
+				if(Number_num == 0)				
 				{
 					flag = 1;
 					break;
@@ -401,6 +421,7 @@ void Check_Input(char data[]){
 					sum+=MEM[i];
 				}
 				char t[4];
+				Transmit("\n",0,strlen("\n"));
 				Transmit(itoa( (sum/(1000))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
 				Transmit(itoa( (sum/(100))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
 				Transmit(itoa( (sum/(10))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
@@ -414,19 +435,13 @@ void Check_Input(char data[]){
 			
 		
 
-	//Transmit("MPIKA",0,strlen("MPIKA"));
-
-
 	if(flag == 1)        // Error found, break while loop (rxreadps --> CR)
 	{					
 		rxReadPos = rxWritePos;  
-		Transmit("ER\r",0,strlen("ER\r"));
+		Transmit("\nER\n\r",0,strlen("\nER\n\r"));
 	}
-	//char Val[10];
-	//Transmit(itoa(par1,Val,16),0,10);
 
-
-	rxReadPos++;		//Ready for the next command (deixnei sto 1o gramma) 
+	rxReadPos++;		//Ready for the next command (directs to the next letter) 
 	
 
 				
@@ -456,16 +471,19 @@ ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
 		
 }
 
+/*
+*   External interrupt handler
+*	When the button is pushed, the next led will turn on while the previous one	will turn off
+*/
 
 ISR(INT1_vect)
 {
-	
+	// prevent ring progress until we disable the GICR (external interrupt)
 	if(cliflag == 0)
 	{
 		++state;
 		if(state >= 5)
 		state = 1;
-
 		if(state == 1)
 		{
 			PORTB |= (1<<PORTB0);
@@ -488,7 +506,6 @@ ISR(INT1_vect)
 		}
 		cliflag = 1;
 	}
-	//PORTB &= ~(1<<PORTB3);
 	
 
 	
