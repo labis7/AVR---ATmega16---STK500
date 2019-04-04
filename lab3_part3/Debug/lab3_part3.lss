@@ -3,33 +3,33 @@ lab3_part3.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000008f6  00000000  00000000  00000094  2**1
+  0 .text         00000c22  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         0000001c  00800060  000008f6  0000098a  2**0
+  1 .data         00000012  00800060  00000c22  00000cb6  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000030b  0080007c  0080007c  000009a6  2**0
+  2 .bss          0000030a  00800072  00800072  00000cc8  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000009a6  2**0
+  3 .comment      00000030  00000000  00000000  00000cc8  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000009d8  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000cf8  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000080  00000000  00000000  00000a14  2**0
+  5 .debug_aranges 00000078  00000000  00000000  00000d34  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000e73  00000000  00000000  00000a94  2**0
+  6 .debug_info   00001146  00000000  00000000  00000dac  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000841  00000000  00000000  00001907  2**0
+  7 .debug_abbrev 00000811  00000000  00000000  00001ef2  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000f5c  00000000  00000000  00002148  2**0
+  8 .debug_line   00001059  00000000  00000000  00002703  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  0000015c  00000000  00000000  000030a4  2**2
+  9 .debug_frame  00000158  00000000  00000000  0000375c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000fdc1  00000000  00000000  00003200  2**0
+ 10 .debug_str    0000fd89  00000000  00000000  000038b4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000728  00000000  00000000  00012fc1  2**0
+ 11 .debug_loc    00000879  00000000  00000000  0001363d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000000f0  00000000  00000000  000136e9  2**0
+ 12 .debug_ranges 000000d8  00000000  00000000  00013eb6  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  00003589  00000000  00000000  000137d9  2**0
+ 13 .debug_macro  00003589  00000000  00000000  00013f8e  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -39,7 +39,7 @@ Disassembly of section .text:
    2:	00 00       	nop
    4:	42 c0       	rjmp	.+132    	; 0x8a <__bad_interrupt>
    6:	00 00       	nop
-   8:	40 c0       	rjmp	.+128    	; 0x8a <__bad_interrupt>
+   8:	3d c5       	rjmp	.+2682   	; 0xa84 <__vector_2>
    a:	00 00       	nop
    c:	3e c0       	rjmp	.+124    	; 0x8a <__bad_interrupt>
    e:	00 00       	nop
@@ -57,7 +57,7 @@ Disassembly of section .text:
   26:	00 00       	nop
   28:	30 c0       	rjmp	.+96     	; 0x8a <__bad_interrupt>
   2a:	00 00       	nop
-  2c:	b9 c3       	rjmp	.+1906   	; 0x7a0 <__vector_11>
+  2c:	ed c4       	rjmp	.+2522   	; 0xa08 <__vector_11>
   2e:	00 00       	nop
   30:	2c c0       	rjmp	.+88     	; 0x8a <__bad_interrupt>
   32:	00 00       	nop
@@ -90,18 +90,18 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	e6 ef       	ldi	r30, 0xF6	; 246
-  68:	f8 e0       	ldi	r31, 0x08	; 8
+  66:	e2 e2       	ldi	r30, 0x22	; 34
+  68:	fc e0       	ldi	r31, 0x0C	; 12
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
   6e:	0d 92       	st	X+, r0
-  70:	ac 37       	cpi	r26, 0x7C	; 124
+  70:	a2 37       	cpi	r26, 0x72	; 114
   72:	b1 07       	cpc	r27, r17
   74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
 
 00000076 <__do_clear_bss>:
   76:	23 e0       	ldi	r18, 0x03	; 3
-  78:	ac e7       	ldi	r26, 0x7C	; 124
+  78:	a2 e7       	ldi	r26, 0x72	; 114
   7a:	b0 e0       	ldi	r27, 0x00	; 0
   7c:	01 c0       	rjmp	.+2      	; 0x80 <.do_clear_bss_start>
 
@@ -109,11 +109,11 @@ Disassembly of section .text:
   7e:	1d 92       	st	X+, r1
 
 00000080 <.do_clear_bss_start>:
-  80:	a7 38       	cpi	r26, 0x87	; 135
+  80:	ac 37       	cpi	r26, 0x7C	; 124
   82:	b2 07       	cpc	r27, r18
   84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
-  86:	df d3       	rcall	.+1982   	; 0x846 <main>
-  88:	34 c4       	rjmp	.+2152   	; 0x8f2 <_exit>
+  86:	59 d5       	rcall	.+2738   	; 0xb3a <main>
+  88:	ca c5       	rjmp	.+2964   	; 0xc1e <_exit>
 
 0000008a <__bad_interrupt>:
   8a:	ba cf       	rjmp	.-140    	; 0x0 <__vectors>
@@ -128,22 +128,34 @@ void board_init(void)
   8c:	08 95       	ret
 
 0000008e <Transmit>:
-			Sendmsg((char)i); //This func is used(easier),because 1 char per time is sent
-			_delay_ms(500);
-		}
-		
-	}
 }
+
+
+//////////////////////////////////////////  TRANSMIT  ///////////////////////////////////////////////////////////////////////////////
+
+void Transmit(char data[],uint8_t x,uint8_t y){
   8e:	9c 01       	movw	r18, r24
+	
+
+	for (uint8_t i = x ; i < y  ; i++ ){
   90:	64 17       	cp	r22, r20
   92:	50 f4       	brcc	.+20     	; 0xa8 <Transmit+0x1a>
+		while(!(UCSRA & (1 << UDRE))) //if UDR is empty(no data transfer at the moment)
   94:	5d 9b       	sbis	0x0b, 5	; 11
   96:	fe cf       	rjmp	.-4      	; 0x94 <Transmit+0x6>
+		;
+		UDR = data[i];
   98:	f9 01       	movw	r30, r18
   9a:	e6 0f       	add	r30, r22
   9c:	f1 1d       	adc	r31, r1
   9e:	90 81       	ld	r25, Z
   a0:	9c b9       	out	0x0c, r25	; 12
+//////////////////////////////////////////  TRANSMIT  ///////////////////////////////////////////////////////////////////////////////
+
+void Transmit(char data[],uint8_t x,uint8_t y){
+	
+
+	for (uint8_t i = x ; i < y  ; i++ ){
   a2:	6f 5f       	subi	r22, 0xFF	; 255
   a4:	46 13       	cpse	r20, r22
   a6:	f6 cf       	rjmp	.-20     	; 0x94 <Transmit+0x6>
@@ -161,11 +173,7 @@ ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
   ae:	0f b6       	in	r0, 0x3f	; 63
   b0:	0f 92       	push	r0
   b2:	11 24       	eor	r1, r1
-		txReadPos++;
-	}
-	if(txReadPos >= BUFFER_SIZE)
-		txReadPos = 0;
-		*/
+	
 }
   b4:	0f 90       	pop	r0
   b6:	0f be       	out	0x3f, r0	; 63
@@ -189,24 +197,22 @@ void Check_Input(char data[]){
   ce:	cf 93       	push	r28
   d0:	df 93       	push	r29
   d2:	00 d0       	rcall	.+0      	; 0xd4 <Check_Input+0x16>
-  d4:	1f 92       	push	r1
+  d4:	00 d0       	rcall	.+0      	; 0xd6 <Check_Input+0x18>
   d6:	cd b7       	in	r28, 0x3d	; 61
   d8:	de b7       	in	r29, 0x3e	; 62
   da:	ac 01       	movw	r20, r24
 	
-	//while(data[rxReadPos] != CR[0]){
-		//
 		flag = 0;
-  dc:	10 92 7f 00 	sts	0x007F, r1	; 0x80007f <flag>
+  dc:	10 92 75 00 	sts	0x0075, r1	; 0x800075 <flag>
 		Space_num = 0;
-  e0:	10 92 85 02 	sts	0x0285, r1	; 0x800285 <Space_num>
+  e0:	10 92 7a 02 	sts	0x027A, r1	; 0x80027a <Space_num>
 		
 		//process
 		//Transmit(myrxbuffer,0,rxWritePos);
 		//Checking for AT<CR> command.
 		
 		if((data[rxReadPos] == 65)&&(data[rxReadPos+1] == 84))  // 65 = "A" , 84 = "T"
-  e4:	30 91 7d 00 	lds	r19, 0x007D	; 0x80007d <rxReadPos>
+  e4:	30 91 73 00 	lds	r19, 0x0073	; 0x800073 <rxReadPos>
   e8:	83 2f       	mov	r24, r19
   ea:	90 e0       	ldi	r25, 0x00	; 0
   ec:	fa 01       	movw	r30, r20
@@ -221,32 +227,32 @@ void Check_Input(char data[]){
   fe:	21 81       	ldd	r18, Z+1	; 0x01
  100:	24 35       	cpi	r18, 0x54	; 84
  102:	09 f0       	breq	.+2      	; 0x106 <Check_Input+0x48>
- 104:	d7 c2       	rjmp	.+1454   	; 0x6b4 <__stack+0x255>
+ 104:	02 c4       	rjmp	.+2052   	; 0x90a <__stack+0x4ab>
 		{
 			if(data[rxReadPos+2] == CR[0]){
  106:	fa 01       	movw	r30, r20
  108:	e8 0f       	add	r30, r24
  10a:	f9 1f       	adc	r31, r25
  10c:	92 81       	ldd	r25, Z+2	; 0x02
- 10e:	80 91 7e 00 	lds	r24, 0x007E	; 0x80007e <CR>
+ 10e:	80 91 74 00 	lds	r24, 0x0074	; 0x800074 <CR>
  112:	98 13       	cpse	r25, r24
  114:	0a c0       	rjmp	.+20     	; 0x12a <Check_Input+0x6c>
 				Transmit("OK\r",0 , strlen("OK\r"));
  116:	43 e0       	ldi	r20, 0x03	; 3
  118:	60 e0       	ldi	r22, 0x00	; 0
- 11a:	8c e6       	ldi	r24, 0x6C	; 108
+ 11a:	81 e6       	ldi	r24, 0x61	; 97
  11c:	90 e0       	ldi	r25, 0x00	; 0
  11e:	b7 df       	rcall	.-146    	; 0x8e <Transmit>
 				rxReadPos = rxWritePos;
- 120:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <__data_end>
- 124:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
- 128:	c9 c2       	rjmp	.+1426   	; 0x6bc <__stack+0x25d>
+ 120:	80 91 72 00 	lds	r24, 0x0072	; 0x800072 <__data_end>
+ 124:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
+ 128:	f4 c3       	rjmp	.+2024   	; 0x912 <__stack+0x4b3>
 			}
 			else
 				flag = 1;
  12a:	81 e0       	ldi	r24, 0x01	; 1
- 12c:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 130:	c9 c2       	rjmp	.+1426   	; 0x6c4 <__stack+0x265>
+ 12c:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+ 130:	f4 c3       	rjmp	.+2024   	; 0x91a <__stack+0x4bb>
 		}
 			//Checking for MW<SP>?<SP>?<CR> and SUM<SP>?<SP>?<CR> command.
 		else if((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 87))		// "M" , "W"
@@ -263,9 +269,9 @@ void Check_Input(char data[]){
 		{
 			rxReadPos++;
  146:	3f 5f       	subi	r19, 0xFF	; 255
- 148:	30 93 7d 00 	sts	0x007D, r19	; 0x80007d <rxReadPos>
+ 148:	30 93 73 00 	sts	0x0073, r19	; 0x800073 <rxReadPos>
 			while(data[rxReadPos] != CR[0])
- 14c:	70 91 7e 00 	lds	r23, 0x007E	; 0x80007e <CR>
+ 14c:	70 91 74 00 	lds	r23, 0x0074	; 0x800074 <CR>
 					flag = 1;
 					break;
 				}
@@ -300,21 +306,21 @@ void Check_Input(char data[]){
  160:	8e c0       	rjmp	.+284    	; 0x27e <Check_Input+0x1c0>
 			{	
 				if(Space_num == 2)
- 162:	90 91 85 02 	lds	r25, 0x0285	; 0x800285 <Space_num>
+ 162:	90 91 7a 02 	lds	r25, 0x027A	; 0x80027a <Space_num>
  166:	92 30       	cpi	r25, 0x02	; 2
  168:	21 f4       	brne	.+8      	; 0x172 <Check_Input+0xb4>
 				{
 					flag = 1;
  16a:	81 e0       	ldi	r24, 0x01	; 1
- 16c:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 170:	a9 c2       	rjmp	.+1362   	; 0x6c4 <__stack+0x265>
+ 16c:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+ 170:	d4 c3       	rjmp	.+1960   	; 0x91a <__stack+0x4bb>
 					break;
 				}
 
 				rxReadPos++;
  172:	21 e0       	ldi	r18, 0x01	; 1
  174:	28 0f       	add	r18, r24
- 176:	20 93 7d 00 	sts	0x007D, r18	; 0x80007d <rxReadPos>
+ 176:	20 93 73 00 	sts	0x0073, r18	; 0x800073 <rxReadPos>
 				if(data[rxReadPos] == SPACE)
  17a:	da 01       	movw	r26, r20
  17c:	a2 0f       	add	r26, r18
@@ -330,19 +336,19 @@ void Check_Input(char data[]){
 					++rxReadPos;
  18e:	a2 e0       	ldi	r26, 0x02	; 2
  190:	a8 0f       	add	r26, r24
- 192:	a0 93 7d 00 	sts	0x007D, r26	; 0x80007d <rxReadPos>
+ 192:	a0 93 73 00 	sts	0x0073, r26	; 0x800073 <rxReadPos>
 					++Space_num;
  196:	ff 24       	eor	r15, r15
  198:	f3 94       	inc	r15
  19a:	f9 0e       	add	r15, r25
- 19c:	f0 92 85 02 	sts	0x0285, r15	; 0x800285 <Space_num>
+ 19c:	f0 92 7a 02 	sts	0x027A, r15	; 0x80027a <Space_num>
 				else
 				{
 					flag = 1;
 					break;
 				}
 				Number_num=0;
- 1a0:	10 92 82 02 	sts	0x0282, r1	; 0x800282 <Number_num>
+ 1a0:	10 92 78 02 	sts	0x0278, r1	; 0x800278 <Number_num>
 				uint16_t k = 0;
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
  1a4:	9a 01       	movw	r18, r20
@@ -352,7 +358,7 @@ void Check_Input(char data[]){
  1ac:	90 81       	ld	r25, Z
  1ae:	79 13       	cpse	r23, r25
  1b0:	26 c0       	rjmp	.+76     	; 0x1fe <Check_Input+0x140>
- 1b2:	97 c2       	rjmp	.+1326   	; 0x6e2 <__stack+0x283>
+ 1b2:	c2 c3       	rjmp	.+1924   	; 0x938 <__stack+0x4d9>
 					++rxReadPos;
 					++Space_num;
 				}
@@ -360,9 +366,9 @@ void Check_Input(char data[]){
 				{
 					flag = 1;
  1b4:	81 e0       	ldi	r24, 0x01	; 1
- 1b6:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 1b6:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 1ba:	d8 c2       	rjmp	.+1456   	; 0x76c <__stack+0x30d>
+ 1ba:	07 c4       	rjmp	.+2062   	; 0x9ca <__stack+0x56b>
 				Number_num=0;
 				uint16_t k = 0;
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
@@ -375,7 +381,7 @@ void Check_Input(char data[]){
 					{
 						Number_num++;
  1c2:	6f 5f       	subi	r22, 0xFF	; 255
- 1c4:	60 93 82 02 	sts	0x0282, r22	; 0x800282 <Number_num>
+ 1c4:	60 93 78 02 	sts	0x0278, r22	; 0x800278 <Number_num>
  1c8:	89 01       	movw	r16, r18
  1ca:	00 0f       	add	r16, r16
  1cc:	11 1f       	adc	r17, r17
@@ -398,7 +404,7 @@ void Check_Input(char data[]){
  1ea:	3a 95       	dec	r19
 						rxReadPos++;
  1ec:	8f 5f       	subi	r24, 0xFF	; 255
- 1ee:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
+ 1ee:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
 					flag = 1;
 					break;
 				}
@@ -414,7 +420,7 @@ void Check_Input(char data[]){
 					else
 					{
 						flag = 1;
- 1f8:	e0 92 7f 00 	sts	0x007F, r14	; 0x80007f <flag>
+ 1f8:	e0 92 75 00 	sts	0x0075, r14	; 0x800075 <flag>
 						break;
  1fc:	13 c0       	rjmp	.+38     	; 0x224 <Check_Input+0x166>
 					flag = 1;
@@ -425,14 +431,14 @@ void Check_Input(char data[]){
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
  1fe:	90 32       	cpi	r25, 0x20	; 32
  200:	09 f4       	brne	.+2      	; 0x204 <Check_Input+0x146>
- 202:	6f c2       	rjmp	.+1246   	; 0x6e2 <__stack+0x283>
+ 202:	9a c3       	rjmp	.+1844   	; 0x938 <__stack+0x4d9>
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
  204:	90 53       	subi	r25, 0x30	; 48
  206:	9a 30       	cpi	r25, 0x0A	; 10
  208:	08 f4       	brcc	.+2      	; 0x20c <Check_Input+0x14e>
- 20a:	88 c2       	rjmp	.+1296   	; 0x71c <__stack+0x2bd>
+ 20a:	b7 c3       	rjmp	.+1902   	; 0x97a <__stack+0x51b>
 					flag = 1;
 					break;
 				}
@@ -464,7 +470,7 @@ void Check_Input(char data[]){
 				}
 
 				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
- 224:	a0 91 7d 00 	lds	r26, 0x007D	; 0x80007d <rxReadPos>
+ 224:	a0 91 73 00 	lds	r26, 0x0073	; 0x800073 <rxReadPos>
  228:	ca 01       	movw	r24, r20
  22a:	8a 0f       	add	r24, r26
  22c:	91 1d       	adc	r25, r1
@@ -482,16 +488,16 @@ void Check_Input(char data[]){
  244:	3d 2d       	mov	r19, r13
 					rxReadPos--;
  246:	a1 50       	subi	r26, 0x01	; 1
- 248:	a0 93 7d 00 	sts	0x007D, r26	; 0x80007d <rxReadPos>
+ 248:	a0 93 73 00 	sts	0x0073, r26	; 0x800073 <rxReadPos>
 				if(Number_num == 0)				//if not valid number parameter
  24c:	61 11       	cpse	r22, r1
  24e:	04 c0       	rjmp	.+8      	; 0x258 <Check_Input+0x19a>
 				{
 					flag = 1;
  250:	81 e0       	ldi	r24, 0x01	; 1
- 252:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 252:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 256:	8a c2       	rjmp	.+1300   	; 0x76c <__stack+0x30d>
+ 256:	b9 c3       	rjmp	.+1906   	; 0x9ca <__stack+0x56b>
 				}
 				if(k > 255)
  258:	2f 3f       	cpi	r18, 0xFF	; 255
@@ -501,30 +507,30 @@ void Check_Input(char data[]){
 				{
 					flag = 1;
  260:	81 e0       	ldi	r24, 0x01	; 1
- 262:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 262:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 266:	82 c2       	rjmp	.+1284   	; 0x76c <__stack+0x30d>
+ 266:	b1 c3       	rjmp	.+1890   	; 0x9ca <__stack+0x56b>
 				}
 				if(Space_num == 1)
  268:	f1 e0       	ldi	r31, 0x01	; 1
  26a:	ff 12       	cpse	r15, r31
  26c:	03 c0       	rjmp	.+6      	; 0x274 <Check_Input+0x1b6>
 					par1 =(uint8_t) k ;
- 26e:	20 93 81 00 	sts	0x0081, r18	; 0x800081 <par1>
+ 26e:	20 93 76 00 	sts	0x0076, r18	; 0x800076 <par1>
  272:	05 c0       	rjmp	.+10     	; 0x27e <Check_Input+0x1c0>
 				else if(Space_num == 2)
  274:	82 e0       	ldi	r24, 0x02	; 2
  276:	f8 12       	cpse	r15, r24
  278:	02 c0       	rjmp	.+4      	; 0x27e <Check_Input+0x1c0>
 					par2 =(uint8_t) k ;
- 27a:	20 93 83 02 	sts	0x0283, r18	; 0x800283 <par2>
+ 27a:	20 93 79 02 	sts	0x0279, r18	; 0x800279 <par2>
 		}
 			//Checking for MW<SP>?<SP>?<CR> and SUM<SP>?<SP>?<CR> command.
 		else if((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 87))		// "M" , "W"
 		{
 			rxReadPos++;
 			while(data[rxReadPos] != CR[0])
- 27e:	80 91 7d 00 	lds	r24, 0x007D	; 0x80007d <rxReadPos>
+ 27e:	80 91 73 00 	lds	r24, 0x0073	; 0x800073 <rxReadPos>
  282:	da 01       	movw	r26, r20
  284:	a8 0f       	add	r26, r24
  286:	b1 1d       	adc	r27, r1
@@ -537,35 +543,35 @@ void Check_Input(char data[]){
 					NULL;
 			}//WHILE LOOP END
 			if((Space_num == 1)||(Space_num == 0)){
- 28e:	80 91 85 02 	lds	r24, 0x0285	; 0x800285 <Space_num>
+ 28e:	80 91 7a 02 	lds	r24, 0x027A	; 0x80027a <Space_num>
  292:	82 30       	cpi	r24, 0x02	; 2
  294:	20 f4       	brcc	.+8      	; 0x29e <Check_Input+0x1e0>
 				flag = 1;
  296:	81 e0       	ldi	r24, 0x01	; 1
- 298:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 29c:	13 c2       	rjmp	.+1062   	; 0x6c4 <__stack+0x265>
+ 298:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+ 29c:	3e c3       	rjmp	.+1660   	; 0x91a <__stack+0x4bb>
 			}
 			
 			if (flag != 1)
- 29e:	80 91 7f 00 	lds	r24, 0x007F	; 0x80007f <flag>
+ 29e:	80 91 75 00 	lds	r24, 0x0075	; 0x800075 <flag>
  2a2:	81 30       	cpi	r24, 0x01	; 1
  2a4:	09 f4       	brne	.+2      	; 0x2a8 <Check_Input+0x1ea>
- 2a6:	0e c2       	rjmp	.+1052   	; 0x6c4 <__stack+0x265>
+ 2a6:	39 c3       	rjmp	.+1650   	; 0x91a <__stack+0x4bb>
 			{
 				MEM[par1]=par2;
- 2a8:	e0 91 81 00 	lds	r30, 0x0081	; 0x800081 <par1>
+ 2a8:	e0 91 76 00 	lds	r30, 0x0076	; 0x800076 <par1>
  2ac:	f0 e0       	ldi	r31, 0x00	; 0
- 2ae:	ee 57       	subi	r30, 0x7E	; 126
+ 2ae:	e9 58       	subi	r30, 0x89	; 137
  2b0:	ff 4f       	sbci	r31, 0xFF	; 255
- 2b2:	80 91 83 02 	lds	r24, 0x0283	; 0x800283 <par2>
+ 2b2:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
  2b6:	80 83       	st	Z, r24
 				Transmit("OK\r\n",0,strlen("OK\n\r"));
  2b8:	44 e0       	ldi	r20, 0x04	; 4
  2ba:	60 e0       	ldi	r22, 0x00	; 0
- 2bc:	80 e7       	ldi	r24, 0x70	; 112
+ 2bc:	85 e6       	ldi	r24, 0x65	; 101
  2be:	90 e0       	ldi	r25, 0x00	; 0
  2c0:	e6 de       	rcall	.-564    	; 0x8e <Transmit>
- 2c2:	fc c1       	rjmp	.+1016   	; 0x6bc <__stack+0x25d>
+ 2c2:	27 c3       	rjmp	.+1614   	; 0x912 <__stack+0x4b3>
 			}
 			
 		}
@@ -573,13 +579,13 @@ void Check_Input(char data[]){
 		else if ((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 82))				// Command : MR		M=77	R=82
  2c4:	82 35       	cpi	r24, 0x52	; 82
  2c6:	09 f0       	breq	.+2      	; 0x2ca <Check_Input+0x20c>
- 2c8:	f5 c1       	rjmp	.+1002   	; 0x6b4 <__stack+0x255>
+ 2c8:	20 c3       	rjmp	.+1600   	; 0x90a <__stack+0x4ab>
 		{
 			rxReadPos++;
  2ca:	3f 5f       	subi	r19, 0xFF	; 255
- 2cc:	30 93 7d 00 	sts	0x007D, r19	; 0x80007d <rxReadPos>
+ 2cc:	30 93 73 00 	sts	0x0073, r19	; 0x800073 <rxReadPos>
 			while(data[rxReadPos] != CR[0])
- 2d0:	70 91 7e 00 	lds	r23, 0x007E	; 0x80007e <CR>
+ 2d0:	70 91 74 00 	lds	r23, 0x0074	; 0x800074 <CR>
 					flag = 1;
 					break;
 				}
@@ -614,21 +620,21 @@ void Check_Input(char data[]){
  2e4:	88 c0       	rjmp	.+272    	; 0x3f6 <Check_Input+0x338>
 			{
 				if(Space_num == 1)
- 2e6:	90 91 85 02 	lds	r25, 0x0285	; 0x800285 <Space_num>
+ 2e6:	90 91 7a 02 	lds	r25, 0x027A	; 0x80027a <Space_num>
  2ea:	91 30       	cpi	r25, 0x01	; 1
  2ec:	21 f4       	brne	.+8      	; 0x2f6 <Check_Input+0x238>
 				{
 					flag = 1;
  2ee:	81 e0       	ldi	r24, 0x01	; 1
- 2f0:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 2f4:	e7 c1       	rjmp	.+974    	; 0x6c4 <__stack+0x265>
+ 2f0:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+ 2f4:	12 c3       	rjmp	.+1572   	; 0x91a <__stack+0x4bb>
 					break;
 				}
 
 				rxReadPos++;
  2f6:	21 e0       	ldi	r18, 0x01	; 1
  2f8:	28 0f       	add	r18, r24
- 2fa:	20 93 7d 00 	sts	0x007D, r18	; 0x80007d <rxReadPos>
+ 2fa:	20 93 73 00 	sts	0x0073, r18	; 0x800073 <rxReadPos>
 				if(data[rxReadPos] == SPACE)
  2fe:	da 01       	movw	r26, r20
  300:	a2 0f       	add	r26, r18
@@ -644,19 +650,19 @@ void Check_Input(char data[]){
 					++rxReadPos;
  312:	a2 e0       	ldi	r26, 0x02	; 2
  314:	a8 0f       	add	r26, r24
- 316:	a0 93 7d 00 	sts	0x007D, r26	; 0x80007d <rxReadPos>
+ 316:	a0 93 73 00 	sts	0x0073, r26	; 0x800073 <rxReadPos>
 					++Space_num;
  31a:	ff 24       	eor	r15, r15
  31c:	f3 94       	inc	r15
  31e:	f9 0e       	add	r15, r25
- 320:	f0 92 85 02 	sts	0x0285, r15	; 0x800285 <Space_num>
+ 320:	f0 92 7a 02 	sts	0x027A, r15	; 0x80027a <Space_num>
 				else
 				{
 					flag = 1;
 					break;
 				}
 				Number_num=0;
- 324:	10 92 82 02 	sts	0x0282, r1	; 0x800282 <Number_num>
+ 324:	10 92 78 02 	sts	0x0278, r1	; 0x800278 <Number_num>
 				uint16_t k = 0;
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
  328:	9a 01       	movw	r18, r20
@@ -666,7 +672,7 @@ void Check_Input(char data[]){
  330:	90 81       	ld	r25, Z
  332:	79 13       	cpse	r23, r25
  334:	26 c0       	rjmp	.+76     	; 0x382 <Check_Input+0x2c4>
- 336:	dd c1       	rjmp	.+954    	; 0x6f2 <__stack+0x293>
+ 336:	08 c3       	rjmp	.+1552   	; 0x948 <__stack+0x4e9>
 					++rxReadPos;
 					++Space_num;
 				}
@@ -674,9 +680,9 @@ void Check_Input(char data[]){
 				{
 					flag = 1;
  338:	81 e0       	ldi	r24, 0x01	; 1
- 33a:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 33a:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 33e:	1c c2       	rjmp	.+1080   	; 0x778 <__stack+0x319>
+ 33e:	4b c3       	rjmp	.+1686   	; 0x9d6 <__stack+0x577>
 				Number_num=0;
 				uint16_t k = 0;
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
@@ -689,7 +695,7 @@ void Check_Input(char data[]){
 					{
 						Number_num++;
  346:	6f 5f       	subi	r22, 0xFF	; 255
- 348:	60 93 82 02 	sts	0x0282, r22	; 0x800282 <Number_num>
+ 348:	60 93 78 02 	sts	0x0278, r22	; 0x800278 <Number_num>
  34c:	89 01       	movw	r16, r18
  34e:	00 0f       	add	r16, r16
  350:	11 1f       	adc	r17, r17
@@ -712,7 +718,7 @@ void Check_Input(char data[]){
  36e:	3a 95       	dec	r19
 						rxReadPos++;
  370:	8f 5f       	subi	r24, 0xFF	; 255
- 372:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
+ 372:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
 					flag = 1;
 					break;
 				}
@@ -728,7 +734,7 @@ void Check_Input(char data[]){
 					else
 					{
 						flag = 1;
- 37c:	e0 92 7f 00 	sts	0x007F, r14	; 0x80007f <flag>
+ 37c:	e0 92 75 00 	sts	0x0075, r14	; 0x800075 <flag>
 						break;
  380:	13 c0       	rjmp	.+38     	; 0x3a8 <Check_Input+0x2ea>
 					flag = 1;
@@ -739,14 +745,14 @@ void Check_Input(char data[]){
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
  382:	90 32       	cpi	r25, 0x20	; 32
  384:	09 f4       	brne	.+2      	; 0x388 <Check_Input+0x2ca>
- 386:	b5 c1       	rjmp	.+874    	; 0x6f2 <__stack+0x293>
+ 386:	e0 c2       	rjmp	.+1472   	; 0x948 <__stack+0x4e9>
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
  388:	90 53       	subi	r25, 0x30	; 48
  38a:	9a 30       	cpi	r25, 0x0A	; 10
  38c:	08 f4       	brcc	.+2      	; 0x390 <Check_Input+0x2d2>
- 38e:	d4 c1       	rjmp	.+936    	; 0x738 <__stack+0x2d9>
+ 38e:	03 c3       	rjmp	.+1542   	; 0x996 <__stack+0x537>
 					flag = 1;
 					break;
 				}
@@ -778,7 +784,7 @@ void Check_Input(char data[]){
 				}
 
 				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
- 3a8:	a0 91 7d 00 	lds	r26, 0x007D	; 0x80007d <rxReadPos>
+ 3a8:	a0 91 73 00 	lds	r26, 0x0073	; 0x800073 <rxReadPos>
  3ac:	ca 01       	movw	r24, r20
  3ae:	8a 0f       	add	r24, r26
  3b0:	91 1d       	adc	r25, r1
@@ -796,16 +802,16 @@ void Check_Input(char data[]){
  3c8:	3d 2d       	mov	r19, r13
 				rxReadPos--;
  3ca:	a1 50       	subi	r26, 0x01	; 1
- 3cc:	a0 93 7d 00 	sts	0x007D, r26	; 0x80007d <rxReadPos>
+ 3cc:	a0 93 73 00 	sts	0x0073, r26	; 0x800073 <rxReadPos>
 				if(Number_num == 0)				//if not valid number parameter
  3d0:	61 11       	cpse	r22, r1
  3d2:	04 c0       	rjmp	.+8      	; 0x3dc <Check_Input+0x31e>
 				{
 					flag = 1;
  3d4:	81 e0       	ldi	r24, 0x01	; 1
- 3d6:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 3d6:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 3da:	ce c1       	rjmp	.+924    	; 0x778 <__stack+0x319>
+ 3da:	fd c2       	rjmp	.+1530   	; 0x9d6 <__stack+0x577>
 				}
 				if(k > 255)
  3dc:	2f 3f       	cpi	r18, 0xFF	; 255
@@ -815,23 +821,23 @@ void Check_Input(char data[]){
 				{
 					flag = 1;
  3e4:	81 e0       	ldi	r24, 0x01	; 1
- 3e6:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 3e6:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 3ea:	c6 c1       	rjmp	.+908    	; 0x778 <__stack+0x319>
+ 3ea:	f5 c2       	rjmp	.+1514   	; 0x9d6 <__stack+0x577>
 				}
 				if(Space_num == 1)
  3ec:	f1 e0       	ldi	r31, 0x01	; 1
  3ee:	ff 12       	cpse	r15, r31
  3f0:	02 c0       	rjmp	.+4      	; 0x3f6 <Check_Input+0x338>
 				par1 =(uint8_t) k ;
- 3f2:	20 93 81 00 	sts	0x0081, r18	; 0x800081 <par1>
+ 3f2:	20 93 76 00 	sts	0x0076, r18	; 0x800076 <par1>
 		}
 		/////////////////////////////////////////// MR ////////////////////////////////////////////////////////////////////
 		else if ((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 82))				// Command : MR		M=77	R=82
 		{
 			rxReadPos++;
 			while(data[rxReadPos] != CR[0])
- 3f6:	80 91 7d 00 	lds	r24, 0x007D	; 0x80007d <rxReadPos>
+ 3f6:	80 91 73 00 	lds	r24, 0x0073	; 0x800073 <rxReadPos>
  3fa:	da 01       	movw	r26, r20
  3fc:	a8 0f       	add	r26, r24
  3fe:	b1 1d       	adc	r27, r1
@@ -844,28 +850,28 @@ void Check_Input(char data[]){
 				NULL;
 			}//WHILE LOOP END
 			if((Space_num == 0)){
- 406:	80 91 85 02 	lds	r24, 0x0285	; 0x800285 <Space_num>
+ 406:	80 91 7a 02 	lds	r24, 0x027A	; 0x80027a <Space_num>
  40a:	81 11       	cpse	r24, r1
  40c:	04 c0       	rjmp	.+8      	; 0x416 <__LOCK_REGION_LENGTH__+0x16>
 				flag = 1;
  40e:	81 e0       	ldi	r24, 0x01	; 1
- 410:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 414:	57 c1       	rjmp	.+686    	; 0x6c4 <__stack+0x265>
+ 410:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+ 414:	82 c2       	rjmp	.+1284   	; 0x91a <__stack+0x4bb>
 			}
 			
 			if (flag != 1)
- 416:	80 91 7f 00 	lds	r24, 0x007F	; 0x80007f <flag>
+ 416:	80 91 75 00 	lds	r24, 0x0075	; 0x800075 <flag>
  41a:	81 30       	cpi	r24, 0x01	; 1
  41c:	09 f4       	brne	.+2      	; 0x420 <__LOCK_REGION_LENGTH__+0x20>
- 41e:	52 c1       	rjmp	.+676    	; 0x6c4 <__stack+0x265>
+ 41e:	7d c2       	rjmp	.+1274   	; 0x91a <__stack+0x4bb>
 			{
 				par2 = MEM[par1];
- 420:	e0 91 81 00 	lds	r30, 0x0081	; 0x800081 <par1>
+ 420:	e0 91 76 00 	lds	r30, 0x0076	; 0x800076 <par1>
  424:	f0 e0       	ldi	r31, 0x00	; 0
- 426:	ee 57       	subi	r30, 0x7E	; 126
+ 426:	e9 58       	subi	r30, 0x89	; 137
  428:	ff 4f       	sbci	r31, 0xFF	; 255
  42a:	80 81       	ld	r24, Z
- 42c:	80 93 83 02 	sts	0x0283, r24	; 0x800283 <par2>
+ 42c:	80 93 79 02 	sts	0x0279, r24	; 0x800279 <par2>
     } else if (__radix < 2 || __radix > 36) {
 	*__s = 0;
 	return __s;
@@ -884,7 +890,7 @@ void Check_Input(char data[]){
  442:	6f 5f       	subi	r22, 0xFF	; 255
  444:	7f 4f       	sbci	r23, 0xFF	; 255
  446:	90 e0       	ldi	r25, 0x00	; 0
- 448:	21 d2       	rcall	.+1090   	; 0x88c <__itoa_ncheck>
+ 448:	b7 d3       	rcall	.+1902   	; 0xbb8 <__itoa_ncheck>
 				//par2=145;
 				char t[3];
 				Transmit(itoa( (par2/(100))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
@@ -896,7 +902,7 @@ void Check_Input(char data[]){
  454:	7f 01       	movw	r14, r30
  456:	e8 1a       	sub	r14, r24
  458:	f9 0a       	sbc	r15, r25
- 45a:	80 91 83 02 	lds	r24, 0x0283	; 0x800283 <par2>
+ 45a:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
  45e:	80 9f       	mul	r24, r16
  460:	81 2d       	mov	r24, r1
  462:	11 24       	eor	r1, r1
@@ -907,11 +913,11 @@ void Check_Input(char data[]){
  46c:	6f 5f       	subi	r22, 0xFF	; 255
  46e:	7f 4f       	sbci	r23, 0xFF	; 255
  470:	90 e0       	ldi	r25, 0x00	; 0
- 472:	0c d2       	rcall	.+1048   	; 0x88c <__itoa_ncheck>
+ 472:	a2 d3       	rcall	.+1860   	; 0xbb8 <__itoa_ncheck>
  474:	4e 2d       	mov	r20, r14
  476:	60 e0       	ldi	r22, 0x00	; 0
  478:	0a de       	rcall	.-1004   	; 0x8e <Transmit>
- 47a:	80 91 83 02 	lds	r24, 0x0283	; 0x800283 <par2>
+ 47a:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
  47e:	80 9f       	mul	r24, r16
  480:	81 2d       	mov	r24, r1
  482:	11 24       	eor	r1, r1
@@ -922,7 +928,7 @@ void Check_Input(char data[]){
  48c:	6f 5f       	subi	r22, 0xFF	; 255
  48e:	7f 4f       	sbci	r23, 0xFF	; 255
  490:	90 e0       	ldi	r25, 0x00	; 0
- 492:	fc d1       	rcall	.+1016   	; 0x88c <__itoa_ncheck>
+ 492:	92 d3       	rcall	.+1828   	; 0xbb8 <__itoa_ncheck>
 				Transmit(itoa( (par2/(10))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
  494:	fc 01       	movw	r30, r24
  496:	01 90       	ld	r0, Z+
@@ -932,7 +938,7 @@ void Check_Input(char data[]){
  49e:	7f 01       	movw	r14, r30
  4a0:	e8 1a       	sub	r14, r24
  4a2:	f9 0a       	sbc	r15, r25
- 4a4:	80 91 83 02 	lds	r24, 0x0283	; 0x800283 <par2>
+ 4a4:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
  4a8:	81 9f       	mul	r24, r17
  4aa:	81 2d       	mov	r24, r1
  4ac:	11 24       	eor	r1, r1
@@ -956,11 +962,11 @@ void Check_Input(char data[]){
  4d0:	6f 5f       	subi	r22, 0xFF	; 255
  4d2:	7f 4f       	sbci	r23, 0xFF	; 255
  4d4:	90 e0       	ldi	r25, 0x00	; 0
- 4d6:	da d1       	rcall	.+948    	; 0x88c <__itoa_ncheck>
+ 4d6:	70 d3       	rcall	.+1760   	; 0xbb8 <__itoa_ncheck>
  4d8:	4e 2d       	mov	r20, r14
  4da:	60 e0       	ldi	r22, 0x00	; 0
  4dc:	d8 dd       	rcall	.-1104   	; 0x8e <Transmit>
- 4de:	80 91 83 02 	lds	r24, 0x0283	; 0x800283 <par2>
+ 4de:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
  4e2:	80 9f       	mul	r24, r16
  4e4:	81 2d       	mov	r24, r1
  4e6:	11 24       	eor	r1, r1
@@ -971,7 +977,7 @@ void Check_Input(char data[]){
  4f0:	6f 5f       	subi	r22, 0xFF	; 255
  4f2:	7f 4f       	sbci	r23, 0xFF	; 255
  4f4:	90 e0       	ldi	r25, 0x00	; 0
- 4f6:	ca d1       	rcall	.+916    	; 0x88c <__itoa_ncheck>
+ 4f6:	60 d3       	rcall	.+1728   	; 0xbb8 <__itoa_ncheck>
 				Transmit(itoa( (par2/(1))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
  4f8:	fc 01       	movw	r30, r24
  4fa:	01 90       	ld	r0, Z+
@@ -981,7 +987,7 @@ void Check_Input(char data[]){
  502:	7f 01       	movw	r14, r30
  504:	e8 1a       	sub	r14, r24
  506:	f9 0a       	sbc	r15, r25
- 508:	80 91 83 02 	lds	r24, 0x0283	; 0x800283 <par2>
+ 508:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
  50c:	81 9f       	mul	r24, r17
  50e:	91 2d       	mov	r25, r1
  510:	11 24       	eor	r1, r1
@@ -999,17 +1005,17 @@ void Check_Input(char data[]){
  528:	6f 5f       	subi	r22, 0xFF	; 255
  52a:	7f 4f       	sbci	r23, 0xFF	; 255
  52c:	90 e0       	ldi	r25, 0x00	; 0
- 52e:	ae d1       	rcall	.+860    	; 0x88c <__itoa_ncheck>
+ 52e:	44 d3       	rcall	.+1672   	; 0xbb8 <__itoa_ncheck>
  530:	4e 2d       	mov	r20, r14
  532:	60 e0       	ldi	r22, 0x00	; 0
 				Transmit("\n\r",0,strlen("\n\r"));
  534:	ac dd       	rcall	.-1192   	; 0x8e <Transmit>
  536:	42 e0       	ldi	r20, 0x02	; 2
  538:	60 e0       	ldi	r22, 0x00	; 0
- 53a:	85 e7       	ldi	r24, 0x75	; 117
+ 53a:	8a e6       	ldi	r24, 0x6A	; 106
  53c:	90 e0       	ldi	r25, 0x00	; 0
  53e:	a7 dd       	rcall	.-1202   	; 0x8e <Transmit>
- 540:	bd c0       	rjmp	.+378    	; 0x6bc <__stack+0x25d>
+ 540:	e8 c1       	rjmp	.+976    	; 0x912 <__stack+0x4b3>
 			}
 			
 		}
@@ -1017,26 +1023,26 @@ void Check_Input(char data[]){
 		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 85) &&(data[rxReadPos + 2] == 77) ){
  542:	23 35       	cpi	r18, 0x53	; 83
  544:	09 f0       	breq	.+2      	; 0x548 <__stack+0xe9>
- 546:	b6 c0       	rjmp	.+364    	; 0x6b4 <__stack+0x255>
+ 546:	e1 c1       	rjmp	.+962    	; 0x90a <__stack+0x4ab>
  548:	fa 01       	movw	r30, r20
  54a:	e8 0f       	add	r30, r24
  54c:	f9 1f       	adc	r31, r25
  54e:	21 81       	ldd	r18, Z+1	; 0x01
  550:	25 35       	cpi	r18, 0x55	; 85
  552:	09 f0       	breq	.+2      	; 0x556 <__stack+0xf7>
- 554:	af c0       	rjmp	.+350    	; 0x6b4 <__stack+0x255>
+ 554:	da c1       	rjmp	.+948    	; 0x90a <__stack+0x4ab>
  556:	fa 01       	movw	r30, r20
  558:	e8 0f       	add	r30, r24
  55a:	f9 1f       	adc	r31, r25
  55c:	82 81       	ldd	r24, Z+2	; 0x02
  55e:	8d 34       	cpi	r24, 0x4D	; 77
  560:	09 f0       	breq	.+2      	; 0x564 <__stack+0x105>
- 562:	a8 c0       	rjmp	.+336    	; 0x6b4 <__stack+0x255>
+ 562:	d3 c1       	rjmp	.+934    	; 0x90a <__stack+0x4ab>
 			rxReadPos+=2;
  564:	3e 5f       	subi	r19, 0xFE	; 254
- 566:	30 93 7d 00 	sts	0x007D, r19	; 0x80007d <rxReadPos>
+ 566:	30 93 73 00 	sts	0x0073, r19	; 0x800073 <rxReadPos>
 			while(data[rxReadPos] != CR[0])
- 56a:	70 91 7e 00 	lds	r23, 0x007E	; 0x80007e <CR>
+ 56a:	70 91 74 00 	lds	r23, 0x0074	; 0x800074 <CR>
 					flag = 1;
 					break;
 				}
@@ -1067,24 +1073,24 @@ void Check_Input(char data[]){
 		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 85) &&(data[rxReadPos + 2] == 77) ){
 			rxReadPos+=2;
 			while(data[rxReadPos] != CR[0])
- 57c:	8b c0       	rjmp	.+278    	; 0x694 <__stack+0x235>
+ 57c:	95 c0       	rjmp	.+298    	; 0x6a8 <__stack+0x249>
 			{
 				if(Space_num == 2)
- 57e:	60 91 85 02 	lds	r22, 0x0285	; 0x800285 <Space_num>
+ 57e:	60 91 7a 02 	lds	r22, 0x027A	; 0x80027a <Space_num>
  582:	62 30       	cpi	r22, 0x02	; 2
  584:	21 f4       	brne	.+8      	; 0x58e <__stack+0x12f>
 				{
 					flag = 1;
  586:	81 e0       	ldi	r24, 0x01	; 1
- 588:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 58c:	9b c0       	rjmp	.+310    	; 0x6c4 <__stack+0x265>
+ 588:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
+ 58c:	99 c0       	rjmp	.+306    	; 0x6c0 <__stack+0x261>
 				}
 
 				rxReadPos++;
  58e:	81 e0       	ldi	r24, 0x01	; 1
  590:	83 0f       	add	r24, r19
- 592:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
+ 592:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
 				if(data[rxReadPos] == SPACE)
  596:	da 01       	movw	r26, r20
  598:	a8 0f       	add	r26, r24
@@ -1100,19 +1106,19 @@ void Check_Input(char data[]){
 					++rxReadPos;
  5aa:	22 e0       	ldi	r18, 0x02	; 2
  5ac:	23 0f       	add	r18, r19
- 5ae:	20 93 7d 00 	sts	0x007D, r18	; 0x80007d <rxReadPos>
+ 5ae:	20 93 73 00 	sts	0x0073, r18	; 0x800073 <rxReadPos>
 					++Space_num;
  5b2:	ff 24       	eor	r15, r15
  5b4:	f3 94       	inc	r15
  5b6:	f6 0e       	add	r15, r22
- 5b8:	f0 92 85 02 	sts	0x0285, r15	; 0x800285 <Space_num>
+ 5b8:	f0 92 7a 02 	sts	0x027A, r15	; 0x80027a <Space_num>
 				else
 				{
 					flag = 1;
 					break;
 				}
 				Number_num=0;
- 5bc:	10 92 82 02 	sts	0x0282, r1	; 0x800282 <Number_num>
+ 5bc:	10 92 78 02 	sts	0x0278, r1	; 0x800278 <Number_num>
 				uint16_t k = 0;
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
  5c0:	da 01       	movw	r26, r20
@@ -1121,7 +1127,7 @@ void Check_Input(char data[]){
  5c6:	8c 91       	ld	r24, X
  5c8:	78 13       	cpse	r23, r24
  5ca:	25 c0       	rjmp	.+74     	; 0x616 <__stack+0x1b7>
- 5cc:	9a c0       	rjmp	.+308    	; 0x702 <__stack+0x2a3>
+ 5cc:	c5 c1       	rjmp	.+906    	; 0x958 <__stack+0x4f9>
 					++rxReadPos;
 					++Space_num;
 				}
@@ -1129,9 +1135,9 @@ void Check_Input(char data[]){
 				{
 					flag = 1;
  5ce:	81 e0       	ldi	r24, 0x01	; 1
- 5d0:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 5d0:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 5d4:	9e c0       	rjmp	.+316    	; 0x712 <__stack+0x2b3>
+ 5d4:	71 c0       	rjmp	.+226    	; 0x6b8 <__stack+0x259>
 				Number_num=0;
 				uint16_t k = 0;
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
@@ -1144,7 +1150,7 @@ void Check_Input(char data[]){
 					{
 						Number_num++;
  5dc:	6f 5f       	subi	r22, 0xFF	; 255
- 5de:	60 93 82 02 	sts	0x0282, r22	; 0x800282 <Number_num>
+ 5de:	60 93 78 02 	sts	0x0278, r22	; 0x800278 <Number_num>
  5e2:	8c 01       	movw	r16, r24
  5e4:	00 0f       	add	r16, r16
  5e6:	11 1f       	adc	r17, r17
@@ -1166,7 +1172,7 @@ void Check_Input(char data[]){
  602:	9a 95       	dec	r25
 						rxReadPos++;
  604:	3f 5f       	subi	r19, 0xFF	; 255
- 606:	30 93 7d 00 	sts	0x007D, r19	; 0x80007d <rxReadPos>
+ 606:	30 93 73 00 	sts	0x0073, r19	; 0x800073 <rxReadPos>
 					flag = 1;
 					break;
 				}
@@ -1182,7 +1188,7 @@ void Check_Input(char data[]){
 					else
 					{
 						flag = 1;
- 610:	e0 92 7f 00 	sts	0x007F, r14	; 0x80007f <flag>
+ 610:	e0 92 75 00 	sts	0x0075, r14	; 0x800075 <flag>
 						break;
  614:	13 c0       	rjmp	.+38     	; 0x63c <__stack+0x1dd>
 					flag = 1;
@@ -1193,14 +1199,14 @@ void Check_Input(char data[]){
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
  616:	80 32       	cpi	r24, 0x20	; 32
  618:	09 f4       	brne	.+2      	; 0x61c <__stack+0x1bd>
- 61a:	73 c0       	rjmp	.+230    	; 0x702 <__stack+0x2a3>
+ 61a:	9e c1       	rjmp	.+828    	; 0x958 <__stack+0x4f9>
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
  61c:	80 53       	subi	r24, 0x30	; 48
  61e:	8a 30       	cpi	r24, 0x0A	; 10
  620:	08 f4       	brcc	.+2      	; 0x624 <__stack+0x1c5>
- 622:	98 c0       	rjmp	.+304    	; 0x754 <__stack+0x2f5>
+ 622:	c7 c1       	rjmp	.+910    	; 0x9b2 <__stack+0x553>
 					flag = 1;
 					break;
 				}
@@ -1232,7 +1238,7 @@ void Check_Input(char data[]){
 				}
 
 				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
- 63c:	20 91 7d 00 	lds	r18, 0x007D	; 0x80007d <rxReadPos>
+ 63c:	20 91 73 00 	lds	r18, 0x0073	; 0x800073 <rxReadPos>
  640:	da 01       	movw	r26, r20
  642:	a2 0f       	add	r26, r18
  644:	b1 1d       	adc	r27, r1
@@ -1249,524 +1255,1042 @@ void Check_Input(char data[]){
  65a:	9d 2d       	mov	r25, r13
 				rxReadPos--;
  65c:	21 50       	subi	r18, 0x01	; 1
- 65e:	20 93 7d 00 	sts	0x007D, r18	; 0x80007d <rxReadPos>
+ 65e:	20 93 73 00 	sts	0x0073, r18	; 0x800073 <rxReadPos>
 				if(Number_num == 0)				//if not valid number parameter
  662:	61 11       	cpse	r22, r1
  664:	04 c0       	rjmp	.+8      	; 0x66e <__stack+0x20f>
 				{
 					flag = 1;
  666:	81 e0       	ldi	r24, 0x01	; 1
- 668:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
+ 668:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
 					break;
- 66c:	52 c0       	rjmp	.+164    	; 0x712 <__stack+0x2b3>
+ 66c:	25 c0       	rjmp	.+74     	; 0x6b8 <__stack+0x259>
 				}
-				if(k > 255)
+				if(k > 255 && Space_num ==1)
  66e:	8f 3f       	cpi	r24, 0xFF	; 255
  670:	91 05       	cpc	r25, r1
  672:	29 f0       	breq	.+10     	; 0x67e <__stack+0x21f>
  674:	20 f0       	brcs	.+8      	; 0x67e <__stack+0x21f>
+ 676:	21 e0       	ldi	r18, 0x01	; 1
+ 678:	f2 12       	cpse	r15, r18
+ 67a:	76 c1       	rjmp	.+748    	; 0x968 <__stack+0x509>
+ 67c:	30 c0       	rjmp	.+96     	; 0x6de <__stack+0x27f>
 				{
 					flag = 1;
- 676:	81 e0       	ldi	r24, 0x01	; 1
- 678:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
 					break;
- 67c:	4a c0       	rjmp	.+148    	; 0x712 <__stack+0x2b3>
+				}
+				else if (k > 15 && Space_num ==2)
+ 67e:	80 31       	cpi	r24, 0x10	; 16
+ 680:	91 05       	cpc	r25, r1
+ 682:	38 f0       	brcs	.+14     	; 0x692 <__stack+0x233>
+ 684:	32 e0       	ldi	r19, 0x02	; 2
+ 686:	f3 12       	cpse	r15, r19
+ 688:	73 c1       	rjmp	.+742    	; 0x970 <__stack+0x511>
+				{
+					flag = 1;
+ 68a:	81 e0       	ldi	r24, 0x01	; 1
+ 68c:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+					break;
+ 690:	17 c0       	rjmp	.+46     	; 0x6c0 <__stack+0x261>
 				}
 				if(Space_num == 1)
- 67e:	21 e0       	ldi	r18, 0x01	; 1
- 680:	f2 12       	cpse	r15, r18
- 682:	03 c0       	rjmp	.+6      	; 0x68a <__stack+0x22b>
+ 692:	21 e0       	ldi	r18, 0x01	; 1
+ 694:	f2 12       	cpse	r15, r18
+ 696:	03 c0       	rjmp	.+6      	; 0x69e <__stack+0x23f>
 				par1 =(uint8_t) k ;
- 684:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <par1>
- 688:	05 c0       	rjmp	.+10     	; 0x694 <__stack+0x235>
+ 698:	80 93 76 00 	sts	0x0076, r24	; 0x800076 <par1>
+ 69c:	05 c0       	rjmp	.+10     	; 0x6a8 <__stack+0x249>
 				else if(Space_num == 2)
- 68a:	22 e0       	ldi	r18, 0x02	; 2
- 68c:	f2 12       	cpse	r15, r18
- 68e:	02 c0       	rjmp	.+4      	; 0x694 <__stack+0x235>
+ 69e:	32 e0       	ldi	r19, 0x02	; 2
+ 6a0:	f3 12       	cpse	r15, r19
+ 6a2:	02 c0       	rjmp	.+4      	; 0x6a8 <__stack+0x249>
 				par2 =(uint8_t)k ;
- 690:	80 93 83 02 	sts	0x0283, r24	; 0x800283 <par2>
+ 6a4:	80 93 79 02 	sts	0x0279, r24	; 0x800279 <par2>
 			
 		}
 		//////////////////////////////////////////////// SUM /////////////////////////////////////////////////////
 		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 85) &&(data[rxReadPos + 2] == 77) ){
 			rxReadPos+=2;
 			while(data[rxReadPos] != CR[0])
- 694:	30 91 7d 00 	lds	r19, 0x007D	; 0x80007d <rxReadPos>
- 698:	da 01       	movw	r26, r20
- 69a:	a3 0f       	add	r26, r19
- 69c:	b1 1d       	adc	r27, r1
- 69e:	8c 91       	ld	r24, X
- 6a0:	87 13       	cpse	r24, r23
- 6a2:	6d cf       	rjmp	.-294    	; 0x57e <__stack+0x11f>
+ 6a8:	30 91 73 00 	lds	r19, 0x0073	; 0x800073 <rxReadPos>
+ 6ac:	da 01       	movw	r26, r20
+ 6ae:	a3 0f       	add	r26, r19
+ 6b0:	b1 1d       	adc	r27, r1
+ 6b2:	8c 91       	ld	r24, X
+ 6b4:	87 13       	cpse	r24, r23
+ 6b6:	63 cf       	rjmp	.-314    	; 0x57e <__stack+0x11f>
 				else if(Space_num == 2)
 				par2 =(uint8_t)k ;
 				else
 				NULL;
 			}//WHILE LOOP END
-			if((Space_num == 1)||(Space_num == 0)){
- 6a4:	80 91 85 02 	lds	r24, 0x0285	; 0x800285 <Space_num>
- 6a8:	82 30       	cpi	r24, 0x02	; 2
- 6aa:	40 f4       	brcc	.+16     	; 0x6bc <__stack+0x25d>
+			if((Space_num == 1)||(Space_num == 0) || (par1+par2>255)){
+ 6b8:	80 91 7a 02 	lds	r24, 0x027A	; 0x80027a <Space_num>
+ 6bc:	82 30       	cpi	r24, 0x02	; 2
+ 6be:	78 f0       	brcs	.+30     	; 0x6de <__stack+0x27f>
+ 6c0:	e0 91 76 00 	lds	r30, 0x0076	; 0x800076 <par1>
+ 6c4:	8e 2f       	mov	r24, r30
+ 6c6:	90 e0       	ldi	r25, 0x00	; 0
+ 6c8:	30 91 79 02 	lds	r19, 0x0279	; 0x800279 <par2>
+ 6cc:	43 2f       	mov	r20, r19
+ 6ce:	50 e0       	ldi	r21, 0x00	; 0
+ 6d0:	bc 01       	movw	r22, r24
+ 6d2:	64 0f       	add	r22, r20
+ 6d4:	75 1f       	adc	r23, r21
+ 6d6:	6f 3f       	cpi	r22, 0xFF	; 255
+ 6d8:	71 05       	cpc	r23, r1
+ 6da:	29 f0       	breq	.+10     	; 0x6e6 <__stack+0x287>
+ 6dc:	24 f0       	brlt	.+8      	; 0x6e6 <__stack+0x287>
 				flag = 1;
- 6ac:	81 e0       	ldi	r24, 0x01	; 1
- 6ae:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 6b2:	08 c0       	rjmp	.+16     	; 0x6c4 <__stack+0x265>
+ 6de:	81 e0       	ldi	r24, 0x01	; 1
+ 6e0:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+ 6e4:	1a c1       	rjmp	.+564    	; 0x91a <__stack+0x4bb>
+			}
+			
+			if (flag!=1)
+ 6e6:	20 91 75 00 	lds	r18, 0x0075	; 0x800075 <flag>
+ 6ea:	21 30       	cpi	r18, 0x01	; 1
+ 6ec:	09 f4       	brne	.+2      	; 0x6f0 <__stack+0x291>
+ 6ee:	15 c1       	rjmp	.+554    	; 0x91a <__stack+0x4bb>
+			{
+				uint16_t sum=0;
+				for(int i = par1; i<=par2 ; i++)
+ 6f0:	48 17       	cp	r20, r24
+ 6f2:	59 07       	cpc	r21, r25
+ 6f4:	6c f0       	brlt	.+26     	; 0x710 <__stack+0x2b1>
+ 6f6:	f0 e0       	ldi	r31, 0x00	; 0
+ 6f8:	e9 58       	subi	r30, 0x89	; 137
+ 6fa:	ff 4f       	sbci	r31, 0xFF	; 255
+ 6fc:	00 e0       	ldi	r16, 0x00	; 0
+ 6fe:	10 e0       	ldi	r17, 0x00	; 0
+				{
+					sum+=MEM[i];
+ 700:	21 91       	ld	r18, Z+
+ 702:	02 0f       	add	r16, r18
+ 704:	11 1d       	adc	r17, r1
+			}
+			
+			if (flag!=1)
+			{
+				uint16_t sum=0;
+				for(int i = par1; i<=par2 ; i++)
+ 706:	01 96       	adiw	r24, 0x01	; 1
+ 708:	48 17       	cp	r20, r24
+ 70a:	59 07       	cpc	r21, r25
+ 70c:	cc f7       	brge	.-14     	; 0x700 <__stack+0x2a1>
+ 70e:	02 c0       	rjmp	.+4      	; 0x714 <__stack+0x2b5>
+				flag = 1;
+			}
+			
+			if (flag!=1)
+			{
+				uint16_t sum=0;
+ 710:	00 e0       	ldi	r16, 0x00	; 0
+ 712:	10 e0       	ldi	r17, 0x00	; 0
+ 714:	0f 2e       	mov	r0, r31
+ 716:	f9 e2       	ldi	r31, 0x29	; 41
+ 718:	df 2e       	mov	r13, r31
+ 71a:	f0 2d       	mov	r31, r0
+ 71c:	3d 9d       	mul	r19, r13
+ 71e:	81 2d       	mov	r24, r1
+ 720:	11 24       	eor	r1, r1
+ 722:	82 95       	swap	r24
+ 724:	8f 70       	andi	r24, 0x0F	; 15
+ 726:	4a e0       	ldi	r20, 0x0A	; 10
+ 728:	be 01       	movw	r22, r28
+ 72a:	6f 5f       	subi	r22, 0xFF	; 255
+ 72c:	7f 4f       	sbci	r23, 0xFF	; 255
+ 72e:	90 e0       	ldi	r25, 0x00	; 0
+ 730:	43 d2       	rcall	.+1158   	; 0xbb8 <__itoa_ncheck>
+				for(int i = par1; i<=par2 ; i++)
+				{
+					sum+=MEM[i];
+				}
+				char t[4];
+				Transmit(itoa( (sum/(1000))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+ 732:	fc 01       	movw	r30, r24
+ 734:	01 90       	ld	r0, Z+
+ 736:	00 20       	and	r0, r0
+ 738:	e9 f7       	brne	.-6      	; 0x734 <__stack+0x2d5>
+ 73a:	31 97       	sbiw	r30, 0x01	; 1
+ 73c:	7f 01       	movw	r14, r30
+ 73e:	e8 1a       	sub	r14, r24
+ 740:	f9 0a       	sbc	r15, r25
+ 742:	98 01       	movw	r18, r16
+ 744:	36 95       	lsr	r19
+ 746:	27 95       	ror	r18
+ 748:	36 95       	lsr	r19
+ 74a:	27 95       	ror	r18
+ 74c:	36 95       	lsr	r19
+ 74e:	27 95       	ror	r18
+ 750:	a5 ec       	ldi	r26, 0xC5	; 197
+ 752:	b0 e2       	ldi	r27, 0x20	; 32
+ 754:	22 d2       	rcall	.+1092   	; 0xb9a <__umulhisi3>
+ 756:	fc 01       	movw	r30, r24
+ 758:	f2 95       	swap	r31
+ 75a:	e2 95       	swap	r30
+ 75c:	ef 70       	andi	r30, 0x0F	; 15
+ 75e:	ef 27       	eor	r30, r31
+ 760:	ff 70       	andi	r31, 0x0F	; 15
+ 762:	ef 27       	eor	r30, r31
+ 764:	9f 01       	movw	r18, r30
+ 766:	ad ec       	ldi	r26, 0xCD	; 205
+ 768:	bc ec       	ldi	r27, 0xCC	; 204
+ 76a:	17 d2       	rcall	.+1070   	; 0xb9a <__umulhisi3>
+ 76c:	96 95       	lsr	r25
+ 76e:	87 95       	ror	r24
+ 770:	96 95       	lsr	r25
+ 772:	87 95       	ror	r24
+ 774:	96 95       	lsr	r25
+ 776:	87 95       	ror	r24
+ 778:	9c 01       	movw	r18, r24
+ 77a:	22 0f       	add	r18, r18
+ 77c:	33 1f       	adc	r19, r19
+ 77e:	88 0f       	add	r24, r24
+ 780:	99 1f       	adc	r25, r25
+ 782:	88 0f       	add	r24, r24
+ 784:	99 1f       	adc	r25, r25
+ 786:	88 0f       	add	r24, r24
+ 788:	99 1f       	adc	r25, r25
+ 78a:	82 0f       	add	r24, r18
+ 78c:	93 1f       	adc	r25, r19
+ 78e:	4a e0       	ldi	r20, 0x0A	; 10
+ 790:	be 01       	movw	r22, r28
+ 792:	6f 5f       	subi	r22, 0xFF	; 255
+ 794:	7f 4f       	sbci	r23, 0xFF	; 255
+ 796:	9f 01       	movw	r18, r30
+ 798:	28 1b       	sub	r18, r24
+ 79a:	39 0b       	sbc	r19, r25
+ 79c:	c9 01       	movw	r24, r18
+ 79e:	0c d2       	rcall	.+1048   	; 0xbb8 <__itoa_ncheck>
+ 7a0:	4e 2d       	mov	r20, r14
+ 7a2:	60 e0       	ldi	r22, 0x00	; 0
+ 7a4:	74 dc       	rcall	.-1816   	; 0x8e <Transmit>
+ 7a6:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
+ 7aa:	8d 9d       	mul	r24, r13
+ 7ac:	81 2d       	mov	r24, r1
+ 7ae:	11 24       	eor	r1, r1
+ 7b0:	82 95       	swap	r24
+ 7b2:	8f 70       	andi	r24, 0x0F	; 15
+ 7b4:	4a e0       	ldi	r20, 0x0A	; 10
+ 7b6:	be 01       	movw	r22, r28
+ 7b8:	6f 5f       	subi	r22, 0xFF	; 255
+ 7ba:	7f 4f       	sbci	r23, 0xFF	; 255
+ 7bc:	90 e0       	ldi	r25, 0x00	; 0
+ 7be:	fc d1       	rcall	.+1016   	; 0xbb8 <__itoa_ncheck>
+				Transmit(itoa( (sum/(100))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+ 7c0:	fc 01       	movw	r30, r24
+ 7c2:	01 90       	ld	r0, Z+
+ 7c4:	00 20       	and	r0, r0
+ 7c6:	e9 f7       	brne	.-6      	; 0x7c2 <__stack+0x363>
+ 7c8:	31 97       	sbiw	r30, 0x01	; 1
+ 7ca:	7f 01       	movw	r14, r30
+ 7cc:	e8 1a       	sub	r14, r24
+ 7ce:	f9 0a       	sbc	r15, r25
+ 7d0:	98 01       	movw	r18, r16
+ 7d2:	36 95       	lsr	r19
+ 7d4:	27 95       	ror	r18
+ 7d6:	36 95       	lsr	r19
+ 7d8:	27 95       	ror	r18
+ 7da:	ab e7       	ldi	r26, 0x7B	; 123
+ 7dc:	b4 e1       	ldi	r27, 0x14	; 20
+ 7de:	dd d1       	rcall	.+954    	; 0xb9a <__umulhisi3>
+ 7e0:	fc 01       	movw	r30, r24
+ 7e2:	f6 95       	lsr	r31
+ 7e4:	e7 95       	ror	r30
+ 7e6:	9f 01       	movw	r18, r30
+ 7e8:	ad ec       	ldi	r26, 0xCD	; 205
+ 7ea:	bc ec       	ldi	r27, 0xCC	; 204
+ 7ec:	d6 d1       	rcall	.+940    	; 0xb9a <__umulhisi3>
+ 7ee:	96 95       	lsr	r25
+ 7f0:	87 95       	ror	r24
+ 7f2:	96 95       	lsr	r25
+ 7f4:	87 95       	ror	r24
+ 7f6:	96 95       	lsr	r25
+ 7f8:	87 95       	ror	r24
+ 7fa:	9c 01       	movw	r18, r24
+ 7fc:	22 0f       	add	r18, r18
+ 7fe:	33 1f       	adc	r19, r19
+ 800:	88 0f       	add	r24, r24
+ 802:	99 1f       	adc	r25, r25
+ 804:	88 0f       	add	r24, r24
+ 806:	99 1f       	adc	r25, r25
+ 808:	88 0f       	add	r24, r24
+ 80a:	99 1f       	adc	r25, r25
+ 80c:	82 0f       	add	r24, r18
+ 80e:	93 1f       	adc	r25, r19
+ 810:	4a e0       	ldi	r20, 0x0A	; 10
+ 812:	be 01       	movw	r22, r28
+ 814:	6f 5f       	subi	r22, 0xFF	; 255
+ 816:	7f 4f       	sbci	r23, 0xFF	; 255
+ 818:	9f 01       	movw	r18, r30
+ 81a:	28 1b       	sub	r18, r24
+ 81c:	39 0b       	sbc	r19, r25
+ 81e:	c9 01       	movw	r24, r18
+ 820:	cb d1       	rcall	.+918    	; 0xbb8 <__itoa_ncheck>
+ 822:	4e 2d       	mov	r20, r14
+ 824:	60 e0       	ldi	r22, 0x00	; 0
+ 826:	33 dc       	rcall	.-1946   	; 0x8e <Transmit>
+ 828:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
+ 82c:	8d 9d       	mul	r24, r13
+ 82e:	81 2d       	mov	r24, r1
+ 830:	11 24       	eor	r1, r1
+ 832:	82 95       	swap	r24
+ 834:	8f 70       	andi	r24, 0x0F	; 15
+ 836:	4a e0       	ldi	r20, 0x0A	; 10
+ 838:	be 01       	movw	r22, r28
+ 83a:	6f 5f       	subi	r22, 0xFF	; 255
+ 83c:	7f 4f       	sbci	r23, 0xFF	; 255
+ 83e:	90 e0       	ldi	r25, 0x00	; 0
+				Transmit(itoa( (sum/(10))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+ 840:	bb d1       	rcall	.+886    	; 0xbb8 <__itoa_ncheck>
+ 842:	fc 01       	movw	r30, r24
+ 844:	01 90       	ld	r0, Z+
+ 846:	00 20       	and	r0, r0
+ 848:	e9 f7       	brne	.-6      	; 0x844 <__stack+0x3e5>
+ 84a:	31 97       	sbiw	r30, 0x01	; 1
+ 84c:	5f 01       	movw	r10, r30
+ 84e:	a8 1a       	sub	r10, r24
+ 850:	b9 0a       	sbc	r11, r25
+ 852:	98 01       	movw	r18, r16
+ 854:	ad ec       	ldi	r26, 0xCD	; 205
+ 856:	bc ec       	ldi	r27, 0xCC	; 204
+ 858:	a0 d1       	rcall	.+832    	; 0xb9a <__umulhisi3>
+ 85a:	7c 01       	movw	r14, r24
+ 85c:	f6 94       	lsr	r15
+ 85e:	e7 94       	ror	r14
+ 860:	f6 94       	lsr	r15
+ 862:	e7 94       	ror	r14
+ 864:	f6 94       	lsr	r15
+ 866:	e7 94       	ror	r14
+ 868:	97 01       	movw	r18, r14
+ 86a:	97 d1       	rcall	.+814    	; 0xb9a <__umulhisi3>
+ 86c:	96 95       	lsr	r25
+ 86e:	87 95       	ror	r24
+ 870:	96 95       	lsr	r25
+ 872:	87 95       	ror	r24
+ 874:	96 95       	lsr	r25
+ 876:	87 95       	ror	r24
+ 878:	9c 01       	movw	r18, r24
+ 87a:	22 0f       	add	r18, r18
+ 87c:	33 1f       	adc	r19, r19
+ 87e:	88 0f       	add	r24, r24
+ 880:	99 1f       	adc	r25, r25
+ 882:	88 0f       	add	r24, r24
+ 884:	99 1f       	adc	r25, r25
+ 886:	88 0f       	add	r24, r24
+ 888:	99 1f       	adc	r25, r25
+ 88a:	82 0f       	add	r24, r18
+ 88c:	93 1f       	adc	r25, r19
+ 88e:	4a e0       	ldi	r20, 0x0A	; 10
+ 890:	be 01       	movw	r22, r28
+ 892:	6f 5f       	subi	r22, 0xFF	; 255
+ 894:	7f 4f       	sbci	r23, 0xFF	; 255
+ 896:	f7 01       	movw	r30, r14
+ 898:	e8 1b       	sub	r30, r24
+ 89a:	f9 0b       	sbc	r31, r25
+ 89c:	cf 01       	movw	r24, r30
+ 89e:	8c d1       	rcall	.+792    	; 0xbb8 <__itoa_ncheck>
+ 8a0:	4a 2d       	mov	r20, r10
+ 8a2:	60 e0       	ldi	r22, 0x00	; 0
+ 8a4:	f4 db       	rcall	.-2072   	; 0x8e <Transmit>
+ 8a6:	80 91 79 02 	lds	r24, 0x0279	; 0x800279 <par2>
+ 8aa:	8d 9d       	mul	r24, r13
+ 8ac:	81 2d       	mov	r24, r1
+ 8ae:	11 24       	eor	r1, r1
+ 8b0:	82 95       	swap	r24
+ 8b2:	8f 70       	andi	r24, 0x0F	; 15
+ 8b4:	4a e0       	ldi	r20, 0x0A	; 10
+ 8b6:	be 01       	movw	r22, r28
+ 8b8:	6f 5f       	subi	r22, 0xFF	; 255
+ 8ba:	7f 4f       	sbci	r23, 0xFF	; 255
+ 8bc:	90 e0       	ldi	r25, 0x00	; 0
+ 8be:	7c d1       	rcall	.+760    	; 0xbb8 <__itoa_ncheck>
+				Transmit(itoa( (sum/(1))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+ 8c0:	fc 01       	movw	r30, r24
+ 8c2:	01 90       	ld	r0, Z+
+ 8c4:	00 20       	and	r0, r0
+ 8c6:	e9 f7       	brne	.-6      	; 0x8c2 <__stack+0x463>
+ 8c8:	31 97       	sbiw	r30, 0x01	; 1
+ 8ca:	6f 01       	movw	r12, r30
+ 8cc:	c8 1a       	sub	r12, r24
+ 8ce:	d9 0a       	sbc	r13, r25
+ 8d0:	c7 01       	movw	r24, r14
+ 8d2:	88 0f       	add	r24, r24
+ 8d4:	99 1f       	adc	r25, r25
+ 8d6:	ee 0c       	add	r14, r14
+ 8d8:	ff 1c       	adc	r15, r15
+ 8da:	ee 0c       	add	r14, r14
+ 8dc:	ff 1c       	adc	r15, r15
+ 8de:	ee 0c       	add	r14, r14
+ 8e0:	ff 1c       	adc	r15, r15
+ 8e2:	8e 0d       	add	r24, r14
+ 8e4:	9f 1d       	adc	r25, r15
+ 8e6:	4a e0       	ldi	r20, 0x0A	; 10
+ 8e8:	be 01       	movw	r22, r28
+ 8ea:	6f 5f       	subi	r22, 0xFF	; 255
+ 8ec:	7f 4f       	sbci	r23, 0xFF	; 255
+ 8ee:	98 01       	movw	r18, r16
+ 8f0:	28 1b       	sub	r18, r24
+ 8f2:	39 0b       	sbc	r19, r25
+ 8f4:	c9 01       	movw	r24, r18
+ 8f6:	60 d1       	rcall	.+704    	; 0xbb8 <__itoa_ncheck>
+ 8f8:	4c 2d       	mov	r20, r12
+ 8fa:	60 e0       	ldi	r22, 0x00	; 0
+ 8fc:	c8 db       	rcall	.-2160   	; 0x8e <Transmit>
+				Transmit("\n\r",0,strlen("\n\r"));
+ 8fe:	42 e0       	ldi	r20, 0x02	; 2
+ 900:	60 e0       	ldi	r22, 0x00	; 0
+ 902:	8a e6       	ldi	r24, 0x6A	; 106
+ 904:	90 e0       	ldi	r25, 0x00	; 0
+ 906:	c3 db       	rcall	.-2170   	; 0x8e <Transmit>
+ 908:	04 c0       	rjmp	.+8      	; 0x912 <__stack+0x4b3>
+ 90a:	81 e0       	ldi	r24, 0x01	; 1
+				
 			}
 		}
 		else
 			flag = 1;
- 6b4:	81 e0       	ldi	r24, 0x01	; 1
- 6b6:	80 93 7f 00 	sts	0x007F, r24	; 0x80007f <flag>
- 6ba:	04 c0       	rjmp	.+8      	; 0x6c4 <__stack+0x265>
+ 90c:	80 93 75 00 	sts	0x0075, r24	; 0x800075 <flag>
+ 910:	04 c0       	rjmp	.+8      	; 0x91a <__stack+0x4bb>
+ 912:	80 91 75 00 	lds	r24, 0x0075	; 0x800075 <flag>
 		
 
 	//Transmit("MPIKA",0,strlen("MPIKA"));
 
 
 	if(flag == 1)        // Error found, break while loop (rxreadps --> CR)
- 6bc:	80 91 7f 00 	lds	r24, 0x007F	; 0x80007f <flag>
- 6c0:	81 30       	cpi	r24, 0x01	; 1
+ 916:	81 30       	cpi	r24, 0x01	; 1
+ 918:	49 f4       	brne	.+18     	; 0x92c <__stack+0x4cd>
+ 91a:	80 91 72 00 	lds	r24, 0x0072	; 0x800072 <__data_end>
 	{					
 		rxReadPos = rxWritePos;  
- 6c2:	49 f4       	brne	.+18     	; 0x6d6 <__stack+0x277>
- 6c4:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <__data_end>
- 6c8:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
+ 91e:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
+ 922:	43 e0       	ldi	r20, 0x03	; 3
 		Transmit("ER\r",0,strlen("ER\r"));
- 6cc:	43 e0       	ldi	r20, 0x03	; 3
- 6ce:	60 e0       	ldi	r22, 0x00	; 0
- 6d0:	88 e7       	ldi	r24, 0x78	; 120
- 6d2:	90 e0       	ldi	r25, 0x00	; 0
- 6d4:	dc dc       	rcall	.-1608   	; 0x8e <Transmit>
+ 924:	60 e0       	ldi	r22, 0x00	; 0
+ 926:	8d e6       	ldi	r24, 0x6D	; 109
+ 928:	90 e0       	ldi	r25, 0x00	; 0
+ 92a:	b1 db       	rcall	.-2206   	; 0x8e <Transmit>
+ 92c:	80 91 73 00 	lds	r24, 0x0073	; 0x800073 <rxReadPos>
 	}
 	//char Val[10];
 	//Transmit(itoa(par1,Val,16),0,10);
 
 
 	rxReadPos++;		//Ready for the next command (deixnei sto 1o gramma) 
- 6d6:	80 91 7d 00 	lds	r24, 0x007D	; 0x80007d <rxReadPos>
- 6da:	8f 5f       	subi	r24, 0xFF	; 255
- 6dc:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
+ 930:	8f 5f       	subi	r24, 0xFF	; 255
+ 932:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
+ 936:	59 c0       	rjmp	.+178    	; 0x9ea <__stack+0x58b>
+ 938:	89 2f       	mov	r24, r25
 	
 
 				
 }
- 6e0:	51 c0       	rjmp	.+162    	; 0x784 <__stack+0x325>
+ 93a:	99 0f       	add	r25, r25
 						flag = 1;
 						break;
 					}	
 				}
 
 				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
- 6e2:	89 2f       	mov	r24, r25
- 6e4:	99 0f       	add	r25, r25
- 6e6:	99 0b       	sbc	r25, r25
- 6e8:	a8 16       	cp	r10, r24
- 6ea:	b9 06       	cpc	r11, r25
- 6ec:	09 f4       	brne	.+2      	; 0x6f0 <__stack+0x291>
- 6ee:	a8 cd       	rjmp	.-1200   	; 0x240 <Check_Input+0x182>
- 6f0:	af cd       	rjmp	.-1186   	; 0x250 <Check_Input+0x192>
+ 93c:	99 0b       	sbc	r25, r25
+ 93e:	a8 16       	cp	r10, r24
+ 940:	b9 06       	cpc	r11, r25
+ 942:	09 f4       	brne	.+2      	; 0x946 <__stack+0x4e7>
+ 944:	7d cc       	rjmp	.-1798   	; 0x240 <Check_Input+0x182>
+ 946:	84 cc       	rjmp	.-1784   	; 0x250 <Check_Input+0x192>
+ 948:	89 2f       	mov	r24, r25
+ 94a:	99 0f       	add	r25, r25
 						flag = 1;
 						break;
 					}
 				}
 
 				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
- 6f2:	89 2f       	mov	r24, r25
- 6f4:	99 0f       	add	r25, r25
- 6f6:	99 0b       	sbc	r25, r25
- 6f8:	a8 16       	cp	r10, r24
- 6fa:	b9 06       	cpc	r11, r25
- 6fc:	09 f4       	brne	.+2      	; 0x700 <__stack+0x2a1>
- 6fe:	62 ce       	rjmp	.-828    	; 0x3c4 <Check_Input+0x306>
- 700:	69 ce       	rjmp	.-814    	; 0x3d4 <Check_Input+0x316>
+ 94c:	99 0b       	sbc	r25, r25
+ 94e:	a8 16       	cp	r10, r24
+ 950:	b9 06       	cpc	r11, r25
+ 952:	09 f4       	brne	.+2      	; 0x956 <__stack+0x4f7>
+ 954:	37 cd       	rjmp	.-1426   	; 0x3c4 <Check_Input+0x306>
+ 956:	3e cd       	rjmp	.-1412   	; 0x3d4 <Check_Input+0x316>
+ 958:	08 2e       	mov	r0, r24
+ 95a:	00 0c       	add	r0, r0
 						flag = 1;
 						break;
 					}
 				}
 
 				if((data[rxReadPos] == SPACE))  //the above while has broken bcs of space and we cancel the rxreadpos increase(must be counted in the next loop)
- 702:	08 2e       	mov	r0, r24
- 704:	00 0c       	add	r0, r0
- 706:	99 0b       	sbc	r25, r25
- 708:	e8 17       	cp	r30, r24
- 70a:	f9 07       	cpc	r31, r25
- 70c:	09 f4       	brne	.+2      	; 0x710 <__stack+0x2b1>
- 70e:	a3 cf       	rjmp	.-186    	; 0x656 <__stack+0x1f7>
- 710:	aa cf       	rjmp	.-172    	; 0x666 <__stack+0x207>
-				else if(Space_num == 2)
-				par2 =(uint8_t)k ;
-				else
-				NULL;
-			}//WHILE LOOP END
-			if((Space_num == 1)||(Space_num == 0)){
- 712:	80 91 85 02 	lds	r24, 0x0285	; 0x800285 <Space_num>
- 716:	82 30       	cpi	r24, 0x02	; 2
- 718:	a8 f6       	brcc	.-86     	; 0x6c4 <__stack+0x265>
- 71a:	c8 cf       	rjmp	.-112    	; 0x6ac <__stack+0x24d>
+ 95c:	99 0b       	sbc	r25, r25
+ 95e:	e8 17       	cp	r30, r24
+ 960:	f9 07       	cpc	r31, r25
+ 962:	09 f4       	brne	.+2      	; 0x966 <__stack+0x507>
+ 964:	78 ce       	rjmp	.-784    	; 0x656 <__stack+0x1f7>
+ 966:	7f ce       	rjmp	.-770    	; 0x666 <__stack+0x207>
+ 968:	80 31       	cpi	r24, 0x10	; 16
+ 96a:	91 05       	cpc	r25, r1
+				if(k > 255 && Space_num ==1)
+				{
+					flag = 1;
+					break;
+				}
+				else if (k > 15 && Space_num ==2)
+ 96c:	d0 f5       	brcc	.+116    	; 0x9e2 <__stack+0x583>
+ 96e:	97 ce       	rjmp	.-722    	; 0x69e <__stack+0x23f>
+ 970:	31 e0       	ldi	r19, 0x01	; 1
+ 972:	f3 16       	cp	r15, r19
+				{
+					flag = 1;
+					break;
+				}
+				if(Space_num == 1)
+ 974:	09 f4       	brne	.+2      	; 0x978 <__stack+0x519>
+ 976:	90 ce       	rjmp	.-736    	; 0x698 <__stack+0x239>
+ 978:	97 ce       	rjmp	.-722    	; 0x6a8 <__stack+0x249>
+ 97a:	e0 92 78 02 	sts	0x0278, r14	; 0x800278 <Number_num>
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
 					{
 						Number_num++;
- 71c:	e0 92 82 02 	sts	0x0282, r14	; 0x800282 <Number_num>
+ 97e:	f9 01       	movw	r30, r18
+ 980:	20 81       	ld	r18, Z
 
 						k = 10 * k + (data[rxReadPos] - '0');
- 720:	f9 01       	movw	r30, r18
- 722:	20 81       	ld	r18, Z
- 724:	02 2e       	mov	r0, r18
- 726:	00 0c       	add	r0, r0
- 728:	33 0b       	sbc	r19, r19
- 72a:	20 53       	subi	r18, 0x30	; 48
- 72c:	31 09       	sbc	r19, r1
+ 982:	02 2e       	mov	r0, r18
+ 984:	00 0c       	add	r0, r0
+ 986:	33 0b       	sbc	r19, r19
+ 988:	20 53       	subi	r18, 0x30	; 48
+ 98a:	31 09       	sbc	r19, r1
+ 98c:	8d 5f       	subi	r24, 0xFD	; 253
+ 98e:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
 						rxReadPos++;
- 72e:	8d 5f       	subi	r24, 0xFD	; 253
- 730:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
+ 992:	61 e0       	ldi	r22, 0x01	; 1
+ 994:	3f cc       	rjmp	.-1922   	; 0x214 <Check_Input+0x156>
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
 					{
 						Number_num++;
- 734:	61 e0       	ldi	r22, 0x01	; 1
- 736:	6e cd       	rjmp	.-1316   	; 0x214 <Check_Input+0x156>
+ 996:	e0 92 78 02 	sts	0x0278, r14	; 0x800278 <Number_num>
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
 					{
 						Number_num++;
- 738:	e0 92 82 02 	sts	0x0282, r14	; 0x800282 <Number_num>
+ 99a:	f9 01       	movw	r30, r18
+ 99c:	20 81       	ld	r18, Z
 
 						k = 10 * k + (data[rxReadPos] - '0');
- 73c:	f9 01       	movw	r30, r18
- 73e:	20 81       	ld	r18, Z
- 740:	02 2e       	mov	r0, r18
- 742:	00 0c       	add	r0, r0
- 744:	33 0b       	sbc	r19, r19
- 746:	20 53       	subi	r18, 0x30	; 48
- 748:	31 09       	sbc	r19, r1
+ 99e:	02 2e       	mov	r0, r18
+ 9a0:	00 0c       	add	r0, r0
+ 9a2:	33 0b       	sbc	r19, r19
+ 9a4:	20 53       	subi	r18, 0x30	; 48
+ 9a6:	31 09       	sbc	r19, r1
+ 9a8:	8d 5f       	subi	r24, 0xFD	; 253
+ 9aa:	80 93 73 00 	sts	0x0073, r24	; 0x800073 <rxReadPos>
 						rxReadPos++;
- 74a:	8d 5f       	subi	r24, 0xFD	; 253
- 74c:	80 93 7d 00 	sts	0x007D, r24	; 0x80007d <rxReadPos>
+ 9ae:	61 e0       	ldi	r22, 0x01	; 1
+ 9b0:	f3 cc       	rjmp	.-1562   	; 0x398 <Check_Input+0x2da>
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
 					{
 						Number_num++;
- 750:	61 e0       	ldi	r22, 0x01	; 1
- 752:	22 ce       	rjmp	.-956    	; 0x398 <Check_Input+0x2da>
+ 9b2:	e0 92 78 02 	sts	0x0278, r14	; 0x800278 <Number_num>
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
 					{
 						Number_num++;
- 754:	e0 92 82 02 	sts	0x0282, r14	; 0x800282 <Number_num>
+ 9b6:	8c 91       	ld	r24, X
+ 9b8:	08 2e       	mov	r0, r24
 
 						k = 10 * k + (data[rxReadPos] - '0');
- 758:	8c 91       	ld	r24, X
- 75a:	08 2e       	mov	r0, r24
- 75c:	00 0c       	add	r0, r0
- 75e:	99 0b       	sbc	r25, r25
- 760:	c0 97       	sbiw	r24, 0x30	; 48
+ 9ba:	00 0c       	add	r0, r0
+ 9bc:	99 0b       	sbc	r25, r25
+ 9be:	c0 97       	sbiw	r24, 0x30	; 48
+ 9c0:	3d 5f       	subi	r19, 0xFD	; 253
+ 9c2:	30 93 73 00 	sts	0x0073, r19	; 0x800073 <rxReadPos>
 						rxReadPos++;
- 762:	3d 5f       	subi	r19, 0xFD	; 253
- 764:	30 93 7d 00 	sts	0x007D, r19	; 0x80007d <rxReadPos>
+ 9c6:	61 e0       	ldi	r22, 0x01	; 1
+ 9c8:	31 ce       	rjmp	.-926    	; 0x62c <__stack+0x1cd>
 				while((Number_num < 3)&&(data[rxReadPos] != CR[0])&&(data[rxReadPos] != 32))
 				{
 					
 					if( (data[rxReadPos] >= 48)&&(data[rxReadPos] <= 57))	 // checking number parameter
 					{
 						Number_num++;
- 768:	61 e0       	ldi	r22, 0x01	; 1
- 76a:	60 cf       	rjmp	.-320    	; 0x62c <__stack+0x1cd>
+ 9ca:	80 91 7a 02 	lds	r24, 0x027A	; 0x80027a <Space_num>
 				else if(Space_num == 2)
 					par2 =(uint8_t) k ;
 				else
 					NULL;
 			}//WHILE LOOP END
 			if((Space_num == 1)||(Space_num == 0)){
- 76c:	80 91 85 02 	lds	r24, 0x0285	; 0x800285 <Space_num>
- 770:	82 30       	cpi	r24, 0x02	; 2
- 772:	08 f4       	brcc	.+2      	; 0x776 <__stack+0x317>
- 774:	90 cd       	rjmp	.-1248   	; 0x296 <Check_Input+0x1d8>
- 776:	a6 cf       	rjmp	.-180    	; 0x6c4 <__stack+0x265>
+ 9ce:	82 30       	cpi	r24, 0x02	; 2
+ 9d0:	08 f4       	brcc	.+2      	; 0x9d4 <__stack+0x575>
+ 9d2:	61 cc       	rjmp	.-1854   	; 0x296 <Check_Input+0x1d8>
+ 9d4:	a2 cf       	rjmp	.-188    	; 0x91a <__stack+0x4bb>
+ 9d6:	80 91 7a 02 	lds	r24, 0x027A	; 0x80027a <Space_num>
 				if(Space_num == 1)
 				par1 =(uint8_t) k ;
 				else
 				NULL;
 			}//WHILE LOOP END
 			if((Space_num == 0)){
- 778:	80 91 85 02 	lds	r24, 0x0285	; 0x800285 <Space_num>
- 77c:	88 23       	and	r24, r24
- 77e:	09 f4       	brne	.+2      	; 0x782 <__stack+0x323>
- 780:	46 ce       	rjmp	.-884    	; 0x40e <__LOCK_REGION_LENGTH__+0xe>
- 782:	a0 cf       	rjmp	.-192    	; 0x6c4 <__stack+0x265>
+ 9da:	88 23       	and	r24, r24
+ 9dc:	09 f4       	brne	.+2      	; 0x9e0 <__stack+0x581>
+ 9de:	17 cd       	rjmp	.-1490   	; 0x40e <__LOCK_REGION_LENGTH__+0xe>
+ 9e0:	9c cf       	rjmp	.-200    	; 0x91a <__stack+0x4bb>
+ 9e2:	22 e0       	ldi	r18, 0x02	; 2
+ 9e4:	f2 12       	cpse	r15, r18
+				if(k > 255 && Space_num ==1)
+				{
+					flag = 1;
+					break;
+				}
+				else if (k > 15 && Space_num ==2)
+ 9e6:	60 ce       	rjmp	.-832    	; 0x6a8 <__stack+0x249>
+ 9e8:	50 ce       	rjmp	.-864    	; 0x68a <__stack+0x22b>
+ 9ea:	0f 90       	pop	r0
+ 9ec:	0f 90       	pop	r0
 
 	rxReadPos++;		//Ready for the next command (deixnei sto 1o gramma) 
 	
 
 				
 }
- 784:	0f 90       	pop	r0
- 786:	0f 90       	pop	r0
- 788:	0f 90       	pop	r0
- 78a:	df 91       	pop	r29
- 78c:	cf 91       	pop	r28
- 78e:	1f 91       	pop	r17
- 790:	0f 91       	pop	r16
- 792:	ff 90       	pop	r15
- 794:	ef 90       	pop	r14
- 796:	df 90       	pop	r13
- 798:	cf 90       	pop	r12
- 79a:	bf 90       	pop	r11
- 79c:	af 90       	pop	r10
- 79e:	08 95       	ret
+ 9ee:	0f 90       	pop	r0
+ 9f0:	0f 90       	pop	r0
+ 9f2:	df 91       	pop	r29
+ 9f4:	cf 91       	pop	r28
+ 9f6:	1f 91       	pop	r17
+ 9f8:	0f 91       	pop	r16
+ 9fa:	ff 90       	pop	r15
+ 9fc:	ef 90       	pop	r14
+ 9fe:	df 90       	pop	r13
+ a00:	cf 90       	pop	r12
+ a02:	bf 90       	pop	r11
+ a04:	af 90       	pop	r10
+ a06:	08 95       	ret
 
-000007a0 <__vector_11>:
+00000a08 <__vector_11>:
+ a08:	1f 92       	push	r1
+ a0a:	0f 92       	push	r0
 
 
 ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
- 7a0:	1f 92       	push	r1
- 7a2:	0f 92       	push	r0
- 7a4:	0f b6       	in	r0, 0x3f	; 63
- 7a6:	0f 92       	push	r0
- 7a8:	11 24       	eor	r1, r1
- 7aa:	2f 93       	push	r18
- 7ac:	3f 93       	push	r19
- 7ae:	4f 93       	push	r20
- 7b0:	5f 93       	push	r21
- 7b2:	6f 93       	push	r22
- 7b4:	7f 93       	push	r23
- 7b6:	8f 93       	push	r24
- 7b8:	9f 93       	push	r25
- 7ba:	af 93       	push	r26
- 7bc:	bf 93       	push	r27
- 7be:	ef 93       	push	r30
- 7c0:	ff 93       	push	r31
+ a0c:	0f b6       	in	r0, 0x3f	; 63
+ a0e:	0f 92       	push	r0
+ a10:	11 24       	eor	r1, r1
+ a12:	2f 93       	push	r18
+ a14:	3f 93       	push	r19
+ a16:	4f 93       	push	r20
+ a18:	5f 93       	push	r21
+ a1a:	6f 93       	push	r22
+ a1c:	7f 93       	push	r23
+ a1e:	8f 93       	push	r24
+ a20:	9f 93       	push	r25
+ a22:	af 93       	push	r26
+ a24:	bf 93       	push	r27
+ a26:	ef 93       	push	r30
+ a28:	ff 93       	push	r31
 
 	/////// ECHO DRIVER  //////////
 	myrxbuffer[rxWritePos] = UDR ;
- 7c2:	8c b1       	in	r24, 0x0c	; 12
- 7c4:	e0 91 7c 00 	lds	r30, 0x007C	; 0x80007c <__data_end>
- 7c8:	f0 e0       	ldi	r31, 0x00	; 0
- 7ca:	ea 57       	subi	r30, 0x7A	; 122
- 7cc:	fd 4f       	sbci	r31, 0xFD	; 253
- 7ce:	80 83       	st	Z, r24
+ a2a:	8c b1       	in	r24, 0x0c	; 12
+ a2c:	e0 91 72 00 	lds	r30, 0x0072	; 0x800072 <__data_end>
+ a30:	f0 e0       	ldi	r31, 0x00	; 0
+ a32:	e4 58       	subi	r30, 0x84	; 132
+ a34:	fd 4f       	sbci	r31, 0xFD	; 253
+ a36:	80 83       	st	Z, r24
 	
 	while(!(UCSRA & (1 << UDRE))) //if UDR is empty(no data transfer at the moment)
- 7d0:	5d 9b       	sbis	0x0b, 5	; 11
- 7d2:	fe cf       	rjmp	.-4      	; 0x7d0 <__vector_11+0x30>
+ a38:	5d 9b       	sbis	0x0b, 5	; 11
+ a3a:	fe cf       	rjmp	.-4      	; 0xa38 <__vector_11+0x30>
 	;
 	UDR = myrxbuffer[rxWritePos];
- 7d4:	8c b9       	out	0x0c, r24	; 12
+ a3c:	8c b9       	out	0x0c, r24	; 12
 	//////////////////////////////
 	
 	//Flag setting according to input control codes
 	if(myrxbuffer[rxWritePos] == CR[0])
- 7d6:	e0 91 7c 00 	lds	r30, 0x007C	; 0x80007c <__data_end>
- 7da:	f0 e0       	ldi	r31, 0x00	; 0
- 7dc:	ea 57       	subi	r30, 0x7A	; 122
- 7de:	fd 4f       	sbci	r31, 0xFD	; 253
- 7e0:	90 81       	ld	r25, Z
- 7e2:	80 91 7e 00 	lds	r24, 0x007E	; 0x80007e <CR>
- 7e6:	98 13       	cpse	r25, r24
- 7e8:	03 c0       	rjmp	.+6      	; 0x7f0 <__vector_11+0x50>
+ a3e:	e0 91 72 00 	lds	r30, 0x0072	; 0x800072 <__data_end>
+ a42:	f0 e0       	ldi	r31, 0x00	; 0
+ a44:	e4 58       	subi	r30, 0x84	; 132
+ a46:	fd 4f       	sbci	r31, 0xFD	; 253
+ a48:	90 81       	ld	r25, Z
+ a4a:	80 91 74 00 	lds	r24, 0x0074	; 0x800074 <CR>
+ a4e:	98 13       	cpse	r25, r24
+ a50:	03 c0       	rjmp	.+6      	; 0xa58 <__vector_11+0x50>
 		Check_Input(myrxbuffer);
- 7ea:	86 e8       	ldi	r24, 0x86	; 134
- 7ec:	92 e0       	ldi	r25, 0x02	; 2
- 7ee:	67 dc       	rcall	.-1842   	; 0xbe <Check_Input>
+ a52:	8c e7       	ldi	r24, 0x7C	; 124
+ a54:	92 e0       	ldi	r25, 0x02	; 2
+ a56:	33 db       	rcall	.-2458   	; 0xbe <Check_Input>
 	
 
 	rxWritePos++;
- 7f0:	80 91 7c 00 	lds	r24, 0x007C	; 0x80007c <__data_end>
- 7f4:	8f 5f       	subi	r24, 0xFF	; 255
- 7f6:	80 93 7c 00 	sts	0x007C, r24	; 0x80007c <__data_end>
+ a58:	80 91 72 00 	lds	r24, 0x0072	; 0x800072 <__data_end>
+ a5c:	8f 5f       	subi	r24, 0xFF	; 255
+ a5e:	80 93 72 00 	sts	0x0072, r24	; 0x800072 <__data_end>
 	
 	
 	if(rxWritePos >= BUFFER_SIZE )
 		rxWritePos = 0;
 		
 }
- 7fa:	ff 91       	pop	r31
- 7fc:	ef 91       	pop	r30
- 7fe:	bf 91       	pop	r27
- 800:	af 91       	pop	r26
- 802:	9f 91       	pop	r25
- 804:	8f 91       	pop	r24
- 806:	7f 91       	pop	r23
- 808:	6f 91       	pop	r22
- 80a:	5f 91       	pop	r21
- 80c:	4f 91       	pop	r20
- 80e:	3f 91       	pop	r19
- 810:	2f 91       	pop	r18
- 812:	0f 90       	pop	r0
- 814:	0f be       	out	0x3f, r0	; 63
- 816:	0f 90       	pop	r0
- 818:	1f 90       	pop	r1
- 81a:	18 95       	reti
+ a62:	ff 91       	pop	r31
+ a64:	ef 91       	pop	r30
+ a66:	bf 91       	pop	r27
+ a68:	af 91       	pop	r26
+ a6a:	9f 91       	pop	r25
+ a6c:	8f 91       	pop	r24
+ a6e:	7f 91       	pop	r23
+ a70:	6f 91       	pop	r22
+ a72:	5f 91       	pop	r21
+ a74:	4f 91       	pop	r20
+ a76:	3f 91       	pop	r19
+ a78:	2f 91       	pop	r18
+ a7a:	0f 90       	pop	r0
+ a7c:	0f be       	out	0x3f, r0	; 63
+ a7e:	0f 90       	pop	r0
+ a80:	1f 90       	pop	r1
+ a82:	18 95       	reti
 
-0000081c <init_serial>:
+00000a84 <__vector_2>:
+
+
+ISR(INT1_vect)
+{
+ a84:	1f 92       	push	r1
+ a86:	0f 92       	push	r0
+ a88:	0f b6       	in	r0, 0x3f	; 63
+ a8a:	0f 92       	push	r0
+ a8c:	11 24       	eor	r1, r1
+ a8e:	8f 93       	push	r24
+ a90:	9f 93       	push	r25
+	
+	if(cliflag == 0)
+ a92:	80 91 7b 02 	lds	r24, 0x027B	; 0x80027b <cliflag>
+ a96:	81 11       	cpse	r24, r1
+ a98:	34 c0       	rjmp	.+104    	; 0xb02 <__vector_2+0x7e>
+	{
+		++state;
+ a9a:	80 91 77 01 	lds	r24, 0x0177	; 0x800177 <state>
+ a9e:	8f 5f       	subi	r24, 0xFF	; 255
+ aa0:	80 93 77 01 	sts	0x0177, r24	; 0x800177 <state>
+		if(state >= 5)
+ aa4:	85 30       	cpi	r24, 0x05	; 5
+ aa6:	20 f0       	brcs	.+8      	; 0xab0 <__vector_2+0x2c>
+		state = 1;
+ aa8:	81 e0       	ldi	r24, 0x01	; 1
+ aaa:	80 93 77 01 	sts	0x0177, r24	; 0x800177 <state>
+ aae:	02 c0       	rjmp	.+4      	; 0xab4 <__vector_2+0x30>
+
+		if(state == 1)
+ ab0:	81 30       	cpi	r24, 0x01	; 1
+ ab2:	31 f4       	brne	.+12     	; 0xac0 <__vector_2+0x3c>
+		{
+			PORTB |= (1<<PORTB0);
+ ab4:	c0 9a       	sbi	0x18, 0	; 24
+			PORTB ^= (1<<PORTB3);
+ ab6:	98 b3       	in	r25, 0x18	; 24
+ ab8:	88 e0       	ldi	r24, 0x08	; 8
+ aba:	89 27       	eor	r24, r25
+ abc:	88 bb       	out	0x18, r24	; 24
+ abe:	1e c0       	rjmp	.+60     	; 0xafc <__vector_2+0x78>
+		}
+		else if (state == 2)
+ ac0:	82 30       	cpi	r24, 0x02	; 2
+ ac2:	49 f4       	brne	.+18     	; 0xad6 <__vector_2+0x52>
+		{
+			PORTB ^= (1<<PORTB3);
+ ac4:	98 b3       	in	r25, 0x18	; 24
+ ac6:	88 e0       	ldi	r24, 0x08	; 8
+ ac8:	89 27       	eor	r24, r25
+ aca:	88 bb       	out	0x18, r24	; 24
+			PORTB ^= (1<<PORTB2);
+ acc:	98 b3       	in	r25, 0x18	; 24
+ ace:	84 e0       	ldi	r24, 0x04	; 4
+ ad0:	89 27       	eor	r24, r25
+ ad2:	88 bb       	out	0x18, r24	; 24
+ ad4:	13 c0       	rjmp	.+38     	; 0xafc <__vector_2+0x78>
+		}
+		else if (state == 3)
+ ad6:	83 30       	cpi	r24, 0x03	; 3
+ ad8:	49 f4       	brne	.+18     	; 0xaec <__vector_2+0x68>
+		{
+			PORTB ^= (1<<PORTB2);
+ ada:	98 b3       	in	r25, 0x18	; 24
+ adc:	84 e0       	ldi	r24, 0x04	; 4
+ ade:	89 27       	eor	r24, r25
+ ae0:	88 bb       	out	0x18, r24	; 24
+			PORTB ^= (1<<PORTB1);
+ ae2:	98 b3       	in	r25, 0x18	; 24
+ ae4:	82 e0       	ldi	r24, 0x02	; 2
+ ae6:	89 27       	eor	r24, r25
+ ae8:	88 bb       	out	0x18, r24	; 24
+ aea:	08 c0       	rjmp	.+16     	; 0xafc <__vector_2+0x78>
+		}
+		else
+		{
+			PORTB ^= (1<<PORTB1);
+ aec:	98 b3       	in	r25, 0x18	; 24
+ aee:	82 e0       	ldi	r24, 0x02	; 2
+ af0:	89 27       	eor	r24, r25
+ af2:	88 bb       	out	0x18, r24	; 24
+			PORTB ^= (1<<PORTB0);
+ af4:	98 b3       	in	r25, 0x18	; 24
+ af6:	81 e0       	ldi	r24, 0x01	; 1
+ af8:	89 27       	eor	r24, r25
+ afa:	88 bb       	out	0x18, r24	; 24
+		}
+		cliflag = 1;
+ afc:	81 e0       	ldi	r24, 0x01	; 1
+ afe:	80 93 7b 02 	sts	0x027B, r24	; 0x80027b <cliflag>
+	}
+	//PORTB &= ~(1<<PORTB3);
+	
+
+	
+}
+ b02:	9f 91       	pop	r25
+ b04:	8f 91       	pop	r24
+ b06:	0f 90       	pop	r0
+ b08:	0f be       	out	0x3f, r0	; 63
+ b0a:	0f 90       	pop	r0
+ b0c:	1f 90       	pop	r1
+ b0e:	18 95       	reti
+
+00000b10 <init_serial>:
 
 
 
 void init_serial(void){
 	// By default URSEL == 0, so we can edit UBRRH regs.
 	UBRRH = (unsigned char)(BRC >> 8); //UBRRH has 8 + 4 useful bits
- 81c:	10 bc       	out	0x20, r1	; 32
+ b10:	10 bc       	out	0x20, r1	; 32
 	UBRRL = (unsigned char)BRC;
- 81e:	83 e3       	ldi	r24, 0x33	; 51
- 820:	89 b9       	out	0x09, r24	; 9
+ b12:	83 e3       	ldi	r24, 0x33	; 51
+ b14:	89 b9       	out	0x09, r24	; 9
 	
 	//UBRRH |= ( 1 << URSEL); // So we can edit UCRSC
 	
 	UCSRC &= ~(1 << UPM0); //UPM1 is cleared by default
- 822:	80 b5       	in	r24, 0x20	; 32
- 824:	8f 7e       	andi	r24, 0xEF	; 239
- 826:	80 bd       	out	0x20, r24	; 32
+ b16:	80 b5       	in	r24, 0x20	; 32
+ b18:	8f 7e       	andi	r24, 0xEF	; 239
+ b1a:	80 bd       	out	0x20, r24	; 32
 	UCSRC &= ~(1 << UPM1); //UPM1 is cleared by default
- 828:	80 b5       	in	r24, 0x20	; 32
- 82a:	8f 7d       	andi	r24, 0xDF	; 223
- 82c:	80 bd       	out	0x20, r24	; 32
+ b1c:	80 b5       	in	r24, 0x20	; 32
+ b1e:	8f 7d       	andi	r24, 0xDF	; 223
+ b20:	80 bd       	out	0x20, r24	; 32
 	UCSRC &= ~(1 << USBS); // 1 Stop bit
- 82e:	80 b5       	in	r24, 0x20	; 32
- 830:	87 7f       	andi	r24, 0xF7	; 247
- 832:	80 bd       	out	0x20, r24	; 32
+ b22:	80 b5       	in	r24, 0x20	; 32
+ b24:	87 7f       	andi	r24, 0xF7	; 247
+ b26:	80 bd       	out	0x20, r24	; 32
 
 	UCSRC = ((1<<URSEL) | (1 << UCSZ0) | (1 << UCSZ1)) ;
- 834:	86 e8       	ldi	r24, 0x86	; 134
- 836:	80 bd       	out	0x20, r24	; 32
+ b28:	86 e8       	ldi	r24, 0x86	; 134
+ b2a:	80 bd       	out	0x20, r24	; 32
 	UCSRB &= ~(1 << UCSZ2); //
- 838:	52 98       	cbi	0x0a, 2	; 10
+ b2c:	52 98       	cbi	0x0a, 2	; 10
 
 	UCSRB |= ((1 << RXEN) | (1 << TXEN)) ;
- 83a:	8a b1       	in	r24, 0x0a	; 10
- 83c:	88 61       	ori	r24, 0x18	; 24
- 83e:	8a b9       	out	0x0a, r24	; 10
+ b2e:	8a b1       	in	r24, 0x0a	; 10
+ b30:	88 61       	ori	r24, 0x18	; 24
+ b32:	8a b9       	out	0x0a, r24	; 10
 
 	UCSRB |= (1 << TXCIE); //TXC interrupts enabled
- 840:	56 9a       	sbi	0x0a, 6	; 10
+ b34:	56 9a       	sbi	0x0a, 6	; 10
 	UCSRB |= (1 << RXCIE); //RXC interrupts enabled
- 842:	57 9a       	sbi	0x0a, 7	; 10
- 844:	08 95       	ret
+ b36:	57 9a       	sbi	0x0a, 7	; 10
+ b38:	08 95       	ret
 
-00000846 <main>:
+00000b3a <main>:
 unsigned char USART_Receive(void);
 
 
 int main (void)
 {
 	board_init();
- 846:	22 dc       	rcall	.-1980   	; 0x8c <board_init>
+ b3a:	a8 da       	rcall	.-2736   	; 0x8c <board_init>
 	init_serial();
- 848:	e9 df       	rcall	.-46     	; 0x81c <init_serial>
- 84a:	78 94       	sei
+ b3c:	e9 df       	rcall	.-46     	; 0xb10 <init_serial>
+ b3e:	78 94       	sei
 	
 	sei();
- 84c:	8d e0       	ldi	r24, 0x0D	; 13
+ b40:	8d e0       	ldi	r24, 0x0D	; 13
 	
 	//String copy
 	//strcpy(SPACE,"\x20");
 	
 	strcpy(CR,"\xD"); 
- 84e:	90 e0       	ldi	r25, 0x00	; 0
- 850:	90 93 7f 00 	sts	0x007F, r25	; 0x80007f <flag>
- 854:	80 93 7e 00 	sts	0x007E, r24	; 0x80007e <CR>
- 858:	83 e1       	ldi	r24, 0x13	; 19
-	strcpy(Pause_Code,"\x13"); // ^S	
- 85a:	90 e0       	ldi	r25, 0x00	; 0
- 85c:	90 93 85 02 	sts	0x0285, r25	; 0x800285 <Space_num>
- 860:	80 93 84 02 	sts	0x0284, r24	; 0x800284 <Pause_Code>
- 864:	81 e1       	ldi	r24, 0x11	; 17
-	strcpy(Resume_Code,"\x11"); //^Q
- 866:	90 e0       	ldi	r25, 0x00	; 0
- 868:	90 93 87 03 	sts	0x0387, r25	; 0x800387 <__bss_end>
- 86c:	80 93 86 03 	sts	0x0386, r24	; 0x800386 <Resume_Code>
- 870:	83 e0       	ldi	r24, 0x03	; 3
-	strcpy(Stop_Code,"\x03");	   // ^C
- 872:	90 e0       	ldi	r25, 0x00	; 0
- 874:	90 93 81 00 	sts	0x0081, r25	; 0x800081 <par1>
- 878:	80 93 80 00 	sts	0x0080, r24	; 0x800080 <Stop_Code>
- 87c:	8f ef       	ldi	r24, 0xFF	; 255
+ b42:	90 e0       	ldi	r25, 0x00	; 0
+ b44:	90 93 75 00 	sts	0x0075, r25	; 0x800075 <flag>
+ b48:	80 93 74 00 	sts	0x0074, r24	; 0x800074 <CR>
+ b4c:	10 92 73 00 	sts	0x0073, r1	; 0x800073 <rxReadPos>
 
-	//SpecialInputFlag will help at specifying
-	//the state of the program according the last input code.
-	SpecialInputFlag = -1;
- 87e:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <SpecialInputFlag>
- 882:	10 92 7d 00 	sts	0x007D, r1	; 0x80007d <rxReadPos>
-	}
-
-
-	*/
-	//after the 'T' input has been received, we can start the normal program.
+	
 	rxReadPos=0;
- 886:	10 92 7c 00 	sts	0x007C, r1	; 0x80007c <__data_end>
+ b50:	10 92 72 00 	sts	0x0072, r1	; 0x800072 <__data_end>
 	rxWritePos=0;
- 88a:	ff cf       	rjmp	.-2      	; 0x88a <main+0x44>
+ b54:	b8 9a       	sbi	0x17, 0	; 23
+	
+	
+	/////////
+	DDRB |= (1<<DDB0);
+ b56:	b9 9a       	sbi	0x17, 1	; 23
+	DDRB |= (1<<DDB1);
+ b58:	ba 9a       	sbi	0x17, 2	; 23
+	DDRB |= (1<<DDB2);
+ b5a:	bb 9a       	sbi	0x17, 3	; 23
+	DDRB |= (1<<DDB3);
+ b5c:	c0 9a       	sbi	0x18, 0	; 24
 
-0000088c <__itoa_ncheck>:
- 88c:	bb 27       	eor	r27, r27
- 88e:	4a 30       	cpi	r20, 0x0A	; 10
- 890:	31 f4       	brne	.+12     	; 0x89e <__itoa_ncheck+0x12>
- 892:	99 23       	and	r25, r25
- 894:	22 f4       	brpl	.+8      	; 0x89e <__itoa_ncheck+0x12>
- 896:	bd e2       	ldi	r27, 0x2D	; 45
- 898:	90 95       	com	r25
- 89a:	81 95       	neg	r24
- 89c:	9f 4f       	sbci	r25, 0xFF	; 255
- 89e:	01 c0       	rjmp	.+2      	; 0x8a2 <__utoa_common>
+	//
+	PORTB |= (1<<PORTB0);
+ b5e:	c1 9a       	sbi	0x18, 1	; 24
+	PORTB |= (1<<PORTB1);
+ b60:	c2 9a       	sbi	0x18, 2	; 24
+	PORTB |= (1<<PORTB2);
+ b62:	c3 9a       	sbi	0x18, 3	; 24
+	PORTB |= (1<<PORTB3);
+ b64:	88 e0       	ldi	r24, 0x08	; 8
 
-000008a0 <__utoa_ncheck>:
- 8a0:	bb 27       	eor	r27, r27
+	
+	
+	PORTD = (1 << PORTD3); // Pull-up resistor enabled, (with low level INT1 , when button is pushed -> low)
+ b66:	82 bb       	out	0x12, r24	; 18
+ b68:	80 e8       	ldi	r24, 0x80	; 128
 
-000008a2 <__utoa_common>:
- 8a2:	fb 01       	movw	r30, r22
- 8a4:	55 27       	eor	r21, r21
- 8a6:	aa 27       	eor	r26, r26
- 8a8:	88 0f       	add	r24, r24
- 8aa:	99 1f       	adc	r25, r25
- 8ac:	aa 1f       	adc	r26, r26
- 8ae:	a4 17       	cp	r26, r20
- 8b0:	10 f0       	brcs	.+4      	; 0x8b6 <__utoa_common+0x14>
- 8b2:	a4 1b       	sub	r26, r20
- 8b4:	83 95       	inc	r24
- 8b6:	50 51       	subi	r21, 0x10	; 16
- 8b8:	b9 f7       	brne	.-18     	; 0x8a8 <__utoa_common+0x6>
- 8ba:	a0 5d       	subi	r26, 0xD0	; 208
- 8bc:	aa 33       	cpi	r26, 0x3A	; 58
- 8be:	08 f0       	brcs	.+2      	; 0x8c2 <__utoa_common+0x20>
- 8c0:	a9 5d       	subi	r26, 0xD9	; 217
- 8c2:	a1 93       	st	Z+, r26
- 8c4:	00 97       	sbiw	r24, 0x00	; 0
- 8c6:	79 f7       	brne	.-34     	; 0x8a6 <__utoa_common+0x4>
- 8c8:	b1 11       	cpse	r27, r1
- 8ca:	b1 93       	st	Z+, r27
- 8cc:	11 92       	st	Z+, r1
- 8ce:	cb 01       	movw	r24, r22
- 8d0:	00 c0       	rjmp	.+0      	; 0x8d2 <strrev>
+	//MCUCR Default values (for ICS11, ICS10) --> low profil
 
-000008d2 <strrev>:
- 8d2:	dc 01       	movw	r26, r24
- 8d4:	fc 01       	movw	r30, r24
- 8d6:	67 2f       	mov	r22, r23
- 8d8:	71 91       	ld	r23, Z+
- 8da:	77 23       	and	r23, r23
- 8dc:	e1 f7       	brne	.-8      	; 0x8d6 <strrev+0x4>
- 8de:	32 97       	sbiw	r30, 0x02	; 2
- 8e0:	04 c0       	rjmp	.+8      	; 0x8ea <strrev+0x18>
- 8e2:	7c 91       	ld	r23, X
- 8e4:	6d 93       	st	X+, r22
- 8e6:	70 83       	st	Z, r23
- 8e8:	62 91       	ld	r22, -Z
- 8ea:	ae 17       	cp	r26, r30
- 8ec:	bf 07       	cpc	r27, r31
- 8ee:	c8 f3       	brcs	.-14     	; 0x8e2 <strrev+0x10>
- 8f0:	08 95       	ret
+	GICR = (1 << INT1);		//External Interrupt Request 1 Enable
+ b6a:	8b bf       	out	0x3b, r24	; 59
+ b6c:	10 92 77 01 	sts	0x0177, r1	; 0x800177 <state>
+	
+	state=0;
+ b70:	10 92 7b 02 	sts	0x027B, r1	; 0x80027b <cliflag>
+	cliflag=0;
+ b74:	80 91 7b 02 	lds	r24, 0x027B	; 0x80027b <cliflag>
+	while(1){
+		if(cliflag == 0)
+ b78:	81 11       	cpse	r24, r1
+ b7a:	02 c0       	rjmp	.+4      	; 0xb80 <main+0x46>
+ b7c:	78 94       	sei
+		{
+			sei();
+ b7e:	fa cf       	rjmp	.-12     	; 0xb74 <main+0x3a>
+ b80:	f8 94       	cli
+		}
+		else
+		{
+			cli();
+ b82:	2f ef       	ldi	r18, 0xFF	; 255
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
 
-000008f2 <_exit>:
- 8f2:	f8 94       	cli
+	__builtin_avr_delay_cycles(__ticks_dc);
+ b84:	87 ea       	ldi	r24, 0xA7	; 167
+ b86:	91 e6       	ldi	r25, 0x61	; 97
+ b88:	21 50       	subi	r18, 0x01	; 1
+ b8a:	80 40       	sbci	r24, 0x00	; 0
+ b8c:	90 40       	sbci	r25, 0x00	; 0
+ b8e:	e1 f7       	brne	.-8      	; 0xb88 <main+0x4e>
+ b90:	00 c0       	rjmp	.+0      	; 0xb92 <main+0x58>
+ b92:	00 00       	nop
+ b94:	10 92 7b 02 	sts	0x027B, r1	; 0x80027b <cliflag>
+			_delay_ms(4000);
+			cliflag = 0;
+ b98:	ed cf       	rjmp	.-38     	; 0xb74 <main+0x3a>
 
-000008f4 <__stop_program>:
- 8f4:	ff cf       	rjmp	.-2      	; 0x8f4 <__stop_program>
+00000b9a <__umulhisi3>:
+ b9a:	a2 9f       	mul	r26, r18
+ b9c:	b0 01       	movw	r22, r0
+ b9e:	b3 9f       	mul	r27, r19
+ ba0:	c0 01       	movw	r24, r0
+ ba2:	a3 9f       	mul	r26, r19
+ ba4:	70 0d       	add	r23, r0
+ ba6:	81 1d       	adc	r24, r1
+ ba8:	11 24       	eor	r1, r1
+ baa:	91 1d       	adc	r25, r1
+ bac:	b2 9f       	mul	r27, r18
+ bae:	70 0d       	add	r23, r0
+ bb0:	81 1d       	adc	r24, r1
+ bb2:	11 24       	eor	r1, r1
+ bb4:	91 1d       	adc	r25, r1
+ bb6:	08 95       	ret
+
+00000bb8 <__itoa_ncheck>:
+ bb8:	bb 27       	eor	r27, r27
+ bba:	4a 30       	cpi	r20, 0x0A	; 10
+ bbc:	31 f4       	brne	.+12     	; 0xbca <__itoa_ncheck+0x12>
+ bbe:	99 23       	and	r25, r25
+ bc0:	22 f4       	brpl	.+8      	; 0xbca <__itoa_ncheck+0x12>
+ bc2:	bd e2       	ldi	r27, 0x2D	; 45
+ bc4:	90 95       	com	r25
+ bc6:	81 95       	neg	r24
+ bc8:	9f 4f       	sbci	r25, 0xFF	; 255
+ bca:	01 c0       	rjmp	.+2      	; 0xbce <__utoa_common>
+
+00000bcc <__utoa_ncheck>:
+ bcc:	bb 27       	eor	r27, r27
+
+00000bce <__utoa_common>:
+ bce:	fb 01       	movw	r30, r22
+ bd0:	55 27       	eor	r21, r21
+ bd2:	aa 27       	eor	r26, r26
+ bd4:	88 0f       	add	r24, r24
+ bd6:	99 1f       	adc	r25, r25
+ bd8:	aa 1f       	adc	r26, r26
+ bda:	a4 17       	cp	r26, r20
+ bdc:	10 f0       	brcs	.+4      	; 0xbe2 <__utoa_common+0x14>
+ bde:	a4 1b       	sub	r26, r20
+ be0:	83 95       	inc	r24
+ be2:	50 51       	subi	r21, 0x10	; 16
+ be4:	b9 f7       	brne	.-18     	; 0xbd4 <__utoa_common+0x6>
+ be6:	a0 5d       	subi	r26, 0xD0	; 208
+ be8:	aa 33       	cpi	r26, 0x3A	; 58
+ bea:	08 f0       	brcs	.+2      	; 0xbee <__utoa_common+0x20>
+ bec:	a9 5d       	subi	r26, 0xD9	; 217
+ bee:	a1 93       	st	Z+, r26
+ bf0:	00 97       	sbiw	r24, 0x00	; 0
+ bf2:	79 f7       	brne	.-34     	; 0xbd2 <__utoa_common+0x4>
+ bf4:	b1 11       	cpse	r27, r1
+ bf6:	b1 93       	st	Z+, r27
+ bf8:	11 92       	st	Z+, r1
+ bfa:	cb 01       	movw	r24, r22
+ bfc:	00 c0       	rjmp	.+0      	; 0xbfe <strrev>
+
+00000bfe <strrev>:
+ bfe:	dc 01       	movw	r26, r24
+ c00:	fc 01       	movw	r30, r24
+ c02:	67 2f       	mov	r22, r23
+ c04:	71 91       	ld	r23, Z+
+ c06:	77 23       	and	r23, r23
+ c08:	e1 f7       	brne	.-8      	; 0xc02 <strrev+0x4>
+ c0a:	32 97       	sbiw	r30, 0x02	; 2
+ c0c:	04 c0       	rjmp	.+8      	; 0xc16 <strrev+0x18>
+ c0e:	7c 91       	ld	r23, X
+ c10:	6d 93       	st	X+, r22
+ c12:	70 83       	st	Z, r23
+ c14:	62 91       	ld	r22, -Z
+ c16:	ae 17       	cp	r26, r30
+ c18:	bf 07       	cpc	r27, r31
+ c1a:	c8 f3       	brcs	.-14     	; 0xc0e <strrev+0x10>
+ c1c:	08 95       	ret
+
+00000c1e <_exit>:
+ c1e:	f8 94       	cli
+
+00000c20 <__stop_program>:
+ c20:	ff cf       	rjmp	.-2      	; 0xc20 <__stop_program>

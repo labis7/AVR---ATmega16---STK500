@@ -3,7 +3,7 @@
  
  * Lab Team  : LAB41140558
  * Authors	 : Gialitakis - Skoufis 
- * Date		 : Wednesday 20/3/19 
+ * Date		 : Thursday 4/4/19 
  * Atmel Studio 7 - Windows 10 Pro
  * AVR Model : STK500 - ATmega16
  
@@ -33,27 +33,22 @@ char myrxbuffer[BUFFER_SIZE];
 uint8_t rxReadPos = 0;
 uint8_t rxWritePos = 0;
 
-uint8_t SpecialInputFlag=-1;
+
 uint8_t flag;
 uint8_t Space_num;
 uint8_t Number_num;
 uint8_t par1;
 uint8_t par2;
+uint8_t cliflag;
+uint8_t state;
+
 
 void init_serial(void);
 void Transmit(char data[],uint8_t x,uint8_t y);
 void Receive(void);
 void Sendmsg(char* data);
 
-/*
-Normal_program contains the output gen. of the sequence 0-9A-z 
-In this function there is some logic to handle the special 
-control input(like pause,resume and end program).
-*/
-void Normal_program();
 
-//We call this function in order to pause the program
-void Pause_func();
 
 void Check_Input(char data[]);
 
@@ -61,9 +56,6 @@ void Check_Input(char data[]);
 //char SPACE[1];
 uint8_t SPACE = 32;
 char CR[1];
-char Pause_Code[1];
-char Resume_Code[1];
-char Stop_Code[1];
 unsigned char USART_Receive(void);
 
 
@@ -72,92 +64,69 @@ int main (void)
 	board_init();
 	init_serial();
 	
+	// question 2, accessing RAM
+	volatile char *a = (char *)malloc(sizeof(char)*10);
+	a=0x0060;
+	
+	a[0]= 'H';
+	a[1] ='e';
+	a[2] ='l';
+	a[3] ='l';
+	a[4] ='o';
+	
 	sei();
 	
 	//String copy
 	//strcpy(SPACE,"\x20");
 	
 	strcpy(CR,"\xD"); 
-	strcpy(Pause_Code,"\x13"); // ^S	
-	strcpy(Resume_Code,"\x11"); //^Q
-	strcpy(Stop_Code,"\x03");	   // ^C
 
-	//SpecialInputFlag will help at specifying
-	//the state of the program according the last input code.
-	SpecialInputFlag = -1;
-	/*
-	while(1){
-		Transmit(myrxbuffer,rxReadPos,rxWritePos); //ECHO
-		_delay_ms(10);
-		if(strcmp(Start_Code[0],(char*)myrxbuffer[rxReadPos-1]) == 0)
-			break;
-	}
-
-
-	*/
-	//after the 'T' input has been received, we can start the normal program.
+	
 	rxReadPos=0;
 	rxWritePos=0;
+	
+	
+	/////////
+	DDRB |= (1<<DDB0);
+	DDRB |= (1<<DDB1);
+	DDRB |= (1<<DDB2);
+	DDRB |= (1<<DDB3);
+
+	//
+	PORTB |= (1<<PORTB0);
+	PORTB |= (1<<PORTB1);
+	PORTB |= (1<<PORTB2);
+	PORTB |= (1<<PORTB3);
+
+	
+	
+	PORTD = (1 << PORTD3); // Pull-up resistor enabled, (with low level INT1 , when button is pushed -> low)
+
+	//MCUCR Default values (for ICS11, ICS10) --> low profil
+
+	GICR = (1 << INT1);		//External Interrupt Request 1 Enable
+	
+	state=0;
+	cliflag=0;
 	while(1){
-		;
+		if(cliflag == 0)
+		{
+			sei();
+		}
+		else
+		{
+			cli();
+			_delay_ms(4000);
+			cliflag = 0;
+		}
 	}
 	
-	
-	//Normal_program();
 	
 	Transmit("\n\rGoodbye",0,strlen("\n\rGoodbye"));
 	_delay_ms(500);
 }
 
 
-void Normal_program(){
-
-	while(1)
-	{		
-		for (uint8_t i=48 ; i <= 90 ; i++){
-			
-			////// CHECK INPUT //////
-			//(INPUT is changed at RXC interrupt)
-			if (SpecialInputFlag == 0)// code 0 = ^S
-				Pause_func();
-			else if(SpecialInputFlag == 1) // code 1 = ^Q
-				NULL;	//Do nothing
-			else if(SpecialInputFlag == 2) // code 2 = ^C
-				return;
-			else NULL;	//Do nothing
-					
-			if(i == 58 )
-				i=65;// jump to the right ASCII Code
-			Sendmsg((char)i); //This func is used(easier),because 1 char per time is sent
-			_delay_ms(500);
-		}
-		
-	}
-}
-
-void Pause_func(){
-	
-	while(1){
-	Sendmsg('\0');
-	_delay_ms(2);
-		//if input means 'resume'
-		if(SpecialInputFlag == 1)
-		{
-			//Reset flag,so we can continue without 
-			//a problem and return back to normal program		
-			SpecialInputFlag = -1;
-			return;
-		}
-	    if(SpecialInputFlag == 2)//end of program input
-	    {
-			Transmit("\n\rGoodbye",0,strlen("\n\rGoodbye"));
-			_delay_ms(15);
-			//Disable transmit(See report for the reason)
-			UCSRB &= ~(1 << TXEN); 
-		    return;
-	    }
-	}
-}
 
 
 
@@ -177,21 +146,7 @@ void Transmit(char data[],uint8_t x,uint8_t y){
 		;
 		UDR = data[i];
 	}
-	//if(UCSRA & (1 << UDRE)) //if UDR is empty(no data transfer at the moment)
-	//	UDR = 0; 
-	//rxReadPos = rxWritePos;            //          CARE!!!!!! mporei ligo prohgoumenws na erthei interrupt 
-	
-/*
-	for (uint8_t i = x ; i < y  ; i++ ){
-		mytxbuffer[txWritePos] = data[i];
-		txWritePos++;
-	}
-	if(txWritePos >= BUFFER_SIZE)
-		txWritePos = 0;
-	rxReadPos = rxWritePos; // Transmit Received Data
-	if(UCSRA & (1 << UDRE)) //if UDR is empty(no data transfer at the moment)
-		UDR = 0;			//Start with empty data, so interrupts can handle the remaining items in mytxbuffer
-*/
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,23 +154,13 @@ void Transmit(char data[],uint8_t x,uint8_t y){
 
 
 ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
-	/*
-	if(txWritePos != txReadPos)
-	{
-		UDR = mytxbuffer[txReadPos];
-		txReadPos++;
-	}
-	if(txReadPos >= BUFFER_SIZE)
-		txReadPos = 0;
-		*/
+	
 }
 
 
 
 void Check_Input(char data[]){
 	
-	//while(data[rxReadPos] != CR[0]){
-		//
 		flag = 0;
 		Space_num = 0;
 		
@@ -427,7 +372,12 @@ void Check_Input(char data[]){
 					flag = 1;
 					break;
 				}
-				if(k > 255)
+				if(k > 255 && Space_num ==1)
+				{
+					flag = 1;
+					break;
+				}
+				else if (k > 15 && Space_num ==2)
 				{
 					flag = 1;
 					break;
@@ -439,8 +389,24 @@ void Check_Input(char data[]){
 				else
 				NULL;
 			}//WHILE LOOP END
-			if((Space_num == 1)||(Space_num == 0)){
+			if((Space_num == 1)||(Space_num == 0) || (par1+par2>255)){
 				flag = 1;
+			}
+			
+			if (flag!=1)
+			{
+				uint16_t sum=0;
+				for(int i = par1; i<=par2 ; i++)
+				{
+					sum+=MEM[i];
+				}
+				char t[4];
+				Transmit(itoa( (sum/(1000))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+				Transmit(itoa( (sum/(100))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+				Transmit(itoa( (sum/(10))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+				Transmit(itoa( (sum/(1))%(10),t,10),0,strlen(itoa((par2/(100))%(10),t,10)));
+				Transmit("\n\r",0,strlen("\n\r"));
+				
 			}
 		}
 		else
@@ -483,22 +449,49 @@ ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
 	
 
 	rxWritePos++;
-	/*
-	if(strcmp(myrxbuffer[rxWritePos],Pause_Code[0]) == 0) //^S
-		SpecialInputFlag = 0;
-	else if (strcmp(myrxbuffer[rxWritePos],Resume_Code[0]) == 0) //^Q
-		SpecialInputFlag = 1;
-	else if (strcmp(myrxbuffer[rxWritePos],Stop_Code[0]) == 0) //^C
-		SpecialInputFlag = 2;
-	else
-		SpecialInputFlag = -1;
-	*/	
-	
 	
 	
 	if(rxWritePos >= BUFFER_SIZE )
 		rxWritePos = 0;
 		
+}
+
+
+ISR(INT1_vect)
+{
+	
+	if(cliflag == 0)
+	{
+		++state;
+		if(state >= 5)
+		state = 1;
+
+		if(state == 1)
+		{
+			PORTB |= (1<<PORTB0);
+			PORTB ^= (1<<PORTB3);
+		}
+		else if (state == 2)
+		{
+			PORTB ^= (1<<PORTB3);
+			PORTB ^= (1<<PORTB2);
+		}
+		else if (state == 3)
+		{
+			PORTB ^= (1<<PORTB2);
+			PORTB ^= (1<<PORTB1);
+		}
+		else
+		{
+			PORTB ^= (1<<PORTB1);
+			PORTB ^= (1<<PORTB0);
+		}
+		cliflag = 1;
+	}
+	//PORTB &= ~(1<<PORTB3);
+	
+
+	
 }
 
 
@@ -523,3 +516,6 @@ void init_serial(void){
 	UCSRB |= (1 << TXCIE); //TXC interrupts enabled
 	UCSRB |= (1 << RXCIE); //RXC interrupts enabled
 }
+
+
+
