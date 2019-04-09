@@ -1,5 +1,5 @@
 /*
-***	Lab 3  -  Part 3  Control Input ***
+***	Lab 3 ***
  
  * Lab Team  : LAB41140558
  * Authors	 : Gialitakis - Skoufis 
@@ -73,6 +73,7 @@ int main (void)
 	a[2] ='l';
 	a[3] ='l';
 	a[4] ='o';
+	
 	
 	// question 1 and 3
 	sei();
