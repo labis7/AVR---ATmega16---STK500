@@ -44,6 +44,12 @@ uint8_t state;
 uint8_t MyColor;
 uint8_t EndGameFlag;
 uint8_t Time;
+uint8_t ILflag = 0;
+uint8_t myTurn = 2;
+uint8_t move_done=0;
+uint8_t enemy_pass=0;
+uint8_t ok_flag=0;
+
 
 void init_serial(void);
 void Transmit(char data[],uint8_t x,uint8_t y);
@@ -71,6 +77,8 @@ int main (void)
 	board_init();
 	init_serial();
 	
+
+		
 	// question 2, accessing RAM and determine the position in memory, where the data will be stored.
 
 	//Game board initialization
@@ -89,38 +97,85 @@ int main (void)
 	M[4,3] = 0 ;
 	M[4,4] = 1 ;
 
-
-	
-	// question 1 and 3
-	sei();
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
 	//////////////////////////////////////////////////////////////////////
 	// delimiter carriage return
-	strcpy(CR,"\xD"); 
+	strcpy(CR,"\xD");
 
 	// Initialization of pointers for buffer
 	rxReadPos=0;
 	rxWritePos=0;
 	
+
+	sei();
+	while(1){
+		
+		//Waiting for PC response - (ILLIGAL request)
+		if(ILflag >= 1)
+		{
+			while(1){		
+				if(ILflag==2){ // we received the response we were waiting
+					ILflag=0;
+					break;
+				}
+			}
+			if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75){
+				// i win
+				myTurn=2;
+			
+			}
+			if(myrxbuffer[rxReadPos] == 80 && myrxbuffer[rxReadPos+1] == 76){
+				//I lose
+				rxReadPos=rxWritePos;
+				Transmit("QT\r",0,"QT\r");
+				//wait for ok;
+				while(1){
+					if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75 && myrxbuffer[rxReadPos+1] == CR[0]){
+						//EndGame();
+						Transmit("LS\r",0,strlen("LS\r"));
+						break;
+					}
+				}
+				myTurn=2;	
+				move_done=1;
+			}
+			
+			rxReadPos=rxWritePos;
+		}
+		
+		//not illegal time && received  MV
+
+		if(myTurn==1){
+			Transmit("OK\r",0 , strlen("OK\r"));
+			//Set timer
+			Algo();
+		
+			while(1){		// Check_Input does not support "OK" response so we check it here
+				if(move_done >= 1)
+				{
+					while(1){
+						if(move_done==2){ // we received the response we were waiting
+							move_done=0;
+							break;
+						}
+					}
+					if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75){
+						//set timer
+						rxReadPos=rxWritePos;
+						myTurn=0;
+						break;	
+					}
+				}
+			}	
+		}
+		
+
+
+	}
+
+
+
+
 	
-
-
-
-
-
 
 	
 	Transmit("\n\rGoodbye",0,strlen("\n\rGoodbye"));
@@ -166,9 +221,19 @@ void RST(void)
 	M[3,4] = 0 ;
 	M[4,3] = 0 ;
 	M[4,4] = 1 ;
+	enemy_pass=0;
+	if(MyColor == 0)// BLACK
+		myTurn=1;
+	else           //WHITE
+		myTurn=0;
 	Transmit("OK\r",0 , strlen("OK\r"));
+	//set Timer;
 }
 
+void EndGame(){
+	//calculating win/loss/tie
+	myTurn=2;
+}
 
 void Waiting()
 {
@@ -178,13 +243,17 @@ void Waiting()
 
 void Algo()
 {
-	//TIMER SET
+
 	//calculating
-
-
-	//send MOVE
+	
+	//CheckMove();
+	//check enemy pass and my pass ....end game
+	//send MOVE or pass
 	//while loop until 'OK' response
 	//call Waiting
+	
+
+	move_done=1;
 }
 
 
@@ -207,23 +276,29 @@ ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
 *	SUM: sum the certain data from memory  
 */
 
-uint8_t ILflag = 0;
+////////////////////////////////////////////CHECK_INPUT///////////////////////////////////////////////
 
 void Check_Input(char data[]){
 	
+		if(data[rxReadPos]==CR[0]){
+			rxReadPos++;
+		}
 		flag = 0;
 		Space_num = 0;
 		
-
-		//Waiting for PC response - (ILLIGAL request)
 		if(ILflag == 1)
 		{
-			if("OK")
-			 //I WIN	
-			if("PL")
-			//I LOSE	 
+			ILflag=2;
+			return;	
 		}
-
+		
+		
+		if(move_done == 1)
+		{
+			move_done=2;
+			return;	
+		}
+	
 
 
 		//process
@@ -244,7 +319,7 @@ void Check_Input(char data[]){
 			RST();
 			rxReadPos = rxWritePos; //
 		}	
-						//// SP<SPACE>{B/W}<CR>
+		// SP<SPACE>{B/W}<CR>
 		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 8O))
 		{
 			//(int)c - 65;
@@ -259,17 +334,20 @@ void Check_Input(char data[]){
 		else if((data[rxReadPos] == 78)&&(data[rxReadPos + 1] == 71))
 		{
 			if(MyColor == 0)// BLACK
-				Algo();
+				myTurn=1;
 			else           //WHITE
-				Waiting();
+				myTurn=0;
+			
+			TCNT1 =34286;		//set Timer;
 			rxReadPos = rxWritePos;
 		}
 		        //EG<CR>
 		else if((data[rxReadPos] == 69)&&(data[rxReadPos + 1] == 71))
 		{
-			EndGameFlag = 1; // check this flag during waiting/calculating loop
+			//EndGameFlag = 1; // check this flag during waiting/calculating loop
 			Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos;
+			EndGame();
 		}
 			 //ST<CR>
         else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 84))
@@ -288,26 +366,28 @@ void Check_Input(char data[]){
 					{
 						M[(((int)data[rxReadPos+3] - 65)*8) + (data[rxReadPos+4] - '0')] = !MyColor;
 						Transmit("OK\r",0 , strlen("OK\r"));
+						myTurn=1;
 					}
-					else
+					else{
 						Transmit("IL\r",0 , strlen("IL\r"));
-						while(1)
-						{
-							ILflag = 1;
-						}
+						ILflag =  1;
+					}
+					rxReadPos = rxWritePos;
+						
 				} 	
 		}
+		else if ((data[rxReadPos] == 80)&&(data[rxReadPos + 1] == 83))
+		{
+			myTurn=1;
+			enemy_pass=1;
+			Transmit("OK\r",0,strlen("OK\r"));
+		}
+		else if((data[rxReadPos] == 87)&&(data[rxReadPos + 1] == 78)){
+			Transmit("OK\r",0,strlen("OK\r"));
+		}
 		else
-			flag = 1;
+			NULL;
 			
-		
-
-	if(flag == 1)        // Error found, break while loop (rxreadps --> CR)
-	{					
-		rxReadPos = rxWritePos;  
-		Transmit("\nER\n\r",0,strlen("\nER\n\r"));
-	}
-
 	rxReadPos++;		//Ready for the next command (directs to the next letter) 
 	
 
@@ -328,8 +408,14 @@ ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
 	//////////////////////////////
 	
 	//Flag setting according to input control codes
-	if(myrxbuffer[rxWritePos] == CR[0])
-		Check_Input(myrxbuffer);
+	if(myrxbuffer[rxWritePos] == CR[0]){
+		if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75){
+			ok_flag=1;
+		}
+		else
+			Check_Input(myrxbuffer);
+	
+	}
 	
 
 	rxWritePos++;
@@ -345,40 +431,7 @@ ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
 *	When the button is pushed, the next led will turn on while the previous one	will turn off
 */
 
-ISR(INT1_vect)
-{
-	// prevent ring progress until we disable the GICR (external interrupt)
-	if(cliflag == 0)
-	{
-		++state;
-		if(state >= 5)
-		state = 1;
-		if(state == 1)
-		{
-			PORTB |= (1<<PORTB0);
-			PORTB ^= (1<<PORTB3);
-		}
-		else if (state == 2)
-		{
-			PORTB ^= (1<<PORTB3);
-			PORTB ^= (1<<PORTB2);
-		}
-		else if (state == 3)
-		{
-			PORTB ^= (1<<PORTB2);
-			PORTB ^= (1<<PORTB1);
-		}
-		else
-		{
-			PORTB ^= (1<<PORTB1);
-			PORTB ^= (1<<PORTB0);
-		}
-		cliflag = 1;
-	}
-	
 
-	
-}
 
 
 
@@ -404,3 +457,37 @@ void init_serial(void){
 }
 
 
+ ISR (TIMER1_OVF_vect)    // Timer1 ISR
+ {
+	 if(myTurn==1){
+		 // coming soon 
+		 myTurn=0;
+		 move_done=1;
+	 } 
+	 else{
+		  Transmit("IT\r",0,strlen("IT\r"));
+		  ILflag=1;
+	 }
+	 
+ }
+
+
+
+void init_timer(){
+	//cli();
+
+	 //////////Timer/Counter Initialization/////////
+	 /* Timer starts from a specific value, 
+		so we can take advantage of ISR
+	 */
+	TCNT1 =34286; // 34286;//49911  //2^16 = 65536 - (8,000,000/256) = 49911
+	TCCR1A = 0x00; //Default - Cleared
+
+	/*	The CLK/64 
+	*/
+	//TCCR1B &=  ~(1<<CS11);  
+	TCCR1B |=  (1<<CS12);// |(1<<CS10);
+	TIMSK = (1 << TOIE1) ;   // Enable timer1 overflow interrupt(TOIE1)
+	//sei();        // Enable global interrupts by setting global interrupt enable bit in SREG
+	//sleep();
+}
