@@ -22,10 +22,7 @@
 #include <util/delay.h>
 #include <avr/iom16.h>
 
-char mytxbuffer[BUFFER_SIZE];
-uint8_t txReadPos=0;
-uint8_t txWritePos=0;
-uint8_t MEM[256];
+//char mytxbuffer[BUFFER_SIZE];
 
 uint8_t scan_pointer=0;
 
@@ -33,22 +30,15 @@ char myrxbuffer[BUFFER_SIZE];
 uint8_t rxReadPos = 0;
 uint8_t rxWritePos = 0;
 
-
-uint8_t flag;
-uint8_t Space_num;
-uint8_t Number_num;
-uint8_t par1;
-uint8_t par2;
-uint8_t cliflag;
-uint8_t state;
+uint8_t enemy_pass;
+uint8_t ok_flag;
+uint8_t move_done;
 uint8_t MyColor;
 uint8_t EndGameFlag;
 uint8_t Time;
-uint8_t ILflag = 0;
-uint8_t myTurn = 2;
-uint8_t move_done=0;
-uint8_t enemy_pass=0;
-uint8_t ok_flag=0;
+volatile uint8_t ILflag = 0;
+volatile uint8_t myTurn = 2;
+
 
 
 void init_serial(void);
@@ -68,7 +58,7 @@ uint8_t SPACE = 32;
 char CR[1];
 unsigned char USART_Receive(void);
 
-volatile uint8_t *M = (uint8_t *)malloc(sizeof(uint8_t)*64);
+volatile uint8_t *M ;
 
 
 
@@ -82,20 +72,24 @@ int main (void)
 	// question 2, accessing RAM and determine the position in memory, where the data will be stored.
 
 	//Game board initialization
+	M= (uint8_t *)malloc(sizeof(uint8_t)*64);
 	
-	
-	for(uint8_t i = 0 ; i <= 7 ; i++)
+	volatile uint8_t i=0;
+	volatile uint8_t y = 0 ;
+	for(i = 0 ; i <= 7 ; i++)
 	{
-		for(uint8_t y = 0 ; y <= 7 ; y++)
+		for(y = 0 ; y <= 7 ; y++)
 		{
-			M[i + 8*y] = 2 ; // 0 == black , 1 == white, 2 == empty
+			M[8*i + y] = (uint8_t)2 ; // 0 == black , 1 == white, 2 == empty
 		}
 	}
 
-	M[3,3] = 1 ;
-	M[3,4] = 0 ;
-	M[4,3] = 0 ;
-	M[4,4] = 1 ;
+	M[3*8+3] = 1 ;
+	M[3*8+4] = 0 ;
+	M[4*8+3] = 0 ;
+	M[4*8+4] = 1 ;
+
+	
 
 	//////////////////////////////////////////////////////////////////////
 	// delimiter carriage return
@@ -104,9 +98,14 @@ int main (void)
 	// Initialization of pointers for buffer
 	rxReadPos=0;
 	rxWritePos=0;
-	
+	ILflag =0;
+	move_done=0;
+	myTurn=2;
 
 	sei();
+	
+	
+
 	while(1){
 		
 		//Waiting for PC response - (ILLIGAL request)
@@ -145,32 +144,38 @@ int main (void)
 		//not illegal time && received  MV
 
 		if(myTurn==1){
-			Transmit("OK\r",0 , strlen("OK\r"));
+			//Transmit("OK\r",0 , strlen("OK\r"));
+			Transmit("Calculating ALGO\r",0 , strlen("Calculating ALGO\r"));
+
 			//Set timer
-			Algo();
+			//Algo();
 		
 			while(1){		// Check_Input does not support "OK" response so we check it here
 				if(move_done >= 1)
 				{
-					while(1){
-						if(move_done==2){ // we received the response we were waiting
+					while(1)
+					{
+						if(move_done==2)
+						{ // we received the response we were waiting
 							move_done=0;
 							break;
 						}
 					}
-					if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75){
+					if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75)
+					{
 						//set timer
 						rxReadPos=rxWritePos;
 						myTurn=0;
 						break;	
 					}
 				}
-			}	
-		}
+			 }	
+		   }
 		
 
 
 	}
+	
 
 
 
@@ -283,8 +288,8 @@ void Check_Input(char data[]){
 		if(data[rxReadPos]==CR[0]){
 			rxReadPos++;
 		}
-		flag = 0;
-		Space_num = 0;
+		//flag = 0;
+		//Space_num = 0;
 		
 		if(ILflag == 1)
 		{
@@ -311,23 +316,23 @@ void Check_Input(char data[]){
 				rxReadPos = rxWritePos;
 			}
 			else
-				flag = 1;
+				;//flag = 1;
 		}
 		//Checking for RST<CR> command.
 		else if((data[rxReadPos] == 82)&&(data[rxReadPos + 1] == 83)&&(data[rxReadPos + 2] == 84))		
 		{
-			RST();
+			Transmit("RST\r",0 , strlen("RST\r"));//RST();
 			rxReadPos = rxWritePos; //
 		}	
 		// SP<SPACE>{B/W}<CR>
-		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 8O))
+		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 80))
 		{
 			//(int)c - 65;
 			if(data[rxReadPos + 3] == 66) //B
 				MyColor = 0;
 			else if(data[rxReadPos + 3] == 87)  //W
 				MyColor = 1;
-			Transmit("\r",0 , strlen("\r"));
+			Transmit("SELECT PLAYER\r",0 , strlen("SELECT PLAYER\r"));//Transmit("\r",0 , strlen("\r"));
 			rxReadPos = rxWritePos;
 		}
 		    //NG  ---- NEW GAME ------
@@ -338,22 +343,28 @@ void Check_Input(char data[]){
 			else           //WHITE
 				myTurn=0;
 			
-			TCNT1 =34286;		//set Timer;
+			//TCNT1 =34286;		//set Timer;
+			Transmit("NEW GAME\r",0 , strlen("NEW GAME\r"));
 			rxReadPos = rxWritePos;
 		}
 		        //EG<CR>
 		else if((data[rxReadPos] == 69)&&(data[rxReadPos + 1] == 71))
 		{
 			//EndGameFlag = 1; // check this flag during waiting/calculating loop
-			Transmit("OK\r",0 , strlen("OK\r"));
+			Transmit("END GAME\r",0 , strlen("END GAME\r"));
+			//Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos;
-			EndGame();
+			//EndGame();
 		}
 			 //ST<CR>
         else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 84))
         {
-			Time = data[rxReadPos] - '0'; //
-			Transmit("OK\r",0 , strlen("OK\r"));
+			Time = data[rxReadPos+3] - '0'; //
+			//Transmit("OK\r",0 , strlen("OK\r"));
+			//Transmit("SET TIME\r\n",0 , strlen("SET TIME\r\n"));
+			char  t[2];
+			//itoa(65,t,10);
+			Transmit(itoa(Time,t,10),0,1);
 			rxReadPos = rxWritePos;
         }
 			//MV<SP>{[A-H],[1-8]}<CR>
@@ -376,18 +387,25 @@ void Check_Input(char data[]){
 						
 				} 	
 		}
+
+		//PASS
 		else if ((data[rxReadPos] == 80)&&(data[rxReadPos + 1] == 83))
 		{
 			myTurn=1;
 			enemy_pass=1;
 			Transmit("OK\r",0,strlen("OK\r"));
 		}
+		//WN
 		else if((data[rxReadPos] == 87)&&(data[rxReadPos + 1] == 78)){
-			Transmit("OK\r",0,strlen("OK\r"));
+			//I WIN
+			//myturn=2;
+			
+			//Transmit("OK\r",0,strlen("OK\r"));
+			Transmit("weeeee are the wiiii....SHUT UP\r",0 , strlen("Weeeee are the wiiii....SHUT UP\r"));
 		}
 		else
 			NULL;
-			
+	rxReadPos=rxWritePos;		
 	rxReadPos++;		//Ready for the next command (directs to the next letter) 
 	
 
@@ -408,14 +426,10 @@ ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
 	//////////////////////////////
 	
 	//Flag setting according to input control codes
-	if(myrxbuffer[rxWritePos] == CR[0]){
-		if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75){
-			ok_flag=1;
-		}
-		else
-			Check_Input(myrxbuffer);
+	if(myrxbuffer[rxWritePos] == CR[0])
+		Check_Input(myrxbuffer);
 	
-	}
+	
 	
 
 	rxWritePos++;
@@ -464,7 +478,7 @@ void init_serial(void){
 		 myTurn=0;
 		 move_done=1;
 	 } 
-	 else{
+	 else if(myTurn == 0){
 		  Transmit("IT\r",0,strlen("IT\r"));
 		  ILflag=1;
 	 }
