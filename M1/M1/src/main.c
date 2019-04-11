@@ -1,9 +1,9 @@
 /*
-***	Lab 3 ***
+***	Milestone 1 ***
  
  * Lab Team  : LAB41140558
  * Authors	 : Gialitakis - Skoufis 
- * Date		 : Thursday 4/4/19 
+ * Date		 : Thursday 11/4/19 
  * Atmel Studio 7 - Windows 10 Pro
  * AVR Model : STK500 - ATmega16
  
@@ -69,12 +69,14 @@ int main (void)
 	board_init();
 	init_serial();
 	init_leds();
+	// delimiter carriage return
+	strcpy(CR,"\xD");
 
-	PORTB |= (1<<PORTB1);
+	//Turning off leds(atmega16)
+	PORTB |= (1<<PORTB1); 
 	PORTB |= (1<<PORTB2);
 	PORTB |= (1<<PORTB3);
 		
-	// question 2, accessing RAM and determine the position in memory, where the data will be stored.
 
 	//Game board initialization
 	M= (uint8_t *)malloc(sizeof(uint8_t)*64);
@@ -88,7 +90,7 @@ int main (void)
 			M[8*i + y] = (uint8_t)2 ; // 0 == black , 1 == white, 2 == empty
 		}
 	}
-
+	//[ x , y ] ? [ X*8 + Y ](AVR), [ NUM ](AVR) ? [ (NUM)div8 , (NUM)mod8 ]
 	M[3*8+3] = 1 ;
 	M[3*8+4] = 0 ;
 	M[4*8+3] = 0 ;
@@ -97,20 +99,20 @@ int main (void)
 	
 
 	//////////////////////////////////////////////////////////////////////
-	// delimiter carriage return
-	strcpy(CR,"\xD");
+	
 
-	// Initialization of pointers for buffer
+	//buffer pointers init
 	rxReadPos=0;
 	rxWritePos=0;
+	//flag Initialization 
 	ILflag =0;
 	move_done=0;
 	myTurn=2;
 	MyColor = 1;
+	
 	sei();
 	
 	
-
 	while(1){
 		
 		//Waiting for PC response - (ILLIGAL request)
@@ -126,32 +128,28 @@ int main (void)
 			}
 			if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75){ // "ok"
 			   rxReadPos=rxWritePos;
-				AnnounceRes(1);
+				AnnounceRes(1); //WIN - LED1
 				myTurn=2;
 			
-			}
+			}//future update : "else ILflag=1;" , wrong input avoidance
+
 			if(myrxbuffer[rxReadPos] == 80 && myrxbuffer[rxReadPos+1] == 76){ //"PL"
-				AnnounceRes(0);
+				AnnounceRes(0); //LOST - LED2
 				myTurn=2;	
-			}			
+			}	//future update : "else ILflag=1;" , wrong input avoidance		
+
 			rxReadPos=rxWritePos;
 		}
-		char t;
-		//not illegal time && received  MV
 		
 		
-		if(myTurn==1){
-			
-			init_timer();
-			myTurn = 1; //Important, bugs with inittimer
-			Algo();
+		if(myTurn==1){ //When its avr's turn			
+			init_timer(); //reset timer
+			myTurn = 1;  //Important - collision with  init_timer
+			Algo();		//The actual algorithm
 		}
 
 	}
 
-
-	Transmit("\n\rGoodbye",0,strlen("\n\rGoodbye"));
-	_delay_ms(500);
 }
 
 
@@ -179,7 +177,7 @@ void Transmit(char data[],uint8_t x,uint8_t y){
 
 }
 
-
+// RESET FUNCTION: initializing game board and turning off leds
 void RST(void)
 {
 	for(uint8_t i = 0 ; i <= 7 ; i++)
@@ -194,13 +192,18 @@ void RST(void)
 	M[4,3] = 0 ;
 	M[4,4] = 1 ;
 	enemy_pass=0;
-	if(MyColor == 0)// BLACK
+
+	//The following code exists in case, RST means that gameboard only will 
+	// reset and the rest of the settings will remain the same as previous.
+	if(MyColor == 0)// BLACK  
 		myTurn=1;
 	else           //WHITE
 		myTurn=0;
 	Transmit("OK\r",0 , strlen("OK\r"));
 }
 
+
+//EG instruction function, blacks and whites counting, and it will announce the winner
 void EndGame(){
 	uint8_t b=0;
 	uint8_t w=0;
@@ -217,22 +220,22 @@ void EndGame(){
 	}
 	if(b == w)
 	{
-		AnnounceRes(2);
+		AnnounceRes(2);	//TIE -LED3
 
 	}
 	else if(b>w) 
 	{
 		if(MyColor == 0) //black
-			AnnounceRes(1);
+			AnnounceRes(1);//WIN - LED1
 		else
-			AnnounceRes(0);
+			AnnounceRes(0); //LOST -LED2
 	}
 	else
 	{
 		if(MyColor == 1) //white
-		AnnounceRes(1);
+		AnnounceRes(1);//WIN - LED1
 		else
-		AnnounceRes(0);
+		AnnounceRes(0); //LOST -LED2
 	}
 
 	//after announcement wait for ok in while loop(set move_done = 1)
@@ -242,10 +245,12 @@ void EndGame(){
 ///////////////////////////////////////////////////// ALGORITHM   /////////////////////////////////////////////////////////////////////////////
 void Algo(void)
 {
+	
+	myTurn = 1;		//Important - collision with  init_timer
 	//calculating
-	myTurn = 1; ////Important, bugs with inittimer
 	while(1)
 	{
+		//Actual Algorithm coming soon . . 
 		if(myTurn==0){ //interrupt will break this
 			break;
 		}
@@ -254,7 +259,7 @@ void Algo(void)
 
 
 	//CheckMove();
-	//check enemy pass and my pass ....end game
+	//check enemy pass and my pass ....end game, Coming Soon
 
 	//send MOVE or pass
 	Transmit("MM G2\r",0,strlen("mv g2\r"));
@@ -275,13 +280,13 @@ void Algo(void)
 				}
 			}
 			
-			if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75) //Respone ok for our MV
+			if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75) //Respone ok for our MM
 			{
 				init_timer();
 				rxReadPos=rxWritePos;
 				myTurn = 0;
 				break;
-			}
+			}//future update : else move_done=1 , wrong input avoidance
 			
 		}
 	}
@@ -293,7 +298,7 @@ void Algo(void)
 
 uint8_t CheckMove()
 {
-	
+	//Coming Soon. . .
 }
 
 
@@ -314,17 +319,18 @@ void Check_Input(char data[]){
 		//flag = 0;
 		//Space_num = 0;
 		
+
+		//ILFlag will help us spot "OK" or "PL" terminal answer
 		if(ILflag == 1)
 		{
-			ILflag=2;
+			ILflag=2;  //asnwer spotted, you can proceed.
 			return;	
 		}
 		
-		
+		//itwill help to spot "OK"  terminal answer
 		if(move_done == 1)
-		{
-			
-			move_done=2;
+		{	
+			move_done=2; //asnwer spotted, you can proceed.
 			return;	
 		}
 	
@@ -339,8 +345,7 @@ void Check_Input(char data[]){
 				Transmit("OK\r",0 , strlen("OK\r"));
 				rxReadPos = rxWritePos;
 			}
-			else
-				;//flag = 1;
+
 		}
 		//Checking for RST<CR> command.
 		else if((data[rxReadPos] == 82)&&(data[rxReadPos + 1] == 83)&&(data[rxReadPos + 2] == 84))		
@@ -359,10 +364,10 @@ void Check_Input(char data[]){
 		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 80))
 		{
 			//(int)c - 65;
-			if(data[rxReadPos + 3] == 66) //B
-				MyColor = 0;
+			if(data[rxReadPos + 3] == 66)		//B
+				MyColor = 0;					//Saving myColor
 			else if(data[rxReadPos + 3] == 87)  //W
-				MyColor = 1;
+				MyColor = 1;					//Saving myColor
 			Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos;
 		}
@@ -388,26 +393,29 @@ void Check_Input(char data[]){
 			 //ST<CR>
         else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 84))
         {
-			Time = data[rxReadPos+3] - '0'; 
+			Time = data[rxReadPos+3] - '0';    //String to Int
 			Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos;
         }
 			//MV<SP>{[A-H],[1-8]}<CR>
 		else if((data[rxReadPos] == 77)&&(data[rxReadPos + 1] == 86))
 		{
-				if((data[rxReadPos+3] >= 65)&&(data[rxReadPos+3] <= 72)&&(data[rxReadPos+4] >= 49)&&(data[rxReadPos+4] <= 56))
+				if((data[rxReadPos+3] >= 65)&&(data[rxReadPos+3] <= 72)&&(data[rxReadPos+4] >= 49)&&(data[rxReadPos+4] <= 56))  // Checking input
 				{
-					uint8_t moveok = CheckMove();
-					if(moveok == 1)
+					uint8_t moveok = CheckMove();  //Check opponents move.
+					//If opponent's move is ligal, send ok and reset timer, else 
+					//send IL and wait for PC response, if response OK --> I win else(PL) --> I LOSE
+					if(moveok == 1)		
 					{
-						M[(((int)data[rxReadPos+3] - 65)*8) + (data[rxReadPos+4] - '0')] = !MyColor;
+						// Saving opponent's move in my local game board
+						M[(((int)data[rxReadPos+3] - 65)*8) + (data[rxReadPos+4] - '0')] = !MyColor;  // Saving opponent's move in my local game board
 						Transmit("OK\r",0 , strlen("OK\r"));
 						init_timer();
 						myTurn=1;
 					}
 					else{
 						Transmit("IL\r",0 , strlen("IL\r"));
-						ILflag =  1;
+						ILflag =  1;							//Waiting mode for PC's response
 					}
 					rxReadPos = rxWritePos;
 						
@@ -418,20 +426,21 @@ void Check_Input(char data[]){
 		else if ((data[rxReadPos] == 80)&&(data[rxReadPos + 1] == 83))
 		{
 			myTurn=1;
-			enemy_pass=1;
+			//This flag will help us end game in case we pass after opponent's pass
+			enemy_pass = 1;   
 			Transmit("OK\r",0,strlen("OK\r"));
 		}
 		//WN
+
 		else if((data[rxReadPos] == 87)&&(data[rxReadPos + 1] == 78)){
-			//I WIN
-			myTurn=2;
-			
+			AnnounceRes(1);  //announce i win with led1
+			myTurn=2;			
 			Transmit("OK\r",0,strlen("OK\r"));
 		}
 		else
 			NULL;
 	rxReadPos=rxWritePos;		
-	rxReadPos++;		//Ready for the next command (directs to the next letter) 
+	rxReadPos++;		//Ready for the next command (directs to the next letter, the one after <CR>) 
 	
 
 				
@@ -499,7 +508,8 @@ void init_serial(void){
  ISR (TIMER1_OVF_vect)    // Timer1 ISR
  {
 	 if(myTurn==1){
-		 // coming soon 		 
+		 // coming soon 
+		 //last sec MM will save the day..eventually.		 
 		 myTurn =0;
 		// move_done = 1;
 	 } 
@@ -512,21 +522,22 @@ void init_serial(void){
 
  void AnnounceRes(uint8_t res)
  {
-	TIMSK &= ~(1 << TOIE1) ; //after announcement, no timer will destroy us !
+	//after announcement, timer interrupts are disabled.
+	TIMSK &= ~(1 << TOIE1) ; 
 	if(res == 1)
 	{
 	     Transmit("WN\r",0,strlen("WN\r"));
-		 PORTB ^= (1<<PORTB1);
+		 PORTB ^= (1<<PORTB1);             //Toggle LED
 	}
 	else if(res == 0)
 	{
 		Transmit("LS\r",0,strlen("LS\r"));
-		PORTB ^= (1<<PORTB2);
+		PORTB ^= (1<<PORTB2);			//Toggle LED
 	}
 	else
 	{
 		Transmit("TE\r",0,strlen("TE\r"));
-		PORTB ^= (1<<PORTB3);
+		PORTB ^= (1<<PORTB3);			//Toggle LED
 	}
 
  }
@@ -537,6 +548,9 @@ void init_serial(void){
 	DDRB |= (1<<DDB1);
 	DDRB |= (1<<DDB2);
 	DDRB |= (1<<DDB3);
+	PORTB |= (1<<PORTB1);
+	PORTB |= (1<<PORTB2);
+	PORTB |= (1<<PORTB3);
  }
 
 void init_timer(){
