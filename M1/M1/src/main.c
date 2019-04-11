@@ -145,33 +145,11 @@ int main (void)
 			init_timer();
 			myTurn = 1; //Important, bugs with inittimer
 			Algo();
-			/*
-			while(1){		// Check_Input does not support "OK" response so we check it here
-				if(move_done >= 1)
-				{
-					while(1)
-					{
-						if(move_done==2)
-						{ // we received the response we were waiting
-							move_done = 0;
-							break;
-						}
-					}
-					if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75) //Respone ok for our MV
-					{
-						init_timer();
-						rxReadPos=rxWritePos;
-						myTurn = 0;
-						break;	
-					}
-				}
-			 }
-			 */	
 		}
-	}
-	
 
-	
+	}
+
+
 	Transmit("\n\rGoodbye",0,strlen("\n\rGoodbye"));
 	_delay_ms(500);
 }
@@ -264,11 +242,8 @@ void EndGame(){
 ///////////////////////////////////////////////////// ALGORITHM   /////////////////////////////////////////////////////////////////////////////
 void Algo(void)
 {
-	Transmit("ALGOO\r\n",0,strlen("ALGO\r\n"));
-	char t;
-	Transmit(itoa(myTurn,t,10),0,1);
 	//calculating
-	myTurn = 1;
+	myTurn = 1; ////Important, bugs with inittimer
 	while(1)
 	{
 		if(myTurn==0){ //interrupt will break this
@@ -283,7 +258,7 @@ void Algo(void)
 
 	//send MOVE or pass
 	Transmit("MM G2\r",0,strlen("mv g2\r"));
-	move_done=1;
+	move_done = 1;
 
 	//while loop until 'OK' response
 	
@@ -377,7 +352,7 @@ void Check_Input(char data[]){
 			PORTB |= (1<<PORTB1);
 			PORTB |= (1<<PORTB2);
 			PORTB |= (1<<PORTB3);
-			//Transmit("RST\r",0 , strlen("RST\r"));//RST();
+			Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos; //
 		}	
 		// SP<SPACE>{B/W}<CR>
@@ -399,8 +374,7 @@ void Check_Input(char data[]){
 			else           //WHITE
 				myTurn=0;
 			
-			//init_timer();
-			//Transmit("NEW GAME\r",0 , strlen("NEW GAME\r"));
+			Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos;
 		}
 		        //EG<CR>
