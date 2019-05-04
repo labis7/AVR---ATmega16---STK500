@@ -187,10 +187,10 @@ void RST(void)
 			M[8*i + y] = 2 ; // 0 == black , 1 == white, 2 == empty
 		}
 	}
-	M[3,3] = 1 ;
-	M[3,4] = 0 ;
-	M[4,3] = 0 ;
-	M[4,4] = 1 ;
+	M[3*8+3] = 1 ;
+	M[3*8+4] = 0 ;
+	M[4*8+3] = 0 ;
+	M[4*8+4] = 1 ;
 	enemy_pass=0;
 
 	//The following code exists in case, RST means that gameboard only will 
@@ -212,9 +212,9 @@ void EndGame(){
 	{
 		for(uint8_t y = 0 ; y <= 7 ; y++)
 		{			
-			if(M[8*i + y] == 0)  // 0 == black , 1 == white, 2 == empty
+			if(M[i*8 + y] == 0)  // 0 == black , 1 == white, 2 == empty
 				b++; 
-			if(M[8*i + y] == 1)
+			if(M[i*8 + y] == 1)
 				w++;
 		}
 	}
@@ -299,6 +299,82 @@ void Algo(void)
 uint8_t CheckMove()
 {
 	//Coming Soon. . .
+
+	found = 0;//init before main loop
+	y = my - 1;
+	for(i = mi - 1; i<=(mi+1); ++i)
+	{
+	  for(y = my - 1; y<=(my+1); ++y)		
+	  {
+	    if((M[u*8 + z] == !MyColor)||(M[u*8 + z] == 2))
+			;
+		else
+		{	
+
+			if(i>mi)
+				ibar=0
+			else if(i==mi)
+				ibar=mi
+			else
+				ibar=7;
+			if(y>mi)
+			ybar=0
+			else if(y==my)
+			ybar=my
+			else
+			ybar=7;	
+
+			istep= i - mi; 
+			ystep= y - my;
+			u=i;
+			z=y;
+
+			skip=1;
+			while((u!=ibar)&&(z!=ybar))
+			{
+				//check
+		
+		
+		
+				if( M[u*8 + z] == 2)
+					break;
+				if([u*8 + z] == !MyColor )	
+				{
+					skip=0;
+					break;
+				}
+				//if mycolor --> do nothing
+	    	}			
+		
+
+				z+= ystep;
+				u+= istep;
+			}
+			if(!skip) //if a solution is found
+			{
+				u=i;
+				z=y;
+				while((u!=ibar)&&(z!=ybar))
+				{
+			
+					M[u*8 + z] = !MyColor;
+					if([u*8 + z] == !MyColor )
+						break;
+
+
+					z+= ystep;
+					u+= istep;
+				}
+			}
+		
+         }//if check
+	  }	  //y for	
+	}	  //x for
+	if(found)
+		return 1;
+	return 0;
+  
+		
 }
 
 
@@ -323,14 +399,14 @@ void Check_Input(char data[]){
 		//ILFlag will help us spot "OK" or "PL" terminal answer
 		if(ILflag == 1)
 		{
-			ILflag=2;  //asnwer spotted, you can proceed.
+			ILflag=2;  //answer spotted, you can proceed.
 			return;	
 		}
 		
-		//itwill help to spot "OK"  terminal answer
+		//it will help to spot "OK"  terminal answer
 		if(move_done == 1)
 		{	
-			move_done=2; //asnwer spotted, you can proceed.
+			move_done=2; //answer spotted, you can proceed.
 			return;	
 		}
 	
