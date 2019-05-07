@@ -48,7 +48,7 @@ void Transmit(char data[],uint8_t x,uint8_t y);
 void Receive(void);
 void Sendmsg(char* data);
 void RST(void);
-uint8_t CheckMove(void);
+uint8_t CheckMove(char data[]);
 
 void Algo(void);
 void Waiting(void);
@@ -112,7 +112,7 @@ int main (void)
 	
 	sei();
 	
-	
+	uint8_t mt=0;
 	while(1){
 		
 		//Waiting for PC response - (ILLIGAL request)
@@ -142,7 +142,15 @@ int main (void)
 		}
 		
 		
-		if(myTurn==1){ //When its avr's turn			
+		if((myTurn == 0)&&(mt == 0)){
+			//Possible speculation algo
+			init_timer();
+			mt = 1;
+		}
+			
+		
+		if(myTurn==1){ //When its avr's turn
+			mt = 0; //reset flag for HIS turn			
 			init_timer(); //reset timer
 			myTurn = 1;  //Important - collision with  init_timer
 			Algo();		//The actual algorithm
@@ -256,7 +264,7 @@ void Algo(void)
 		}
 	}
 
-
+	
 
 	//CheckMove();
 	//check enemy pass and my pass ....end game, Coming Soon
@@ -296,72 +304,82 @@ void Algo(void)
 
 
 
-uint8_t CheckMove()
+uint8_t CheckMove(char data[])
 {
 	//Coming Soon. . .
+	uint8_t mi,my,i,j,u,z,found,ibar,ybar,skip,istep,ystep;
+	
+	//translate opponent's move
+	mi = ((int)data[rxReadPos+3] - 65);
+	my = (data[rxReadPos+4] - '0') - 1;
+	char c[1];
+	c[0] = mi + '0';
+	Transmit(c,0,1);
+	char c1[1];
+	c1[0] = my + '0';
+	Transmit(c1,0,1);
 
 	found = 0;//init before main loop
-	y = my - 1;
 	for(i = mi - 1; i<=(mi+1); ++i)
 	{
-	  for(y = my - 1; y<=(my+1); ++y)		
+	  for(j = my - 1; j<=(my+1); ++j)		
 	  {
-	    if((M[u*8 + z] == !MyColor)||(M[u*8 + z] == 2))
+	    if((M[i*8 + j] == !MyColor)||(M[i*8 + j] == 2)) //checking neighbors
 			;
 		else
 		{	
+			
 
-			if(i>mi)
-				ibar=0
-			else if(i==mi)
-				ibar=mi
+			//Setting up i barrier
+			if(i > mi)
+				ibar = 0 ;
+			else if(i == mi)
+				ibar = mi;
 			else
-				ibar=7;
-			if(y>mi)
-			ybar=0
-			else if(y==my)
-			ybar=my
+				ibar = 7;
+			
+			//Setting up y barrier
+			if(j > mi)
+			ybar = 0;
+			else if(j == my)
+			ybar = my;
 			else
-			ybar=7;	
+			ybar = 7;	
 
-			istep= i - mi; 
-			ystep= y - my;
-			u=i;
-			z=y;
+			//setting up steps, (for the loops)
+			istep = i - mi; 
+			ystep = j - my;
+			//start from the accepted neighbor
+			u=i; 
+			z=j;
 
-			skip=1;
-			while((u!=ibar)&&(z!=ybar))
+			skip = 1;
+			while((u != (ibar+istep))&&(z != (ybar+ystep)))
 			{
-				//check
-		
-		
-		
+				//check	
 				if( M[u*8 + z] == 2)
 					break;
-				if([u*8 + z] == !MyColor )	
-				{
-					skip=0;
+				if(M[u*8 + z] == !MyColor )	
+				{ 
+					found = 1;
+					skip = 0;
 					break;
 				}
 				//if mycolor --> do nothing
-	    	}			
-		
-
-				z+= ystep;
+	    		z+= ystep;
 				u+= istep;
-			}
+			
+			}			
+			
 			if(!skip) //if a solution is found
 			{
 				u=i;
-				z=y;
-				while((u!=ibar)&&(z!=ybar))
+				z=j;
+				while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
 				{
-			
 					M[u*8 + z] = !MyColor;
-					if([u*8 + z] == !MyColor )
+					if(M[u*8 + z] == !MyColor ) 
 						break;
-
-
 					z+= ystep;
 					u+= istep;
 				}
@@ -370,7 +388,7 @@ uint8_t CheckMove()
          }//if check
 	  }	  //y for	
 	}	  //x for
-	if(found)
+	if(found == 1)
 		return 1;
 	return 0;
   
@@ -478,13 +496,13 @@ void Check_Input(char data[]){
 		{
 				if((data[rxReadPos+3] >= 65)&&(data[rxReadPos+3] <= 72)&&(data[rxReadPos+4] >= 49)&&(data[rxReadPos+4] <= 56))  // Checking input
 				{
-					uint8_t moveok = CheckMove();  //Check opponents move.
-					//If opponent's move is ligal, send ok and reset timer, else 
+					uint8_t moveok = CheckMove(data);  //Check opponents move.
+					//If opponent's move is legal, send ok and reset timer, else 
 					//send IL and wait for PC response, if response OK --> I win else(PL) --> I LOSE
 					if(moveok == 1)		
 					{
 						// Saving opponent's move in my local game board
-						M[(((int)data[rxReadPos+3] - 65)*8) + (data[rxReadPos+4] - '0')] = !MyColor;  // Saving opponent's move in my local game board
+						//M[(((int)data[rxReadPos+3] - 65)*8) + (data[rxReadPos+4] - '0')] = !MyColor;  // Saving opponent's move in my local game board
 						Transmit("OK\r",0 , strlen("OK\r"));
 						init_timer();
 						myTurn=1;
