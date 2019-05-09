@@ -37,6 +37,7 @@ uint8_t move_done;
 uint8_t MyColor;
 uint8_t EndGameFlag;
 uint8_t Time;
+uint8_t mt=0;
 volatile uint8_t ILflag = 0;
 volatile uint8_t myTurn = 2;
 
@@ -48,7 +49,8 @@ void Transmit(char data[],uint8_t x,uint8_t y);
 void Receive(void);
 void Sendmsg(char* data);
 void RST(void);
-uint8_t CheckMove(char data[]);
+void Board(void);
+uint8_t CheckMove(uint8_t mi, uint8_t my, uint8_t color);
 
 void Algo(void);
 void Waiting(void);
@@ -112,7 +114,7 @@ int main (void)
 	
 	sei();
 	
-	uint8_t mt=0;
+	
 	while(1){
 		
 		//Waiting for PC response - (ILLIGAL request)
@@ -130,6 +132,7 @@ int main (void)
 			   rxReadPos=rxWritePos;
 				AnnounceRes(1); //WIN - LED1
 				myTurn=2;
+				
 			
 			}//future update : "else ILflag=1;" , wrong input avoidance
 
@@ -144,8 +147,9 @@ int main (void)
 		
 		if((myTurn == 0)&&(mt == 0)){
 			//Possible speculation algo
-			init_timer();
 			mt = 1;
+			init_timer();
+			myTurn = 0;
 		}
 			
 		
@@ -188,6 +192,8 @@ void Transmit(char data[],uint8_t x,uint8_t y){
 // RESET FUNCTION: initializing game board and turning off leds
 void RST(void)
 {
+	
+	mt = 0;
 	for(uint8_t i = 0 ; i <= 7 ; i++)
 	{
 		for(uint8_t y = 0 ; y <= 7 ; y++)
@@ -203,11 +209,11 @@ void RST(void)
 
 	//The following code exists in case, RST means that gameboard only will 
 	// reset and the rest of the settings will remain the same as previous.
-	if(MyColor == 0)// BLACK  
+/*	if(MyColor == 0)// BLACK  
 		myTurn=1;
 	else           //WHITE
 		myTurn=0;
-	Transmit("OK\r",0 , strlen("OK\r"));
+	Transmit("OK\r",0 , strlen("OK\r"));*/
 }
 
 
@@ -248,6 +254,7 @@ void EndGame(){
 
 	//after announcement wait for ok in while loop(set move_done = 1)
 	myTurn = 2;
+
 }
 
 ///////////////////////////////////////////////////// ALGORITHM   /////////////////////////////////////////////////////////////////////////////
@@ -269,33 +276,25 @@ void Algo(void)
 	//CheckMove();
 	//check enemy pass and my pass ....end game, Coming Soon
 	char mymove[6];
-	uint8_t mi,my,i,j,u,z,found,ibar,ybar,skip,istep,ystep;
+	uint8_t mi,my,i,j,u,z,ibar,ybar,skip,istep,ystep;
 	for(mi=0;mi<=7;mi++)
 	{
 		for(my=0; my<=7; my++)
 		{
 			if(M[mi*8+my] == MyColor)
 			{					 // we found one of our pawns, so we start to check potential move 
-			/*	mymove[0] = 'A';
-				mymove[1] = 'A';
-				mymove[2] = '\x20';
-				mymove[3] = mi+65;
-				mymove[4] = (my+1)+'0';
-				mymove[5] = '\r';
-				Transmit(mymove,0,6);			*/	
+
 				for(i = mi - 1; i<=(mi+1); ++i)
 				{
+					if(i<0||i>7)
+						continue;
 					for(j = my - 1; j<=(my+1); ++j)
 					{
+						if(j<0||j>7)
+							continue;
 						if((M[i*8 + j] == !MyColor))		//our pawn has en enemy pawn adjacent to it
 						{
-							/*	mymove[0] = 'B';
-								mymove[1] = 'B';
-								mymove[2] = '\x20';
-								mymove[3] = i+65;
-								mymove[4] = (j+1)+'0';
-								mymove[5] = '\r';
-								Transmit(mymove,0,6);*/
+
 							//Setting up i barrier (board)
 							if(i > mi)
 							ibar = 7 ;
@@ -319,28 +318,20 @@ void Algo(void)
 							u=i;
 							z=j;
 							
-							mymove[0] = ibar+65;
-							mymove[1] = ybar+1+'0';
-							mymove[2] = '\x20';
-							mymove[3] = u+65;
-							mymove[4] = z+1+'0';
-							mymove[5] = '\r';
-							Transmit(mymove,0,6);
+
 
 							skip = 1;
 							while((u != (ibar+istep))&&(z != (ybar+ystep))) 
 							{
-								/*	mymove[0] = 'C';
-									mymove[1] = 'C';
-									mymove[2] = '\x20';
-									mymove[3] = u+65;
-									mymove[4] = (z+1)+'0';
-									mymove[5] = '\r';
-									Transmit(mymove,0,6);*/
+								if(M[u*8 + z] == MyColor )
+								{
+									break;
+								}
+								
 								//check
 								if( M[u*8 + z] == 2){
 									skip = 0;
-									M[u*8+z] = MyColor;
+									CheckMove(u, z, MyColor);
 									
 									mymove[0] = 'M';
 									mymove[1] = 'M';
@@ -348,15 +339,10 @@ void Algo(void)
 									mymove[3] = u+65;
 									mymove[4] = (z+1)+'0';
 									mymove[5] = '\r';
-									
-									break;
-								
-								
-								}
-								if(M[u*8 + z] == MyColor )
-								{
+										
 									break;
 								}
+								
 								//if mycolor --> do nothing
 								z+= ystep;
 								u+= istep;
@@ -370,7 +356,7 @@ void Algo(void)
 								while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
 								{
 									if(M[u*8 + z] == MyColor )
-									break;
+										break;
 									M[u*8 + z] = MyColor;
 									
 									z+= ystep;
@@ -378,6 +364,7 @@ void Algo(void)
 								}
 								
 								move_done=1;
+								Board();
 								Transmit(mymove,0,6);
 								if(move_done)
 									break;
@@ -433,23 +420,19 @@ void Algo(void)
 
 
 
-uint8_t CheckMove(char data[])
+uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 {
-	//Coming Soon. . .
 	volatile int i,j;
-	uint8_t mi,my,u,z,found,ibar,ybar,skip,istep,ystep;
+	uint8_t u,z,found,ibar,ybar,skip,istep,ystep;
 	char mymove[6];
-	//translate opponent's move
-	mi = ((int)data[rxReadPos+3] - 65);
-	my = (data[rxReadPos+4] - '0') - 1;
-	char c[1];
-	c[0] = mi +1 + '0';
-	Transmit(c,0,1);
-	char c1[1];
-	c1[0] = my+1 + '0';
-	M[(mi+1)*8 + (my+1)] == !MyColor;
-	Transmit(c1,0,1);
-
+	//char c[1];
+	//c[0] = mi +1 + '0';
+	//Transmit(c,0,1);
+	//char c1[1];
+	//c1[0] = my+1 + '0';
+	//M[(mi+1)*8 + (my+1)] = color;
+	//Transmit(c1,0,1);
+	
 	found = 0;//init before main loop
 	for(i = mi - 1; i<=(mi+1); ++i)
 	{
@@ -459,16 +442,18 @@ uint8_t CheckMove(char data[])
 	  {
 		if(j<0||j>7)
 			continue;  
-		  mymove[0] = i+65;
-		  mymove[1] = j+1+'0';
-		  mymove[2] = '\x20';
-		  mymove[3] = M[i*8 + j]+'0';
-		  mymove[4] = '\x20';
-		  mymove[5] = '\r';
-		  Transmit(mymove,0,6);
-		  
-	    if((M[i*8 + j] == !MyColor)||(M[i*8 + j] == 2)) //checking neighbors
-			;
+			/*					mymove[0] = i+65;
+								mymove[1] = j+1+'0';
+								mymove[2] = '\x20';
+								mymove[3] = M[i*8 + j]+'0';
+								mymove[4] = '\x20';
+								mymove[5] = '\r';
+								Transmit(mymove,0,6);
+								
+
+		  */
+	    if((M[i*8 + j] == color)||(M[i*8 + j] == 2)) //checking neighbors
+			;//Transmit("PIKA\n",0,strlen("PIKA\n"));
 		else
 		{	
 			
@@ -502,16 +487,30 @@ uint8_t CheckMove(char data[])
 				//check	
 				if( M[u*8 + z] == 2)
 					break;
-				if(M[u*8 + z] == !MyColor )	
+					
+				//IF in the line we are checking, we find a friendly pawn, then the move is legal se place the new pawn 
+				if(M[u*8 + z] == color )	
 				{ 
-					M[mi*8 + my] = !MyColor;
-				/*	mymove[0] = 'Z';
-					mymove[1] = 'Z';
-					mymove[2] = '\x20';
-					mymove[3] = mi+65;
-					mymove[4] = (my+1)+'0';
-					mymove[5] = '\r';
-					Transmit(mymove,0,6);*/
+					
+					M[mi*8 + my] = color;
+					/*								mymove[0] = '\n';
+													mymove[1] = '\r';
+													mymove[2] = '\x20';
+													mymove[3] = 'Z';
+													mymove[4] = '\x20';
+													mymove[5] = '\r';
+													Transmit(mymove,0,6);*/
+										mymove[0] = mi+65;
+										mymove[1] = my+1+'0';
+										mymove[2] = '\x20';
+										mymove[3] = M[mi*8 + my]+'0';
+										mymove[4] = '\x20';
+										mymove[5] = '\r';
+										Transmit(mymove,0,6);
+					
+					
+					
+					//mark that it is a legal move
 					found = 1;
 					skip = 0;
 					break;
@@ -528,17 +527,26 @@ uint8_t CheckMove(char data[])
 				z=j;
 				while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
 				{
-					if(M[u*8 + z] == !MyColor ) 
+					if(M[u*8 + z] == 2)
+					{
 						break;
-					M[u*8 + z] = !MyColor;
-				/*		mymove[0] = 'P';
-						mymove[1] = 'P';
-						mymove[2] = '\x20';
-						mymove[3] = u+65;
-						mymove[4] = (z+1)+'0';
-						mymove[5] = '\r';
-						Transmit(mymove,0,6);*/
+					}
+					if(M[u*8 + z] == color )
+					{
+						break;
+					}
+					M[u*8 + z] = color;	
 					
+					mymove[0] = u+65;
+					mymove[1] = z+1+'0';
+					mymove[2] = '\x20';
+					mymove[3] = M[u*8 + z]+'0';
+					mymove[4] = '\x20';
+					mymove[5] = '\r';
+					Transmit(mymove,0,6);
+					
+					
+									
 					z+= ystep;
 					u+= istep;
 				}
@@ -554,6 +562,35 @@ uint8_t CheckMove(char data[])
 		
 }
 
+
+void Board(){
+	char mymove[6];
+	uint8_t s1,s2;
+	Transmit("\x20",0,1);
+	for(s1=0 ; s1<8 ; s1++)
+	{
+		mymove[0] = '|';
+		mymove[1] = '\x20';
+		mymove[2] = s1+1+'0';
+		mymove[3] = '\x20';
+		Transmit(mymove,0,4);
+	}
+	for(s1=0 ; s1<8 ; s1++)
+	{
+		Transmit("\n\r",0,strlen("\n\r"));
+		mymove[0] = s1+65;
+		Transmit(mymove,0,1);
+		for(s2=0; s2<8; s2++)
+		{
+			mymove[0] = '|';
+			mymove[1] = '\x20';
+			mymove[2] = M[s1*8 + s2]+'0';
+			mymove[3] = '\x20';
+			Transmit(mymove,0,4);
+		}
+	}
+	Transmit("\n\r",0,strlen("\n\r"));
+}
 
 ISR (USART_TXC_vect) { //  Interrupts for completed transmit data	
 }
@@ -606,12 +643,13 @@ void Check_Input(char data[]){
 			ILflag =0;
 			move_done=0;
 			myTurn=2;
-			MyColor = 1;
 			PORTB |= (1<<PORTB1);
 			PORTB |= (1<<PORTB2);
 			PORTB |= (1<<PORTB3);
+			RST();
 			Transmit("OK\r",0 , strlen("OK\r"));
-			rxReadPos = rxWritePos; //
+			rxReadPos = rxWritePos; 
+			//
 		}	
 		// SP<SPACE>{B/W}<CR>
 		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 80))
@@ -627,6 +665,7 @@ void Check_Input(char data[]){
 		    //NG  ---- NEW GAME ------
 		else if((data[rxReadPos] == 78)&&(data[rxReadPos + 1] == 71))
 		{
+			
 			if(MyColor == 0)// BLACK
 				myTurn=1;
 			else           //WHITE
@@ -655,7 +694,7 @@ void Check_Input(char data[]){
 		{
 				if((data[rxReadPos+3] >= 65)&&(data[rxReadPos+3] <= 72)&&(data[rxReadPos+4] >= 49)&&(data[rxReadPos+4] <= 56))  // Checking input
 				{
-					uint8_t moveok = CheckMove(data);  //Check opponents move.
+					uint8_t moveok = CheckMove(((int)data[rxReadPos+3] - 65),((data[rxReadPos+4] - '0') - 1), !MyColor );  //Check opponents move.
 					//If opponent's move is legal, send ok and reset timer, else 
 					//send IL and wait for PC response, if response OK --> I win else(PL) --> I LOSE
 					if(moveok == 1)		
