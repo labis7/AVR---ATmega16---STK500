@@ -50,6 +50,7 @@ void Receive(void);
 void Sendmsg(char* data);
 void RST(void);
 void Board(void);
+void EndGame(void);
 uint8_t CheckMove(uint8_t mi, uint8_t my, uint8_t color);
 
 void Algo(void);
@@ -163,37 +164,19 @@ int main (void)
 	}
 
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-/*
-* This function transmits a single byte to the terminal
-*/
-void Sendmsg(char *data){
-	if(UCSRA & (1 << UDRE)) //if UDR is empty(no data transfer at the moment)
-		UDR = data;
-}
-
-
-// TRANSMIT function : transmits a string
-
-void Transmit(char data[],uint8_t x,uint8_t y){
-	
-
-	for (uint8_t i = x ; i < y  ; i++ ){
-		while(!(UCSRA & (1 << UDRE))) //if UDR is empty(no data transfer at the moment)
-		;
-		UDR = data[i];
-	}
-
-}
 
 // RESET FUNCTION: initializing game board and turning off leds
 void RST(void)
 {
 	
-	mt = 0;
+	mt = 0; //flag reset
+
+	//Resetting board 
 	for(uint8_t i = 0 ; i <= 7 ; i++)
 	{
 		for(uint8_t y = 0 ; y <= 7 ; y++)
@@ -205,101 +188,47 @@ void RST(void)
 	M[3*8+4] = 0 ;
 	M[4*8+3] = 0 ;
 	M[4*8+4] = 1 ;
-	enemy_pass=0;
-
-	//The following code exists in case, RST means that gameboard only will 
-	// reset and the rest of the settings will remain the same as previous.
-/*	if(MyColor == 0)// BLACK  
-		myTurn=1;
-	else           //WHITE
-		myTurn=0;
-	Transmit("OK\r",0 , strlen("OK\r"));*/
+	enemy_pass = 0;
 }
 
 
-//EG instruction function, blacks and whites counting, and it will announce the winner
-void EndGame(){
-	uint8_t b=0;
-	uint8_t w=0;
 
-	for(uint8_t i = 0 ; i <= 7 ; i++)
-	{
-		for(uint8_t y = 0 ; y <= 7 ; y++)
-		{			
-			if(M[i*8 + y] == 0)  // 0 == black , 1 == white, 2 == empty
-				b++; 
-			if(M[i*8 + y] == 1)
-				w++;
-		}
-	}
-	if(b == w)
-	{
-		AnnounceRes(2);	//TIE -LED3
-
-	}
-	else if(b>w) 
-	{
-		if(MyColor == 0) //black
-			AnnounceRes(1);//WIN - LED1
-		else
-			AnnounceRes(0); //LOST -LED2
-	}
-	else
-	{
-		if(MyColor == 1) //white
-		AnnounceRes(1);//WIN - LED1
-		else
-		AnnounceRes(0); //LOST -LED2
-	}
-
-	//after announcement wait for ok in while loop(set move_done = 1)
-	myTurn = 2;
-
-}
-
-///////////////////////////////////////////////////// ALGORITHM   /////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////// ALGORITHM   /////////////////////////////////////////////////////////////////////////////
 void Algo(void)
 {
-	
-	myTurn = 1;		//Important - collision with  init_timer
-	//calculating
-/*	while(1)
-	{
-		//Actual Algorithm coming soon . . 
-		if(myTurn==0){ //interrupt will break this
-			break;
-		}
-	}
-*/
-	
-
-	//CheckMove();
-	//check enemy pass and my pass ....end game, Coming Soon
-	char mymove[6];
 	uint8_t mi,my,i,j,u,z,ibar,ybar,skip,istep,ystep;
+	myTurn = 1;		//Important - collision with  init_timer
+	
+	char mymove[6];
+	
+	//The next 2 for loop are responsible to find(scanning whole board) our pawns
 	for(mi=0;mi<=7;mi++)
 	{
 		for(my=0; my<=7; my++)
 		{
-			if(M[mi*8+my] == MyColor)
-			{					 // we found one of our pawns, so we start to check potential move 
-
+			 // we found one of our pawns, so we start to check potential move 
+			if(M[mi*8+my] == MyColor)  
+			{					
+				//The next 2 for loops find scanning the 8 slots/positions around the pawn we found.
 				for(i = mi - 1; i<=(mi+1); ++i)
 				{
-					if(i<0||i>7)
+					if(i<0||i>7) //Matrix out of border protection 
 						continue;
 					for(j = my - 1; j<=(my+1); ++j)
 					{
-						if(j<0||j>7)
+						if(j<0||j>7) //Matrix out of border protection 
 							continue;
-						if((M[i*8 + j] == !MyColor))		//our pawn has en enemy pawn adjacent to it
+
+						//our pawn has en enemy pawn adjacent to it,
+						//so we will find the borders+direction we need to search
+						if((M[i*8 + j] == !MyColor))		
 						{
 
 							//Setting up i barrier (board)
 							if(i > mi)
 							ibar = 7 ;
 							else if(i == mi)
-							ibar = 10;
+							ibar = 10;   //big enough, so the other axis will break while below
 							else
 							ibar = 0;
 							
@@ -314,25 +243,27 @@ void Algo(void)
 							//setting up steps, (for the loops)
 							istep = i - mi;
 							ystep = j - my;
+							
 							//start from the accepted neighbor
 							u=i;
 							z=j;
 							
 
 
-							skip = 1;
+							skip = 1;//reset
+
+							//Now,its gonna find a valid path(which will get colorized accordingly)
 							while((u != (ibar+istep))&&(z != (ybar+ystep))) 
 							{
-								if(M[u*8 + z] == MyColor )
+								if(M[u*8 + z] == MyColor ) //Break, because we need empty slot(to put our move in it)
 								{
 									break;
 								}
 								
-								//check
-								if( M[u*8 + z] == 2){
+								if( M[u*8 + z] == 2){			//We found a valid empty slot
 									skip = 0;
-									CheckMove(u, z, MyColor);
-									
+									CheckMove(u, z, MyColor);  //Coloring adjacent paths, according to the rules
+									//Building message
 									mymove[0] = 'M';
 									mymove[1] = 'M';
 									mymove[2] = '\x20';
@@ -342,17 +273,16 @@ void Algo(void)
 										
 									break;
 								}
-								
-								//if mycolor --> do nothing
+
 								z+= ystep;
 								u+= istep;
-								
 							}
-							
-							if(!skip) //if a solution is found
+							//if a solution is found
+							if(!skip) 
 							{
 								u=i;
 								z=j;
+								//Same iteration, this time we color the path
 								while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
 								{
 									if(M[u*8 + z] == MyColor )
@@ -364,8 +294,8 @@ void Algo(void)
 								}
 								
 								move_done=1;
-								Board();
-								Transmit(mymove,0,6);
+								Board(); //Board Visualization
+								Transmit(mymove,0,6); //Transmit our Move
 								if(move_done)
 									break;
 							}
@@ -385,13 +315,12 @@ void Algo(void)
 
 	
 	
-
-	//send MOVE or pass
-	//Transmit("MM G2\r",0,strlen("mv g2\r"));
+	//if move_done == 0 , that means that we cant find solution, we pass
+	
 
 	//while loop until 'OK' response
-	
-	while(1){		// Check_Input does not support "OK" response so we check it here
+	while(1)
+	{		// Check_Input does not support "OK" response so we check it here
 		if(move_done >= 1)
 		{
 			while(1)
@@ -413,25 +342,37 @@ void Algo(void)
 			}//future update : else move_done=1 , wrong input avoidance
 			
 		}
+		else if(move_done == 0)//No solution was found
+		{
+			if (enemy_pass == 1) //Enemy sent pass too
+			{
+				EndGame();		//Go count pawns and announce the winner
+				break;
+			}
+			else
+			{
+				Transmit("MP\r",0,strlen("MP\r")); //Transmit MYPASS
+				break;
+			}
+		}
 	}
+	
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
+/////////////////////////////////////////////////////////////////////////////  CHECK MOVE  /////////////////////////////////////////////////////////////////////
+//Similar to Algo (less comments)
+//Given a slot, it can find all the possible paths that must be colorized(It also returns Legal/Illegal flag)
+
 uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 {
 	volatile int i,j;
 	uint8_t u,z,found,ibar,ybar,skip,istep,ystep;
 	char mymove[6];
-	//char c[1];
-	//c[0] = mi +1 + '0';
-	//Transmit(c,0,1);
-	//char c1[1];
-	//c1[0] = my+1 + '0';
-	//M[(mi+1)*8 + (my+1)] = color;
-	//Transmit(c1,0,1);
+
 	
 	found = 0;//init before main loop
 	for(i = mi - 1; i<=(mi+1); ++i)
@@ -442,22 +383,11 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 	  {
 		if(j<0||j>7)
 			continue;  
-			/*					mymove[0] = i+65;
-								mymove[1] = j+1+'0';
-								mymove[2] = '\x20';
-								mymove[3] = M[i*8 + j]+'0';
-								mymove[4] = '\x20';
-								mymove[5] = '\r';
-								Transmit(mymove,0,6);
-								
-
-		  */
-	    if((M[i*8 + j] == color)||(M[i*8 + j] == 2)) //checking neighbors
-			;//Transmit("PIKA\n",0,strlen("PIKA\n"));
-		else
+		//checking neighbors, we are trying to find opponents color
+	    if((M[i*8 + j] == color)||(M[i*8 + j] == 2)) 
+			;
+		else //opponents color was found
 		{	
-			
-
 			//Setting up i barrier
 			if(i > mi)
 				ibar = 7 ;
@@ -482,6 +412,7 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 			z=j;
 
 			skip = 1;
+			//Now,its gonna find a valid path(which will get colorized accordingly)
 			while((u != (ibar+istep))&&(z != (ybar+ystep)))
 			{
 				//check	
@@ -493,29 +424,12 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 				{ 
 					
 					M[mi*8 + my] = color;
-					/*								mymove[0] = '\n';
-													mymove[1] = '\r';
-													mymove[2] = '\x20';
-													mymove[3] = 'Z';
-													mymove[4] = '\x20';
-													mymove[5] = '\r';
-													Transmit(mymove,0,6);*/
-										mymove[0] = mi+65;
-										mymove[1] = my+1+'0';
-										mymove[2] = '\x20';
-										mymove[3] = M[mi*8 + my]+'0';
-										mymove[4] = '\x20';
-										mymove[5] = '\r';
-										Transmit(mymove,0,6);
-					
-					
-					
+														
 					//mark that it is a legal move
 					found = 1;
 					skip = 0;
 					break;
 				}
-				//if mycolor --> do nothing
 	    		z+= ystep;
 				u+= istep;
 			
@@ -527,26 +441,10 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 				z=j;
 				while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
 				{
-					if(M[u*8 + z] == 2)
-					{
+					if((M[u*8 + z] == 2)||(M[u*8 + z] == color ))
 						break;
-					}
-					if(M[u*8 + z] == color )
-					{
-						break;
-					}
-					M[u*8 + z] = color;	
-					
-					mymove[0] = u+65;
-					mymove[1] = z+1+'0';
-					mymove[2] = '\x20';
-					mymove[3] = M[u*8 + z]+'0';
-					mymove[4] = '\x20';
-					mymove[5] = '\r';
-					Transmit(mymove,0,6);
-					
-					
-									
+
+					M[u*8 + z] = color;										
 					z+= ystep;
 					u+= istep;
 				}
@@ -556,13 +454,12 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 	  }	  //y for	
 	}	  //x for
 	if(found == 1)
-		return 1;
-	return 0;
-  
-		
+		return 1;//Legal
+	return 0;	
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+//Visualization of the board
 void Board(){
 	char mymove[6];
 	uint8_t s1,s2;
@@ -592,14 +489,77 @@ void Board(){
 	Transmit("\n\r",0,strlen("\n\r"));
 }
 
-ISR (USART_TXC_vect) { //  Interrupts for completed transmit data	
+
+/////////////////////////////////////////////////////////////////////////////////////// END GAME & ANNOUNCEMENT /////////////////////////////////////////////////////////////////////
+
+//EG instruction function, blacks and whites counting, and it will announce the winner
+void EndGame(){
+	uint8_t b=0;
+	uint8_t w=0;
+
+	for(uint8_t i = 0 ; i <= 7 ; i++)
+	{
+		for(uint8_t y = 0 ; y <= 7 ; y++)
+		{
+			if(M[i*8 + y] == 0)  // 0 == black , 1 == white, 2 == empty
+			b++;
+			if(M[i*8 + y] == 1)
+			w++;
+		}
+	}
+	if(b == w)
+	{
+		AnnounceRes(2);	//TIE -LED3
+
+	}
+	else if(b>w)
+	{
+		if(MyColor == 0) //black
+		AnnounceRes(1);//WIN - LED1
+		else
+		AnnounceRes(0); //LOST -LED2
+	}
+	else
+	{
+		if(MyColor == 1) //white
+		AnnounceRes(1);//WIN - LED1
+		else
+		AnnounceRes(0); //LOST -LED2
+	}
+
+	//after announcement wait for ok in while loop(set move_done = 1)
+	myTurn = 2;
+}
+
+
+
+void AnnounceRes(uint8_t res)
+{
+	//after announcement, timer interrupts are disabled.
+	TIMSK &= ~(1 << TOIE1) ;
+	if(res == 1)
+	{
+		Transmit("WN\r",0,strlen("WN\r"));
+		PORTB ^= (1<<PORTB1);             //Toggle LED
+	}
+	else if(res == 0)
+	{
+		Transmit("LS\r",0,strlen("LS\r"));
+		PORTB ^= (1<<PORTB2);			//Toggle LED
+	}
+	else
+	{
+		Transmit("TE\r",0,strlen("TE\r"));
+		PORTB ^= (1<<PORTB3);			//Toggle LED
+	}
+
 }
 
 
 
 
 
-////////////////////////////////////////////   CHECK_INPUT    ///////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////   CHECK_INPUT    /////////////////////////////////////////////////////////////////////////////////////////
 
 void Check_Input(char data[]){
 	
@@ -647,6 +607,8 @@ void Check_Input(char data[]){
 			PORTB |= (1<<PORTB2);
 			PORTB |= (1<<PORTB3);
 			RST();
+			TCCR1B = 0x00;         //Clearing timer -- total reset
+			TIMSK = (1 << TOIE1) ; //Overflow interrupts -- disabled
 			Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos; 
 			//
@@ -694,6 +656,7 @@ void Check_Input(char data[]){
 		{
 				if((data[rxReadPos+3] >= 65)&&(data[rxReadPos+3] <= 72)&&(data[rxReadPos+4] >= 49)&&(data[rxReadPos+4] <= 56))  // Checking input
 				{
+					enemy_pass = 0;
 					uint8_t moveok = CheckMove(((int)data[rxReadPos+3] - 65),((data[rxReadPos+4] - '0') - 1), !MyColor );  //Check opponents move.
 					//If opponent's move is legal, send ok and reset timer, else 
 					//send IL and wait for PC response, if response OK --> I win else(PL) --> I LOSE
@@ -738,6 +701,7 @@ void Check_Input(char data[]){
 				
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -754,9 +718,7 @@ ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
 	//Flag setting according to input control codes
 	if(myrxbuffer[rxWritePos] == CR[0])
 		Check_Input(myrxbuffer);
-	
-	
-	
+
 
 	rxWritePos++;
 	
@@ -766,35 +728,11 @@ ISR (USART_RXC_vect) { //  Interrupts : a new element in UDR
 		
 }
 
-/*
-*   External interrupt handler
-*	When the button is pushed, the next led will turn on while the previous one	will turn off
-*/
 
 
-
-
-
-
-void init_serial(void){
-	// By default URSEL == 0, so we can edit UBRRH regs.
-	UBRRH = (unsigned char)(BRC >> 8); //UBRRH has 8 + 4 useful bits
-	UBRRL = (unsigned char)BRC;
-	
-	//UBRRH |= ( 1 << URSEL); // So we can edit UCRSC
-	
-	UCSRC &= ~(1 << UPM0); //UPM1 is cleared by default
-	UCSRC &= ~(1 << UPM1); //UPM1 is cleared by default
-	UCSRC &= ~(1 << USBS); // 1 Stop bit
-
-	UCSRC = ((1<<URSEL) | (1 << UCSZ0) | (1 << UCSZ1)) ;
-	UCSRB &= ~(1 << UCSZ2); //
-
-	UCSRB |= ((1 << RXEN) | (1 << TXEN)) ;
-
-	UCSRB |= (1 << TXCIE); //TXC interrupts enabled
-	UCSRB |= (1 << RXCIE); //RXC interrupts enabled
+ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
 }
+
 
 
  ISR (TIMER1_OVF_vect)    // Timer1 ISR
@@ -811,29 +749,31 @@ void init_serial(void){
 	 }	 
  }
 
+ /*
+ * This function transmits a single byte to the terminal
+ */
+ void Sendmsg(char *data){
+	 if(UCSRA & (1 << UDRE)) //if UDR is empty(no data transfer at the moment)
+	 UDR = data;
+ }
 
- void AnnounceRes(uint8_t res)
- {
-	//after announcement, timer interrupts are disabled.
-	TIMSK &= ~(1 << TOIE1) ; 
-	if(res == 1)
-	{
-	     Transmit("WN\r",0,strlen("WN\r"));
-		 PORTB ^= (1<<PORTB1);             //Toggle LED
-	}
-	else if(res == 0)
-	{
-		Transmit("LS\r",0,strlen("LS\r"));
-		PORTB ^= (1<<PORTB2);			//Toggle LED
-	}
-	else
-	{
-		Transmit("TE\r",0,strlen("TE\r"));
-		PORTB ^= (1<<PORTB3);			//Toggle LED
-	}
+
+ // TRANSMIT function : transmits a string
+
+ void Transmit(char data[],uint8_t x,uint8_t y){
+	 
+
+	 for (uint8_t i = x ; i < y  ; i++ ){
+		 while(!(UCSRA & (1 << UDRE))) //if UDR is empty(no data transfer at the moment)
+		 ;
+		 UDR = data[i];
+	 }
 
  }
 
+
+
+ //////////////////////////////////////////////// INITIALIZATION ///////////////////////////////////////////////////////////
 
  void init_leds()
  {
@@ -858,8 +798,30 @@ void init_timer(){
 	/*	The CLK/64 
 	*/
 	//TCCR1B &=  ~(1<<CS11);  
+	
 	TCCR1B |=  (1<<CS12);// |(1<<CS10);
 	TIMSK = (1 << TOIE1) ;   // Enable timer1 overflow interrupt(TOIE1)
 	//sei();        // Enable global interrupts by setting global interrupt enable bit in SREG
 	//sleep();
+}
+
+
+void init_serial(void){
+	// By default URSEL == 0, so we can edit UBRRH regs.
+	UBRRH = (unsigned char)(BRC >> 8); //UBRRH has 8 + 4 useful bits
+	UBRRL = (unsigned char)BRC;
+	
+	//UBRRH |= ( 1 << URSEL); // So we can edit UCRSC
+	
+	UCSRC &= ~(1 << UPM0); //UPM1 is cleared by default
+	UCSRC &= ~(1 << UPM1); //UPM1 is cleared by default
+	UCSRC &= ~(1 << USBS); // 1 Stop bit
+
+	UCSRC = ((1<<URSEL) | (1 << UCSZ0) | (1 << UCSZ1)) ;
+	UCSRB &= ~(1 << UCSZ2); //
+
+	UCSRB |= ((1 << RXEN) | (1 << TXEN)) ;
+
+	UCSRB |= (1 << TXCIE); //TXC interrupts enabled
+	UCSRB |= (1 << RXCIE); //RXC interrupts enabled
 }
