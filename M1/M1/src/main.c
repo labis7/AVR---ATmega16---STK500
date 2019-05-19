@@ -30,6 +30,7 @@ char myrxbuffer[BUFFER_SIZE];
 uint8_t rxReadPos = 0;
 uint8_t rxWritePos = 0;
 
+uint8_t ITflag=0;
 uint8_t EOT=0;
 uint8_t enemy_pass;
 uint8_t ok_flag;
@@ -108,16 +109,19 @@ int main (void)
 	rxReadPos=0;
 	rxWritePos=0;
 	//flag Initialization 
+	ITflag=0;
 	ILflag =0;
 	move_done=0;
 	myTurn=2;
 	MyColor = 1;
 	
+
 	sei();
 	
 	
 	while(1){
-		
+
+
 		//Waiting for PC response - (ILLIGAL request)
 		if(ILflag >= 1)
 		{
@@ -138,8 +142,18 @@ int main (void)
 			}//future update : "else ILflag=1;" , wrong input avoidance
 
 			if(myrxbuffer[rxReadPos] == 80 && myrxbuffer[rxReadPos+1] == 76){ //"PL"
-				AnnounceRes(0); //LOST - LED2								//WARNING: algo myturn=1 in case we want to continue playing
-				myTurn=2;	
+				if(ITflag==1)
+				{
+					ITflag = 0;
+					init_timer();
+					
+				}
+				else
+				{
+					Transmit("QT\r",0 , strlen("QT\r"));
+					myTurn=2;
+				}						
+					
 			}	//future update : "else ILflag=1;" , wrong input avoidance		
 
 			rxReadPos=rxWritePos;
@@ -174,8 +188,15 @@ int main (void)
 void RST(void)
 {
 	
-	mt = 0; //flag reset
+	ILflag =0;
+	move_done=0;
+	myTurn=2;
+	PORTB |= (1<<PORTB1);
+	PORTB |= (1<<PORTB2);
+	PORTB |= (1<<PORTB3);
 
+	mt = 0; //flag reset
+	myTurn=2;
 	//Resetting board 
 	for(uint8_t i = 0 ; i <= 7 ; i++)
 	{
@@ -189,6 +210,12 @@ void RST(void)
 	M[4*8+3] = 0 ;
 	M[4*8+4] = 1 ;
 	enemy_pass = 0;
+
+	TCCR1B = 0x00;         //Clearing timer -- total reset
+	TIMSK = (1 << TOIE1) ; //Overflow interrupts -- disabled
+	Transmit("OK\r",0 , strlen("OK\r"));
+	rxReadPos = rxWritePos;
+	
 }
 
 
@@ -326,7 +353,7 @@ void Algo(void)
 			while(1)
 			{
 				_delay_ms(10);
-				if(move_done == 2)
+				if((move_done == 2)||(myTurn==2))  //myturn==2 means that a RST was made. and we can break this loop.
 				{ // we received the response we were waiting'
 					move_done = 0;
 					break;
@@ -339,8 +366,8 @@ void Algo(void)
 				rxReadPos=rxWritePos;
 				myTurn = 0;
 				break;
-			}//future update : else move_done=1 , wrong input avoidance
-			
+			}
+
 		}
 		else if(move_done == 0)//No solution was found
 		{
@@ -552,6 +579,8 @@ void AnnounceRes(uint8_t res)
 		Transmit("TE\r",0,strlen("TE\r"));
 		PORTB ^= (1<<PORTB3);			//Toggle LED
 	}
+	TCCR1B = 0x00;         //Clearing timer -- total reset
+	TIMSK = (1 << TOIE1) ; //Overflow interrupts -- disabled
 
 }
 
@@ -600,18 +629,7 @@ void Check_Input(char data[]){
 		//Checking for RST<CR> command.
 		else if((data[rxReadPos] == 82)&&(data[rxReadPos + 1] == 83)&&(data[rxReadPos + 2] == 84))		
 		{
-			ILflag =0;
-			move_done=0;
-			myTurn=2;
-			PORTB |= (1<<PORTB1);
-			PORTB |= (1<<PORTB2);
-			PORTB |= (1<<PORTB3);
 			RST();
-			TCCR1B = 0x00;         //Clearing timer -- total reset
-			TIMSK = (1 << TOIE1) ; //Overflow interrupts -- disabled
-			Transmit("OK\r",0 , strlen("OK\r"));
-			rxReadPos = rxWritePos; 
-			//
 		}	
 		// SP<SPACE>{B/W}<CR>
 		else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 80))
@@ -627,13 +645,33 @@ void Check_Input(char data[]){
 		    //NG  ---- NEW GAME ------
 		else if((data[rxReadPos] == 78)&&(data[rxReadPos + 1] == 71))
 		{
-			
+			//RST();
+			move_done=0;
+			for(uint8_t i = 0 ; i <= 7 ; i++)
+			{
+				for(uint8_t y = 0 ; y <= 7 ; y++)
+				{
+					M[8*i + y] = (uint8_t)2 ; // 0 == black , 1 == white, 2 == empty
+				}
+			}
+			//[ x , y ] ? [ X*8 + Y ](AVR), [ NUM ](AVR) ? [ (NUM)div8 , (NUM)mod8 ]
+			M[3*8+3] = 1 ;
+			M[3*8+4] = 0 ;
+			M[4*8+3] = 0 ;
+			M[4*8+4] = 1 ;
 			if(MyColor == 0)// BLACK
+			{
 				myTurn=1;
+				Transmit("OK\r",0 , strlen("OK\r"));
+			}
 			else           //WHITE
+			{
+				RST();  //FIXING bug with whites(rst contains OK Transmit)
 				myTurn=0;
+			}
 			
-			Transmit("OK\r",0 , strlen("OK\r"));
+			//init_timer();
+			//Transmit("OK\r",0 , strlen("OK\r"));           This is the 2nd OK, not important, RST contains OK transmit
 			rxReadPos = rxWritePos;
 		}
 		        //EG<CR>
@@ -671,6 +709,8 @@ void Check_Input(char data[]){
 					else{
 						Transmit("IL\r",0 , strlen("IL\r"));
 						ILflag =  1;							//Waiting mode for PC's response
+						myTurn=2;
+						mt=0;
 					}
 					rxReadPos = rxWritePos;
 						
@@ -745,7 +785,8 @@ ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
 	 } 
 	 else if(myTurn == 0){
 		  Transmit("IT\r",0,strlen("IT\r"));
-		  ILflag=1;
+		  ITflag = 1;
+		  ILflag = 1;
 	 }	 
  }
 
