@@ -29,7 +29,8 @@ uint8_t scan_pointer=0;
 char myrxbuffer[BUFFER_SIZE];
 uint8_t rxReadPos = 0;
 uint8_t rxWritePos = 0;
-
+uint8_t vi_max=0;
+uint8_t vj_max=0;
 uint8_t ITflag=0;
 uint8_t EOT=0;
 uint8_t enemy_pass;
@@ -39,8 +40,10 @@ uint8_t MyColor;
 uint8_t EndGameFlag;
 uint8_t Time;
 uint8_t mt=0;
+uint8_t V[64]= {18,11,16,16,16,16,11,18,  11,10,13,13,13,13,10,11,  16,13,15,14,14,15,13,16,  16,13,14,15,15,14,13,16,  16,13,14,15,15,14,13,16,  16,13,15,14,14,15,13,16,  11,10,13,13,13,13,10,11,  18,11,16,16,16,16,11,18};
 volatile uint8_t ILflag = 0;
 volatile uint8_t myTurn = 2;
+
 
 void AnnounceRes(uint8_t res);
 void init_timer(void);
@@ -65,6 +68,7 @@ char CR[1];
 unsigned char USART_Receive(void);
 
 volatile uint8_t *M ;
+volatile uint8_t *V ;
 
 
 
@@ -85,6 +89,7 @@ int main (void)
 	//Game board initialization
 	M= (uint8_t *)malloc(sizeof(uint8_t)*64);
 	
+	
 	volatile uint8_t i=0;
 	volatile uint8_t y = 0 ;
 	for(i = 0 ; i <= 7 ; i++)
@@ -99,20 +104,24 @@ int main (void)
 	M[3*8+4] = 0 ;
 	M[4*8+3] = 0 ;
 	M[4*8+4] = 1 ;
+	
+
+	/////////////////////////////INIT VALUE weight BOARD///////////////////////////
+	//V= (uint8_t *)malloc(sizeof(uint8_t)*64);
 
 	
 
-	//////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////
 	
 
 	//buffer pointers init
 	rxReadPos=0;
 	rxWritePos=0;
 	//flag Initialization 
-	ITflag=0;
-	ILflag =0;
-	move_done=0;
-	myTurn=2;
+	ITflag = 0;
+	ILflag = 0;
+	move_done = 0;
+	myTurn = 2;
 	MyColor = 1;
 	
 
@@ -228,7 +237,7 @@ void Algo(void)
 	
 	char mymove[6];
 	
-	//The next 2 for loop are responsible to find(scanning whole board) our pawns
+	//The next 2 for loop are responsible to find(scanning whole board) our pawns  ----------------------------------------- U P D A T E : we will save the positions of our pawns
 	for(mi=0;mi<=7;mi++)
 	{
 		for(my=0; my<=7; my++)
@@ -289,7 +298,10 @@ void Algo(void)
 								
 								if( M[u*8 + z] == 2){			//We found a valid empty slot
 									skip = 0;
-									CheckMove(u, z, MyColor);  //Coloring adjacent paths, according to the rules
+									move_done=1;
+									//CheckMove(u, z, MyColor, 1);  //Coloring adjacent paths, according to the rules  ////////-- OLD VERSION --////////////
+									CheckMove(u, z, MyColor, 0); //Calculate and 'write'(if its the greatest till now) on board(in the specific slot we found) the result score of this possible move.
+									/*
 									//Building message
 									mymove[0] = 'M';
 									mymove[1] = 'M';
@@ -297,7 +309,7 @@ void Algo(void)
 									mymove[3] = u+65;
 									mymove[4] = (z+1)+'0';
 									mymove[5] = '\r';
-										
+									*/
 									break;
 								}
 
@@ -305,6 +317,7 @@ void Algo(void)
 								u+= istep;
 							}
 							//if a solution is found
+							/*
 							if(!skip) 
 							{
 								u=i;
@@ -326,25 +339,34 @@ void Algo(void)
 								if(move_done)
 									break;
 							}
+							*/
 							
 						}//if check neighbors
 					}//j for
-					if(move_done)
-						break;
+
 				}//i for
 			}//if  (find our pawn)
-			if(move_done)
-				break;
+
 		}//for my
-		if(move_done)
-			break;
+
 	}//for mi
+	if(move_done)
+	{
+		CheckMove(vi_max, vj_max, MyColor ,1); // Paint the best possible slot
+		mymove[0] = 'M';
+		mymove[1] = 'M';
+		mymove[2] = '\x20';
+		mymove[3] = vi_max+65;
+		mymove[4] = (vj_max+1)+'0';
+		mymove[5] = '\r';
+		Transmit(mymove,0,6); //Transmit our Move
+	}
 
 	
-	
-	//if move_done == 0 , that means that we cant find solution, we pass
-	
 
+
+	
+	//if move_done == 0 , that means that we cant find solution, we pass                           
 	//while loop until 'OK' response
 	while(1)
 	{		// Check_Input does not support "OK" response so we check it here
@@ -394,12 +416,12 @@ void Algo(void)
 //Similar to Algo (less comments)
 //Given a slot, it can find all the possible paths that must be colorized(It also returns Legal/Illegal flag)
 
-uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
+uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 {
 	volatile int i,j;
-	uint8_t u,z,found,ibar,ybar,skip,istep,ystep;
+	uint8_t u,z,found,ibar,ybar,skip,istep,ystep, pcounter;
 	char mymove[6];
-
+	pcounter=0;
 	
 	found = 0;//init before main loop
 	for(i = mi - 1; i<=(mi+1); ++i)
@@ -411,7 +433,7 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 		if(j<0||j>7)
 			continue;  
 		//checking neighbors, we are trying to find opponents color
-	    if((M[i*8 + j] == color)||(M[i*8 + j] == 2)) 
+	    if((M[i*8 + j] == color)||(M[i*8 + j] >= 2)) 
 			;
 		else //opponents color was found
 		{	
@@ -440,46 +462,103 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color)
 
 			skip = 1;
 			//Now,its gonna find a valid path(which will get colorized accordingly)
-			while((u != (ibar+istep))&&(z != (ybar+ystep)))
-			{
-				//check	
-				if( M[u*8 + z] == 2)
-					break;
-					
-				//IF in the line we are checking, we find a friendly pawn, then the move is legal se place the new pawn 
-				if(M[u*8 + z] == color )	
-				{ 
-					
-					M[mi*8 + my] = color;
-														
-					//mark that it is a legal move
-					found = 1;
-					skip = 0;
-					break;
-				}
-	    		z+= ystep;
-				u+= istep;
 			
-			}			
 			
-			if(!skip) //if a solution is found
+			if(paint == 0) //just for finding the best slot
 			{
-				u=i;
-				z=j;
-				while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
+				while((u != (ibar+istep))&&(z != (ybar+ystep)))
 				{
-					if((M[u*8 + z] == 2)||(M[u*8 + z] == color ))
+					//check
+					if( M[u*8 + z] >= 2)
+					break;
+					
+					//IF in the line we are checking, we find a friendly pawn, then the move is legal so place the new pawn
+					if(M[u*8 + z] == color )
+					{
+						
+						//M[mi*8 + my] = color;
+						
+						//mark that it is a legal move
+						found = 1;
+						skip = 0;
 						break;
-
-					M[u*8 + z] = color;										
+					}
 					z+= ystep;
 					u+= istep;
+					
 				}
+				
+				if(!skip) //if a solution is found
+				{
+					u=i;
+					z=j;
+					while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
+					{
+						if((M[u*8 + z] >= 2)||(M[u*8 + z] == color ))
+						break;
+
+						//M[u*8 + z] = color;
+						pcounter++;
+						z+= ystep;
+						u+= istep;
+					}
+				}
+
 			}
-		
+			else
+			{
+				while((u != (ibar+istep))&&(z != (ybar+ystep)))
+				{
+					//check	
+					if( M[u*8 + z] >= 2)
+						break;
+					
+					//IF in the line we are checking, we find a friendly pawn, then the move is legal so place the new pawn 
+					if(M[u*8 + z] == color )	
+					{ 
+					
+						M[mi*8 + my] = color;
+														
+						//mark that it is a legal move
+						found = 1;
+						skip = 0;
+						break;
+					}
+	    			z+= ystep;
+					u+= istep;
+			
+				}			
+			
+				if(!skip) //if a solution is found
+				{
+					u=i;
+					z=j;
+					while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
+					{
+						if((M[u*8 + z] >= 2)||(M[u*8 + z] == color ))
+							break;
+
+						M[u*8 + z] = color;										
+						z+= ystep;
+						u+= istep;
+					}
+				}
+			}//if paint
+			
          }//if check
 	  }	  //y for	
 	}	  //x for
+	if(paint == 0)
+	{
+		if(M[vi_max*8 + vj_max] <= pcounter + V[mi*8 +my])
+		{
+			M[mi*8 + my] = pcounter + V[mi*8 +my];   //remember on our board the latest max move.(there is no reason to save a value on board if its not the max)
+			M[vi_max*8 + vj_max] = 2;
+			vi_max = mi;
+			vj_max = my;
+		}
+	}
+
 	if(found == 1)
 		return 1;//Legal
 	return 0;	
@@ -695,7 +774,7 @@ void Check_Input(char data[]){
 				if((data[rxReadPos+3] >= 65)&&(data[rxReadPos+3] <= 72)&&(data[rxReadPos+4] >= 49)&&(data[rxReadPos+4] <= 56))  // Checking input
 				{
 					enemy_pass = 0;
-					uint8_t moveok = CheckMove(((int)data[rxReadPos+3] - 65),((data[rxReadPos+4] - '0') - 1), !MyColor );  //Check opponents move.
+					uint8_t moveok = CheckMove(((int)data[rxReadPos+3] - 65),((data[rxReadPos+4] - '0') - 1), !MyColor, 1 );  //Check opponents move.
 					//If opponent's move is legal, send ok and reset timer, else 
 					//send IL and wait for PC response, if response OK --> I win else(PL) --> I LOSE
 					if(moveok == 1)		
