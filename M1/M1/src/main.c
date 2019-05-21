@@ -55,7 +55,7 @@ void Sendmsg(char* data);
 void RST(void);
 void Board(void);
 void EndGame(void);
-uint8_t CheckMove(uint8_t mi, uint8_t my, uint8_t color);
+uint8_t CheckMove(uint8_t mi, uint8_t my, uint8_t color, uint8_t paint);
 
 void Algo(void);
 void Waiting(void);
@@ -68,7 +68,7 @@ char CR[1];
 unsigned char USART_Receive(void);
 
 volatile uint8_t *M ;
-volatile uint8_t *V ;
+
 
 
 
@@ -89,8 +89,31 @@ int main (void)
 	//Game board initialization
 	M= (uint8_t *)malloc(sizeof(uint8_t)*64);
 	
+	volatile int i=0;
+	/////////////////////////////////TASK MANAGER - RAM USAGE////////////////////////////////
+	/*
+	uint8_t *omg;
+	volatile int limit =600;
+	omg = (uint8_t *)malloc(sizeof(uint8_t)*limit);
 	
-	volatile uint8_t i=0;
+	for(i = 0 ; i <= limit-1 ; i++)
+	{
+		omg[i] = 0;
+	}
+
+	omg[limit -1]=5;
+
+	
+	
+	for(i = 0 ; i <= limit -1 ; i++)
+	{
+		if(omg[i] == 5)
+			Transmit("yaso\r",0 , strlen("aaaa\r"));
+
+	}
+	*/
+	///////////////////////////////////////////////////////////////////////////
+
 	volatile uint8_t y = 0 ;
 	for(i = 0 ; i <= 7 ; i++)
 	{
@@ -235,6 +258,10 @@ void Algo(void)
 	uint8_t mi,my,i,j,u,z,ibar,ybar,skip,istep,ystep;
 	myTurn = 1;		//Important - collision with  init_timer
 	
+	vi_max = 3;
+	vj_max = 3;
+	
+
 	char mymove[6];
 	
 	//The next 2 for loop are responsible to find(scanning whole board) our pawns  ----------------------------------------- U P D A T E : we will save the positions of our pawns
@@ -359,6 +386,7 @@ void Algo(void)
 		mymove[3] = vi_max+65;
 		mymove[4] = (vj_max+1)+'0';
 		mymove[5] = '\r';
+		Board();
 		Transmit(mymove,0,6); //Transmit our Move
 	}
 
@@ -550,10 +578,11 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 	}	  //x for
 	if(paint == 0)
 	{
-		if(M[vi_max*8 + vj_max] <= pcounter + V[mi*8 +my])
+		if(M[vi_max*8 + vj_max] <= pcounter +14 + V[mi*8 +my]) //14: OFFSET FOR OUR VALUE TABLE
 		{
-			M[mi*8 + my] = pcounter + V[mi*8 +my];   //remember on our board the latest max move.(there is no reason to save a value on board if its not the max)
-			M[vi_max*8 + vj_max] = 2;
+			M[mi*8 + my] = pcounter +14 + V[mi*8 +my];   //remember on our board the latest max move.(there is no reason to save a value on board if its not the max)
+			if(M[vi_max*8 + vj_max] > 2)	
+				M[vi_max*8 + vj_max] = 2;
 			vi_max = mi;
 			vj_max = my;
 		}
