@@ -63,7 +63,8 @@ uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint);
 void Algo(void);
 void Waiting(void);
 void Check_Input(char data[]);
-
+void simulate_opponent(void);
+void algo_sim(void);
 //Char definitions of the control inputs
 //char SPACE[1];
 uint8_t SPACE = 32;
@@ -264,7 +265,7 @@ void RST(void)
 
 uint8_t vi_max,vj_max,v_max;
 
-algo_sim()
+void algo_sim(void)
 {
 
 	uint8_t mi,my,i,j,u,z,ibar,ybar,skip,istep,ystep;
@@ -325,7 +326,15 @@ algo_sim()
 
 
 							skip = 1;//reset
-
+/*
+												char mymove[6];
+												mymove[0] = 'E';
+												mymove[1] = '\x20';
+												mymove[2] = mi+65;
+												mymove[3] = '\x20';
+												mymove[4] = (my+1)+'0';
+												mymove[5] = '\r';
+												Transmit(mymove,0,6);*/
 							//Now,its gonna find a valid path(which will get colorized accordingly)
 							while((u != (ibar+istep))&&(z != (ybar+ystep))) 
 							{
@@ -338,6 +347,8 @@ algo_sim()
 									skip = 0;
 									move_done=1;
 									//CheckMove(u, z, MyColor, 1);  //Coloring adjacent paths, according to the rules  ////////-- OLD VERSION --////////////
+
+									
 									checkmove_sim(u, z, !MyColor, 0); //Calculate and 'write'(if its the greatest till now) on board(in the specific slot we found) the result score of this possible move.
 									break;
 								}
@@ -503,6 +514,7 @@ uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 	}	  //x for
 	if(paint == 0)
 	{
+		
 		if(M[vi_max*8 + vj_max] <= pcounter +14 + V[mi*8 +my]) //14: OFFSET FOR OUR VALUE TABLE
 		{
 			M[mi*8 + my] = pcounter +14 + V[mi*8 +my];   //remember on our board the latest max move.(there is no reason to save a value on board if its not the max)
@@ -510,7 +522,8 @@ uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 				M[vi_max*8 + vj_max] = 2;
 			vi_max = mi;
 			vj_max = my;
-			v_max = pcounter +14 + V[mi*8 +my];
+			v_max = pcounter +14 + V[mi*8 +my];								
+			
 		}
 	}
 
@@ -521,23 +534,65 @@ uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 
 
 
-simulate_opponent()
+void simulate_opponent(void)
 {
+		char mymove[6];
 	
+	/*
+					mymove[0] = (v1_max-28)+'0';
+					mymove[1] = '\x20';
+					mymove[2] = (v2_max-28)+'0';
+					mymove[3] = '\x20';
+					mymove[4] = (v3_max-28)+'0';
+					mymove[5] = '\r';
+					Transmit(mymove,0,6);*/
 	uint8_t worst_op_move_value;
 	if( v1_max > 0 )
 	{
-		memcpy(MB, M , 64*8);
+		
+	/*				//	char mymove[6];
+						mymove[0] = 'Z';
+						mymove[1] = '\x20';
+						mymove[2] = vi1_max+65;
+						mymove[3] = '\x20';
+						mymove[4] = (vj1_max+1)+'0';
+						mymove[5] = '\r';
+						Transmit(mymove,0,6);*/
+		
+		for(uint8_t i=0; i<8; i++){
+			for(uint8_t j=0; j<8; j++){	
+				MB[i*8+j]=M[i*8+j];
+			}
+		}
+						
+						
+		
 		checkmove_sim(vi1_max, vj1_max, MyColor, 1);   // we make 1 of our best 3 possible moves
+		Board();
 		algo_sim();                              //finding the best possible solution(without speculation)
+		Board();
+		
 		vi_final = vi1_max;
 		vj_final = vj1_max;
 		worst_op_move_value = v_max;
 
+
+				//char mymove[6];
+		/*		mymove[0] = 'W';
+				mymove[1] = '\x20';
+				mymove[2] = vi_final+65;
+				mymove[3] = '\x20';
+				mymove[4] = (vj_final+1)+'0';
+				mymove[5] = '\r';
+				Transmit(mymove,0,6);*/
 	}
-	if( v1_max > 0 )
+	if( v2_max > 0 )
 	{
-		memcpy(M, MB , 64*8);
+			for(uint8_t i=0; i<8; i++){
+				for(uint8_t j=0; j<8; j++){
+					M[i*8+j]=MB[i*8+j];
+				}
+			}
 		checkmove_sim(vi2_max, vj2_max, MyColor, 1);   // we make 1 of our best 3 possible moves
 		algo_sim();                              //finding the best possible solution(without speculation)
 		if(worst_op_move_value > v_max)
@@ -547,9 +602,13 @@ simulate_opponent()
 			worst_op_move_value = v_max;
 		}
 	}
-	if( v1_max > 0 )
+	if( v3_max > 0 )
 	{
-		memcpy(M, MB , 64*8);
+		for(uint8_t i=0; i<8; i++){
+			for(uint8_t j=0; j<8; j++){
+				M[i*8+j]=MB[i*8+j];
+			}
+		}
 		checkmove_sim(vi3_max, vj3_max, MyColor, 1);   // we make 1 of our best 3 possible moves
 		algo_sim();                              //finding the best possible solution(without speculation)
 		if(worst_op_move_value > v_max)
@@ -559,7 +618,13 @@ simulate_opponent()
 			worst_op_move_value = v_max;
 		}
 	}
-	memcpy(M, MB , 64*8);
+
+	
+	for(uint8_t i=0; i<8; i++){
+		for(uint8_t j=0; j<8; j++){
+			M[i*8+j]=MB[i*8+j];
+		}
+	}
 }
 
 
@@ -646,15 +711,15 @@ void Algo(void)
 									move_done=1;
 									//CheckMove(u, z, MyColor, 1);  //Coloring adjacent paths, according to the rules  ////////-- OLD VERSION --////////////
 									CheckMove(u, z, MyColor, 0); //Calculate and 'write'(if its the greatest till now) on board(in the specific slot we found) the result score of this possible move.
-									/*
-									//Building message
+									
+								/*	//Building message
 									mymove[0] = 'M';
 									mymove[1] = 'M';
 									mymove[2] = '\x20';
 									mymove[3] = u+65;
 									mymove[4] = (z+1)+'0';
 									mymove[5] = '\r';
-									*/
+									Transmit(mymove,0,6);*/
 									break;
 								}
 
@@ -697,10 +762,26 @@ void Algo(void)
 	}//for mi
 	if(move_done)
 	{
+	/*			mymove[0] = 'A';
+				mymove[1] = 'A';
+				mymove[2] = '\x20';
+				mymove[3] = vi_final+65;
+				mymove[4] = (vj_final+1)+'0';
+				mymove[5] = '\r';
+		Transmit(mymove,0,6);
 		
+		*/
 		simulate_opponent();
-
-
+/*
+_delay_ms(10);
+				mymove[0] = 'B';
+				mymove[1] = 'B';
+				mymove[2] = '\x20';
+				mymove[3] = vi_final+65;
+				mymove[4] = (vj_final+1)+'0';
+				mymove[5] = '\r';
+				Transmit(mymove,0,6);
+*/
 		//vi_final and vj_final are the final move decision after the speculation 
 		
 		CheckMove(vi_final, vj_final, MyColor ,1); // Paint the best possible slot
@@ -907,30 +988,56 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 		
 		if(v1_max < pcounter + 14 + V[mi*8 +my])
 		{
+						v3_max  =   v2_max 	;
+						vi3_max = 	vi2_max	;
+						vj3_max  =	vj2_max	;
+			
+			
+			
+						v2_max  =   v1_max 	;
+						vi2_max = 	vi1_max	;
+						vj2_max  =	vj1_max	;
+						
+			
+			/*			mymove[0] = mi+'0';
+						mymove[1] =  my+'0';
+						mymove[2] ='\x20';
+						mymove[3] =  M[mi*8 + my]+'0';
+						mymove[4] = '\n';
+						Transmit(mymove,0,5);*/
 			v1_max  = pcounter + 14 + V[mi*8 +my];
 			vi1_max = mi;
 			vj1_max  = my;
 
-			v2_max  =   v1_max 	;
-			vi2_max = 	vi1_max	;
-			vj2_max  =	vj1_max	;
-
-			v3_max  =   v2_max 	;
-			vi3_max = 	vi2_max	;
-			vj3_max  =	vj2_max	;
 		}
 		else if ( v2_max < pcounter + 14 + V[mi*8 +my]  )
 		{
+			
+						v3_max  =   v2_max 	;
+						vi3_max = 	vi2_max	;
+						vj3_max  =	vj2_max	;
+			
+			/*						mymove[0] = mi+'0';
+									mymove[1] =  my+'0';
+									mymove[2] ='\x20';
+									mymove[3] =  M[mi*8 + my]+'0';
+									mymove[4] = '\n';
+									Transmit(mymove,0,5);*/
 			v2_max  = pcounter + 14 + V[mi*8 +my];
 			vi2_max = mi;
 			vj2_max  = my;
 
-			v3_max  =   v2_max 	;
-			vi3_max = 	vi2_max	;
-			vj3_max  =	vj2_max	;
+
 		}
 		else if ( v3_max < pcounter + 14 + V[mi*8 +my]  )
 		{
+			
+		/*						mymove[0] = mi+'0';
+									mymove[1] =  my+'0';
+									mymove[2] ='\x20';
+									mymove[3] =  M[mi*8 + my]+'0';
+									mymove[4] = '\n';
+									Transmit(mymove,0,5);*/
 			v3_max  = pcounter + 14 + V[mi*8 +my];
 			vi3_max = mi;
 			vj3_max  = my;
