@@ -40,7 +40,8 @@ uint8_t ok_flag;
 uint8_t move_done;
 uint8_t MyColor;
 uint8_t EndGameFlag;
-uint8_t Time;
+uint8_t Time=2;
+uint8_t time_tmp=2;
 uint8_t mt=0;
 uint8_t V[64]= {18,11,16,16,16,16,11,18,  11,10,13,13,13,13,10,11,  16,13,15,14,14,15,13,16,  16,13,14,15,15,14,13,16,  16,13,14,15,15,14,13,16,  16,13,15,14,14,15,13,16,  11,10,13,13,13,13,10,11,  18,11,16,16,16,16,11,18};
 volatile uint8_t ILflag = 0;
@@ -268,7 +269,8 @@ uint8_t vi_max,vj_max,v_max;
 void algo_sim(void)
 {
 
-	uint8_t mi,my,i,j,u,z,ibar,ybar,skip,istep,ystep;
+	uint8_t mi,my,i,j,u,z,ibar,ybar,skip;
+	uint8_t istep,ystep;
 	myTurn = 1;		//Important - collision with  init_timer
 	
 	vi_max=3;
@@ -308,7 +310,7 @@ void algo_sim(void)
 							ibar = 0;
 							
 							//Setting up y barrier
-							if(j > mi)
+							if(j > my)
 							ybar = 7;
 							else if(j == my)
 							ybar = 10;
@@ -383,7 +385,8 @@ void algo_sim(void)
 uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 {
 	volatile int i,j;
-	uint8_t u,z,found,ibar,ybar,skip,istep,ystep, pcounter;
+		uint8_t u,z,found,ibar,ybar,skip,pcounter;
+		uint8_t istep,ystep;
 	char mymove[6];
 	pcounter=0;
 	
@@ -410,7 +413,7 @@ uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 				ibar = 0;
 				
 				//Setting up y barrier
-				if(j > mi)
+				if(j > my)
 				ybar = 7;
 				else if(j == my)
 				ybar = 9;
@@ -568,23 +571,16 @@ void simulate_opponent(void)
 						
 		
 		checkmove_sim(vi1_max, vj1_max, MyColor, 1);   // we make 1 of our best 3 possible moves
-		Board();
+		//Board();
 		algo_sim();                              //finding the best possible solution(without speculation)
-		Board();
+	//	Board();
 		
 		vi_final = vi1_max;
 		vj_final = vj1_max;
 		worst_op_move_value = v_max;
 
 
-				//char mymove[6];
-		/*		mymove[0] = 'W';
-				mymove[1] = '\x20';
-				mymove[2] = vi_final+65;
-				mymove[3] = '\x20';
-				mymove[4] = (vj_final+1)+'0';
-				mymove[5] = '\r';
-				Transmit(mymove,0,6);*/
+
 	}
 	if( v2_max > 0 )
 	{
@@ -637,7 +633,8 @@ void simulate_opponent(void)
 //////////////////////////////////////////////////////////////////////////// ALGORITHM   /////////////////////////////////////////////////////////////////////////////
 void Algo(void)
 {
-	uint8_t mi,my,i,j,u,z,ibar,ybar,skip,istep,ystep;
+	uint8_t mi,my,i,j,u,z,ibar,ybar,skip;
+	uint8_t istep,ystep;
 	myTurn = 1;		//Important - collision with  init_timer
 	
 	v1_max = 0;
@@ -679,7 +676,7 @@ void Algo(void)
 							ibar = 0;
 							
 							//Setting up y barrier
-							if(j > mi)
+							if(j > my)
 							ybar = 7;
 							else if(j == my)
 							ybar = 10;
@@ -783,6 +780,27 @@ _delay_ms(10);
 				Transmit(mymove,0,6);
 */
 		//vi_final and vj_final are the final move decision after the speculation 
+		/*						mymove[0] = 'A';
+								mymove[1] = 'A';
+								mymove[2] = vi1_max+65;
+								mymove[3] = vj1_max+1+'0';
+								mymove[4] = '\r';
+								Transmit(mymove,0,6);
+								_delay_ms(10);
+								mymove[0] = 'A';
+								mymove[1] = 'A';
+								mymove[2] = vi2_max+65;
+								mymove[3] = vj2_max+1+'0';
+								mymove[4] = '\r';
+								Transmit(mymove,0,6);
+								_delay_ms(10);
+								mymove[0] = 'A';
+								mymove[1] = 'A';
+								mymove[2] = vi3_max+65;
+								mymove[3] = vj3_max+1+'0';
+								mymove[4] = '\r';
+								Transmit(mymove,0,6);
+								_delay_ms(10);*/
 		
 		CheckMove(vi_final, vj_final, MyColor ,1); // Paint the best possible slot
 		mymove[0] = 'M';
@@ -854,9 +872,13 @@ _delay_ms(10);
 uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 {
 	volatile int i,j;
-	uint8_t u,z,found,ibar,ybar,skip,istep,ystep, pcounter;
+	uint8_t u,z,found,ibar,ybar,skip,pcounter;
+	uint8_t istep,ystep;
 	char mymove[6];
 	pcounter=0;
+	
+	if (M[mi*8 + my] < 2 ) //Make sure that the slot is empty and available
+		return 0;
 	
 	found = 0;//init before main loop
 	for(i = mi - 1; i<=(mi+1); ++i)
@@ -881,7 +903,7 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 				ibar = 0;
 			
 			//Setting up y barrier
-			if(j > mi)
+			if(j > my)
 			ybar = 7;
 			else if(j == my)
 			ybar = 9;
@@ -941,7 +963,31 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 
 			}
 			else
-			{
+			{/*
+										mymove[0] = 'C';
+										mymove[1] = 'C';
+										mymove[2] = u+65;
+										mymove[3] = z+1+'0';
+										mymove[4] = '\r';
+										Transmit(mymove,0,5);
+										M[mi*8 + my] = color;
+				
+				_delay_ms(10)
+										mymove[0] = 'D';
+										mymove[1] = 'D';
+										mymove[2] = ibar+'0';
+										mymove[3] = ybar+'0';
+										mymove[4] = '\r';
+										Transmit(mymove,0,5);
+					_delay_ms(10)					
+										mymove[0] = 'E';
+										mymove[1] = 'E';
+										mymove[2] = istep+'0';
+										mymove[3] = ystep+'0';
+										mymove[4] = '\r';
+										Transmit(mymove,0,5);
+										
+								_delay_ms(10)	*/	
 				while((u != (ibar+istep))&&(z != (ybar+ystep)))
 				{
 					//check	
@@ -973,6 +1019,8 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 						if((M[u*8 + z] >= 2)||(M[u*8 + z] == color ))
 							break;
 
+
+
 						M[u*8 + z] = color;										
 						z+= ystep;
 						u+= istep;
@@ -999,12 +1047,7 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 						vj2_max  =	vj1_max	;
 						
 			
-			/*			mymove[0] = mi+'0';
-						mymove[1] =  my+'0';
-						mymove[2] ='\x20';
-						mymove[3] =  M[mi*8 + my]+'0';
-						mymove[4] = '\n';
-						Transmit(mymove,0,5);*/
+
 			v1_max  = pcounter + 14 + V[mi*8 +my];
 			vi1_max = mi;
 			vj1_max  = my;
@@ -1261,6 +1304,7 @@ void Check_Input(char data[]){
         else if((data[rxReadPos] == 83)&&(data[rxReadPos + 1] == 84))
         {
 			Time = data[rxReadPos+3] - '0';    //String to Int
+			time_tmp=Time;
 			Transmit("OK\r",0 , strlen("OK\r"));
 			rxReadPos = rxWritePos;
         }
@@ -1352,17 +1396,25 @@ ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
 
  ISR (TIMER1_OVF_vect)    // Timer1 ISR
  {
-	 if(myTurn==1){
-		 // coming soon 
-		 //last sec MM will save the day..eventually.		 
-		 myTurn =0;
-		// move_done = 1;
-	 } 
-	 else if(myTurn == 0){
-		  Transmit("IT\r",0,strlen("IT\r"));
-		  ITflag = 1;
-		  ILflag = 1;
-	 }	 
+	 time_tmp--;
+	 if(time_tmp==0){
+		 time_tmp=Time;
+		 if(myTurn==1){
+			 // coming soon 
+			 //last sec MM will save the day..eventually.		 
+			 myTurn =0;
+			// move_done = 1;
+		 } 
+		 else if(myTurn == 0){
+			  Transmit("IT\r",0,strlen("IT\r"));
+			  ITflag = 1;
+			  ILflag = 1;
+		 }	 
+	 }
+	 
+	TCNT1 = 65536-(8000000/1024);//3036;//x=number of seconds  //2^16 = 65536 - X(10,000,000/1024)
+	TCCR1A = 0x00; //Default - Cleared
+		 
  }
 
  /*
@@ -1403,12 +1455,13 @@ ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
 
 void init_timer(){
 	//cli();
-
+	time_tmp=Time;
 	 //////////Timer/Counter Initialization/////////
 	 /* Timer starts from a specific value, 
 		so we can take advantage of ISR
 	 */
-	TCNT1 = 3036;//2SECONDS // 34286;//49911  //2^16 = 65536 - (8,000,000/256) 
+	//if the result is negative, we will need to two timers (or one timer used 2 times)
+	TCNT1 = 65536-(8000000/1024);//3036;//x=number of seconds  //2^16 = 65536 - X(10,000,000/1024) 
 	TCCR1A = 0x00; //Default - Cleared
 
 	/*	The CLK/64 
@@ -1416,6 +1469,7 @@ void init_timer(){
 	//TCCR1B &=  ~(1<<CS11);  
 	
 	TCCR1B |=  (1<<CS12);// |(1<<CS10);
+	TCCR1B |=  (1<<CS10);
 	TIMSK = (1 << TOIE1) ;   // Enable timer1 overflow interrupt(TOIE1)
 	//sei();        // Enable global interrupts by setting global interrupt enable bit in SREG
 	//sleep();

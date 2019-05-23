@@ -31,7 +31,6 @@ vi2_max             0x1               src/main.o
 ok_flag             0x1               src/main.o
 myrxbuffer          0x100             src/main.o
 M                   0x2               src/main.o
-Time                0x1               src/main.o
 vi_max              0x1               src/main.o
 __flp               0x2               d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(malloc.o)
 vj2_max             0x1               src/main.o
@@ -304,7 +303,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x1c6e
+.text           0x00000000     0x1cac
  *(.vectors)
  .vectors       0x00000000       0x54 D:/Storage/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega16/avr5/crtatmega16.o
                 0x00000000                __vector_default
@@ -387,63 +386,63 @@ END GROUP
                 0x00000090        0x2 src/ASF/mega/boards/stk600/rcx_x/init.o
                 0x00000090                board_init
  .text.checkmove_sim
-                0x00000092      0x540 src/main.o
+                0x00000092      0x548 src/main.o
                 0x00000092                checkmove_sim
  .text.algo_sim
-                0x000005d2      0x296 src/main.o
-                0x000005d2                algo_sim
- .text.CheckMove
-                0x00000868      0x552 src/main.o
-                0x00000868                CheckMove
- .text.__vector_13
-                0x00000dba       0x14 src/main.o
-                0x00000dba                __vector_13
- .text.Transmit
-                0x00000dce       0x1c src/main.o
-                0x00000dce                Transmit
- .text.RST      0x00000dea       0x7a src/main.o
-                0x00000dea                RST
- .text.Board    0x00000e64       0xe2 src/main.o
-                0x00000e64                Board
+                0x000005da      0x296 src/main.o
+                0x000005da                algo_sim
  .text.simulate_opponent
-                0x00000f46      0x1a2 src/main.o
-                0x00000f46                simulate_opponent
+                0x00000870      0x19e src/main.o
+                0x00000870                simulate_opponent
+ .text.CheckMove
+                0x00000a0e      0x55e src/main.o
+                0x00000a0e                CheckMove
+ .text.__vector_13
+                0x00000f6c       0x14 src/main.o
+                0x00000f6c                __vector_13
+ .text.Transmit
+                0x00000f80       0x1c src/main.o
+                0x00000f80                Transmit
+ .text.RST      0x00000f9c       0x7a src/main.o
+                0x00000f9c                RST
+ .text.Board    0x00001016       0xe2 src/main.o
+                0x00001016                Board
  .text.AnnounceRes
-                0x000010e8       0x50 src/main.o
-                0x000010e8                AnnounceRes
- .text.EndGame  0x00001138       0x78 src/main.o
-                0x00001138                EndGame
+                0x000010f8       0x50 src/main.o
+                0x000010f8                AnnounceRes
+ .text.EndGame  0x00001148       0x78 src/main.o
+                0x00001148                EndGame
  .text.__vector_8
-                0x000011b0       0x6e src/main.o
-                0x000011b0                __vector_8
+                0x000011c0       0x8e src/main.o
+                0x000011c0                __vector_8
  .text.init_leds
-                0x0000121e        0xe src/main.o
-                0x0000121e                init_leds
+                0x0000124e        0xe src/main.o
+                0x0000124e                init_leds
  .text.init_timer
-                0x0000122c       0x16 src/main.o
-                0x0000122c                init_timer
- .text.Algo     0x00001242      0x326 src/main.o
-                0x00001242                Algo
+                0x0000125c       0x24 src/main.o
+                0x0000125c                init_timer
+ .text.Algo     0x00001280      0x322 src/main.o
+                0x00001280                Algo
  .text.Check_Input
-                0x00001568      0x27c src/main.o
-                0x00001568                Check_Input
+                0x000015a2      0x280 src/main.o
+                0x000015a2                Check_Input
  .text.__vector_11
-                0x000017e4       0x7c src/main.o
-                0x000017e4                __vector_11
+                0x00001822       0x7c src/main.o
+                0x00001822                __vector_11
  .text.init_serial
-                0x00001860       0x2a src/main.o
-                0x00001860                init_serial
- .text.main     0x0000188a      0x19e src/main.o
-                0x0000188a                main
+                0x0000189e       0x2a src/main.o
+                0x0000189e                init_serial
+ .text.main     0x000018c8      0x19e src/main.o
+                0x000018c8                main
  .text.avr-libc
-                0x00001a28      0x242 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(malloc.o)
-                0x00001a28                malloc
-                0x00001b58                free
-                0x00001c6a                . = ALIGN (0x2)
+                0x00001a66      0x242 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(malloc.o)
+                0x00001a66                malloc
+                0x00001b96                free
+                0x00001ca8                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00001c6a        0x0 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x00001c6a                _exit
-                0x00001c6a                exit
+ .fini9         0x00001ca8        0x0 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x00001ca8                _exit
+                0x00001ca8                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -462,11 +461,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00001c6a        0x4 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00001ca8        0x4 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00001c6e                _etext = .
+                0x00001cac                _etext = .
 
-.data           0x00800060       0x6c load address 0x00001c6e
+.data           0x00800060       0x6e load address 0x00001cac
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x6 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(malloc.o)
@@ -478,74 +477,78 @@ END GROUP
                 0x00800066                myTurn
  .data.V        0x00800067       0x40 src/main.o
                 0x00800067                V
+ .data.time_tmp
+                0x008000a7        0x1 src/main.o
+                0x008000a7                time_tmp
+ .data.Time     0x008000a8        0x1 src/main.o
+                0x008000a8                Time
  *(.gnu.linkonce.d*)
  *(.rodata)
  *(.rodata*)
  .rodata.str1.1
-                0x008000a7       0x25 src/main.o
+                0x008000a9       0x25 src/main.o
  *(.gnu.linkonce.r*)
-                0x008000cc                . = ALIGN (0x2)
-                0x008000cc                _edata = .
-                0x008000cc                PROVIDE (__data_end, .)
+                0x008000ce                . = ALIGN (0x2)
+                0x008000ce                _edata = .
+                0x008000ce                PROVIDE (__data_end, .)
 
-.bss            0x008000cc      0x122
-                0x008000cc                PROVIDE (__bss_start, .)
+.bss            0x008000ce      0x121
+                0x008000ce                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
- .bss.ILflag    0x008000cc        0x1 src/main.o
-                0x008000cc                ILflag
- .bss.mt        0x008000cd        0x1 src/main.o
-                0x008000cd                mt
- .bss.ITflag    0x008000ce        0x1 src/main.o
-                0x008000ce                ITflag
- .bss.v3_max    0x008000cf        0x1 src/main.o
-                0x008000cf                v3_max
- .bss.vj3_max   0x008000d0        0x1 src/main.o
-                0x008000d0                vj3_max
- .bss.vi3_max   0x008000d1        0x1 src/main.o
-                0x008000d1                vi3_max
+ .bss.ILflag    0x008000ce        0x1 src/main.o
+                0x008000ce                ILflag
+ .bss.mt        0x008000cf        0x1 src/main.o
+                0x008000cf                mt
+ .bss.ITflag    0x008000d0        0x1 src/main.o
+                0x008000d0                ITflag
+ .bss.v3_max    0x008000d1        0x1 src/main.o
+                0x008000d1                v3_max
+ .bss.vj3_max   0x008000d2        0x1 src/main.o
+                0x008000d2                vj3_max
+ .bss.vi3_max   0x008000d3        0x1 src/main.o
+                0x008000d3                vi3_max
  .bss.rxWritePos
-                0x008000d2        0x1 src/main.o
-                0x008000d2                rxWritePos
+                0x008000d4        0x1 src/main.o
+                0x008000d4                rxWritePos
  .bss.rxReadPos
-                0x008000d3        0x1 src/main.o
-                0x008000d3                rxReadPos
+                0x008000d5        0x1 src/main.o
+                0x008000d5                rxReadPos
  *(COMMON)
- COMMON         0x008000d4      0x116 src/main.o
-                0x008000d4                vi1_max
-                0x008000d5                vj_final
-                0x008000d6                CR
-                0x008000d7                enemy_pass
-                0x008000d8                v_max
-                0x008000d9                move_done
-                0x008000da                v1_max
-                0x008000db                vi_final
-                0x008000dc                vj1_max
-                0x008000dd                EndGameFlag
-                0x008000de                vj_max
-                0x008000df                v2_max
-                0x008000e0                MyColor
-                0x008000e1                MB
-                0x008000e3                vi2_max
-                0x008000e4                ok_flag
-                0x008000e5                myrxbuffer
-                0x008001e5                M
-                0x008001e7                Time
-                0x008001e8                vi_max
-                0x008001e9                vj2_max
- COMMON         0x008001ea        0x4 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(malloc.o)
-                0x008001ea                __brkval
-                0x008001ec                __flp
-                0x008001ee                PROVIDE (__bss_end, .)
-                0x00001c6e                __data_load_start = LOADADDR (.data)
-                0x00001cda                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x008000d6      0x115 src/main.o
+                0x008000d6                vi1_max
+                0x008000d7                vj_final
+                0x008000d8                CR
+                0x008000d9                enemy_pass
+                0x008000da                v_max
+                0x008000db                move_done
+                0x008000dc                v1_max
+                0x008000dd                vi_final
+                0x008000de                vj1_max
+                0x008000df                EndGameFlag
+                0x008000e0                vj_max
+                0x008000e1                v2_max
+                0x008000e2                MyColor
+                0x008000e3                MB
+                0x008000e5                vi2_max
+                0x008000e6                ok_flag
+                0x008000e7                myrxbuffer
+                0x008001e7                M
+                0x008001e9                vi_max
+                0x008001ea                vj2_max
+ COMMON         0x008001eb        0x4 d:/storage/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(malloc.o)
+                0x008001eb                __brkval
+                0x008001ed                __flp
+                0x008001ef                PROVIDE (__bss_end, .)
+                0x00001cac                __data_load_start = LOADADDR (.data)
+                0x00001d1a                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x008001ee        0x0
+.noinit         0x008001ef        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x008001ee                _end = .
-                0x008001ee                PROVIDE (__heap_start, .)
+                0x008001ef                _end = .
+                0x008001ef                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)
@@ -633,28 +636,28 @@ END GROUP
  .debug_abbrev  0x000004e7       0x47 src/ASF/mega/boards/stk600/rcx_x/init.o
  .debug_abbrev  0x0000052e      0x2cf src/main.o
 
-.debug_line     0x00000000     0x198e
+.debug_line     0x00000000     0x19b3
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x115 D:/Storage/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega16/avr5/crtatmega16.o
  .debug_line    0x00000115      0x37e src/ASF/mega/boards/stk600/rcx_x/init.o
- .debug_line    0x00000493     0x14fb src/main.o
+ .debug_line    0x00000493     0x1520 src/main.o
 
 .debug_frame    0x00000000      0x3d0
  *(.debug_frame)
  .debug_frame   0x00000000       0x24 src/ASF/mega/boards/stk600/rcx_x/init.o
  .debug_frame   0x00000024      0x3ac src/main.o
 
-.debug_str      0x00000000     0xfe8e
+.debug_str      0x00000000     0xfe97
  *(.debug_str)
  .debug_str     0x00000000      0x1af D:/Storage/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.2.209/gcc/dev/atmega16/avr5/crtatmega16.o
  .debug_str     0x000001af     0xf038 src/ASF/mega/boards/stk600/rcx_x/init.o
                                0xf1e0 (size before relaxing)
- .debug_str     0x0000f1e7      0xca7 src/main.o
-                               0xfe81 (size before relaxing)
+ .debug_str     0x0000f1e7      0xcb0 src/main.o
+                               0xfe8a (size before relaxing)
 
-.debug_loc      0x00000000     0x1ae8
+.debug_loc      0x00000000     0x1c93
  *(.debug_loc)
- .debug_loc     0x00000000     0x1ae8 src/main.o
+ .debug_loc     0x00000000     0x1c93 src/main.o
 
 .debug_macinfo
  *(.debug_macinfo)
