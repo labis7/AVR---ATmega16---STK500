@@ -1,9 +1,9 @@
 /*
-***	Milestone 1 ***
+***	Milestone 3 ***
  
  * Lab Team  : LAB41140558
  * Authors	 : Gialitakis - Skoufis 
- * Date		 : Thursday 11/4/19 
+ * Date		 : Friday 24/5/19 
  * Atmel Studio 7 - Windows 10 Pro
  * AVR Model : STK500 - ATmega16
  
@@ -15,7 +15,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#define F_CPU   8000000
+#define F_CPU   10000000
 #define BAUD    9600
 #define BRC     ((F_CPU/16/BAUD) - 1)
 #define BUFFER_SIZE  256
@@ -43,7 +43,7 @@ uint8_t EndGameFlag;
 uint8_t Time=2;
 uint8_t time_tmp=2;
 uint8_t mt=0;
-uint8_t V[64]= {18,11,16,16,16,16,11,18,  11,10,13,13,13,13,10,11,  16,13,15,14,14,15,13,16,  16,13,14,15,15,14,13,16,  16,13,14,15,15,14,13,16,  16,13,15,14,14,15,13,16,  11,10,13,13,13,13,10,11,  18,11,16,16,16,16,11,18};
+uint8_t V[64]= {18,11,16,16,16,16,11,18,  11,10,13,13,13,13,10,11,  16,13,15,14,14,15,13,16,  16,13,14,15,15,14,13,16,  16,13,14,15,15,14,13,16,  16,13,15,14,14,15,13,16,  11,10,13,13,13,13,10,11,  18,11,16,16,16,16,11,18};//Weights per slot
 volatile uint8_t ILflag = 0;
 volatile uint8_t myTurn = 2;
 
@@ -60,6 +60,7 @@ void Board(void);
 void EndGame(void);
 uint8_t CheckMove(uint8_t mi, uint8_t my, uint8_t color, uint8_t paint);
 uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint);
+uint8_t vi_max,vj_max,v_max;
 
 void Algo(void);
 void Waiting(void);
@@ -98,27 +99,7 @@ int main (void)
 
 	volatile int i=0;
 	/////////////////////////////////TASK MANAGER - RAM USAGE////////////////////////////////
-	/*
-	uint8_t *omg;
-	volatile int limit =600;
-	omg = (uint8_t *)malloc(sizeof(uint8_t)*limit);
-	
-	for(i = 0 ; i <= limit-1 ; i++)
-	{
-		omg[i] = 0;
-	}
-
-	omg[limit -1]=5;
-
-	
-	
-	for(i = 0 ; i <= limit -1 ; i++)
-	{
-		if(omg[i] == 5)
-			Transmit("yaso\r",0 , strlen("aaaa\r"));
-
-	}
-	*/
+	//%empty
 	///////////////////////////////////////////////////////////////////////////
 
 	volatile uint8_t y = 0 ;
@@ -261,374 +242,6 @@ void RST(void)
 }
 
 
-/////////////////////////////////////////////////////////////////////////// SIMULATION /////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-uint8_t vi_max,vj_max,v_max;
-
-void algo_sim(void)
-{
-
-	uint8_t mi,my,i,j,u,z,ibar,ybar,skip;
-	uint8_t istep,ystep;
-	myTurn = 1;		//Important - collision with  init_timer
-	
-	vi_max=3;
-	vj_max=3;
-
-	char mymove[6];
-	
-	//The next 2 for loop are responsible to find(scanning whole board) our pawns  ----------------------------------------- U P D A T E : we will save the positions of our pawns
-	for(mi=0;mi<=7;mi++)
-	{
-		for(my=0; my<=7; my++)
-		{
-			 // we found one of our pawns, so we start to check potential move 
-			if(M[mi*8+my] == !MyColor)  
-			{					
-				//The next 2 for loops find scanning the 8 slots/positions around the pawn we found.
-				for(i = mi - 1; i<=(mi+1); ++i)
-				{
-					if(i<0||i>7) //Matrix out of border protection 
-						continue;
-					for(j = my - 1; j<=(my+1); ++j)
-					{
-						if(j<0||j>7) //Matrix out of border protection 
-							continue;
-
-						//our pawn has en enemy pawn adjacent to it,
-						//so we will find the borders+direction we need to search
-						if((M[i*8 + j] == MyColor))		
-						{
-
-							//Setting up i barrier (board)
-							if(i > mi)
-							ibar = 7 ;
-							else if(i == mi)
-							ibar = 10;   //big enough, so the other axis will break while below
-							else
-							ibar = 0;
-							
-							//Setting up y barrier
-							if(j > my)
-							ybar = 7;
-							else if(j == my)
-							ybar = 10;
-							else
-							ybar = 0;
-
-							//setting up steps, (for the loops)
-							istep = i - mi;
-							ystep = j - my;
-							
-							//start from the accepted neighbor
-							u=i;
-							z=j;
-							
-
-
-							skip = 1;//reset
-/*
-												char mymove[6];
-												mymove[0] = 'E';
-												mymove[1] = '\x20';
-												mymove[2] = mi+65;
-												mymove[3] = '\x20';
-												mymove[4] = (my+1)+'0';
-												mymove[5] = '\r';
-												Transmit(mymove,0,6);*/
-							//Now,its gonna find a valid path(which will get colorized accordingly)
-							while((u != (ibar+istep))&&(z != (ybar+ystep))) 
-							{
-								if(M[u*8 + z] == !MyColor ) //Break, because we need empty slot(to put our move in it)
-								{
-									break;
-								}
-								
-								if( M[u*8 + z] == 2){			//We found a valid empty slot
-									skip = 0;
-									move_done=1;
-									//CheckMove(u, z, MyColor, 1);  //Coloring adjacent paths, according to the rules  ////////-- OLD VERSION --////////////
-
-									
-									checkmove_sim(u, z, !MyColor, 0); //Calculate and 'write'(if its the greatest till now) on board(in the specific slot we found) the result score of this possible move.
-									break;
-								}
-
-								z+= ystep;
-								u+= istep;
-							}
-							
-						}//if check neighbors
-					}//j for
-
-				}//i for
-			}//if  (find our pawn)
-
-		}//for my
-
-	}//for mi
-
-	if(move_done)
-	{
-		return;
-	}
-	else
-		v_max=0; 
-	return;
-
-
-	
-}
-
-
-uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
-{
-	volatile int i,j;
-		uint8_t u,z,found,ibar,ybar,skip,pcounter;
-		uint8_t istep,ystep;
-	char mymove[6];
-	pcounter=0;
-	
-	found = 0;//init before main loop
-	for(i = mi - 1; i<=(mi+1); ++i)
-	{
-		if(i<0||i>7)
-		continue;
-		for(j = my - 1; j<=(my+1); ++j)
-		{
-			if(j<0||j>7)
-			continue;
-			//checking neighbors, we are trying to find opponents color
-			if((M[i*8 + j] == color)||(M[i*8 + j] >= 2))
-			;
-			else //opponents color was found
-			{
-				//Setting up i barrier
-				if(i > mi)
-				ibar = 7 ;
-				else if(i == mi)
-				ibar = 9;
-				else
-				ibar = 0;
-				
-				//Setting up y barrier
-				if(j > my)
-				ybar = 7;
-				else if(j == my)
-				ybar = 9;
-				else
-				ybar = 0;
-
-				//setting up steps, (for the loops)
-				istep = i - mi;
-				ystep = j - my;
-				//start from the accepted neighbor
-				u=i;
-				z=j;
-
-				skip = 1;
-				//Now,its gonna find a valid path(which will get colorized accordingly)
-				
-				
-				if(paint == 0) //just for finding the best slot
-				{
-					while((u != (ibar+istep))&&(z != (ybar+ystep)))
-					{
-						//check
-						if( M[u*8 + z] >= 2)
-						break;
-						
-						//IF in the line we are checking, we find a friendly pawn, then the move is legal so place the new pawn
-						if(M[u*8 + z] == color )
-						{
-							
-							//M[mi*8 + my] = color;
-							
-							//mark that it is a legal move
-							found = 1;
-							skip = 0;
-							break;
-						}
-						z+= ystep;
-						u+= istep;
-						
-					}
-					
-					if(!skip) //if a solution is found
-					{
-						u=i;
-						z=j;
-						while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
-						{
-							if((M[u*8 + z] >= 2)||(M[u*8 + z] == color ))
-							break;
-
-							//M[u*8 + z] = color;
-							pcounter++;
-							z+= ystep;
-							u+= istep;
-						}
-					}
-
-				}
-				else
-				{
-					while((u != (ibar+istep))&&(z != (ybar+ystep)))
-					{
-						//check
-						if( M[u*8 + z] >= 2)
-						break;
-						
-						//IF in the line we are checking, we find a friendly pawn, then the move is legal so place the new pawn
-						if(M[u*8 + z] == color )
-						{
-							
-							M[mi*8 + my] = color;
-							
-							//mark that it is a legal move
-							found = 1;
-							skip = 0;
-							break;
-						}
-						z+= ystep;
-						u+= istep;
-						
-					}
-					
-					if(!skip) //if a solution is found
-					{
-						u=i;
-						z=j;
-						while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
-						{
-							if((M[u*8 + z] >= 2)||(M[u*8 + z] == color ))
-							break;
-
-							M[u*8 + z] = color;
-							z+= ystep;
-							u+= istep;
-						}
-					}
-				}//if paint
-				
-			}//if check
-		}	  //y for
-	}	  //x for
-	if(paint == 0)
-	{
-		
-		if(M[vi_max*8 + vj_max] <= pcounter +14 + V[mi*8 +my]) //14: OFFSET FOR OUR VALUE TABLE
-		{
-			M[mi*8 + my] = pcounter +14 + V[mi*8 +my];   //remember on our board the latest max move.(there is no reason to save a value on board if its not the max)
-			if(M[vi_max*8 + vj_max] > 2)
-				M[vi_max*8 + vj_max] = 2;
-			vi_max = mi;
-			vj_max = my;
-			v_max = pcounter +14 + V[mi*8 +my];								
-			
-		}
-	}
-
-	if(found == 1)
-	return 1;//Legal
-	return 0;
-}
-
-
-
-void simulate_opponent(void)
-{
-		char mymove[6];
-	
-	/*
-					mymove[0] = (v1_max-28)+'0';
-					mymove[1] = '\x20';
-					mymove[2] = (v2_max-28)+'0';
-					mymove[3] = '\x20';
-					mymove[4] = (v3_max-28)+'0';
-					mymove[5] = '\r';
-					Transmit(mymove,0,6);*/
-	uint8_t worst_op_move_value;
-	if( v1_max > 0 )
-	{
-		
-	/*				//	char mymove[6];
-						mymove[0] = 'Z';
-						mymove[1] = '\x20';
-						mymove[2] = vi1_max+65;
-						mymove[3] = '\x20';
-						mymove[4] = (vj1_max+1)+'0';
-						mymove[5] = '\r';
-						Transmit(mymove,0,6);*/
-		
-		for(uint8_t i=0; i<8; i++){
-			for(uint8_t j=0; j<8; j++){	
-				MB[i*8+j]=M[i*8+j];
-			}
-		}
-						
-						
-		
-		checkmove_sim(vi1_max, vj1_max, MyColor, 1);   // we make 1 of our best 3 possible moves
-		//Board();
-		algo_sim();                              //finding the best possible solution(without speculation)
-	//	Board();
-		
-		vi_final = vi1_max;
-		vj_final = vj1_max;
-		worst_op_move_value = v_max;
-
-
-
-	}
-	if( v2_max > 0 )
-	{
-			for(uint8_t i=0; i<8; i++){
-				for(uint8_t j=0; j<8; j++){
-					M[i*8+j]=MB[i*8+j];
-				}
-			}
-		checkmove_sim(vi2_max, vj2_max, MyColor, 1);   // we make 1 of our best 3 possible moves
-		algo_sim();                              //finding the best possible solution(without speculation)
-		if(worst_op_move_value > v_max)
-		{
-			vi_final = vi2_max;
-			vj_final = vj2_max;
-			worst_op_move_value = v_max;
-		}
-	}
-	if( v3_max > 0 )
-	{
-		for(uint8_t i=0; i<8; i++){
-			for(uint8_t j=0; j<8; j++){
-				M[i*8+j]=MB[i*8+j];
-			}
-		}
-		checkmove_sim(vi3_max, vj3_max, MyColor, 1);   // we make 1 of our best 3 possible moves
-		algo_sim();                              //finding the best possible solution(without speculation)
-		if(worst_op_move_value > v_max)
-		{
-			vi_final = vi3_max;
-			vj_final = vj3_max;
-			worst_op_move_value = v_max;
-		}
-	}
-
-	
-	for(uint8_t i=0; i<8; i++){
-		for(uint8_t j=0; j<8; j++){
-			M[i*8+j]=MB[i*8+j];
-		}
-	}
-}
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 //////////////////////////////////////////////////////////////////////////// ALGORITHM   /////////////////////////////////////////////////////////////////////////////
 void Algo(void)
@@ -706,47 +319,15 @@ void Algo(void)
 								if( M[u*8 + z] == 2){			//We found a valid empty slot
 									skip = 0;
 									move_done=1;
-									//CheckMove(u, z, MyColor, 1);  //Coloring adjacent paths, according to the rules  ////////-- OLD VERSION --////////////
-									CheckMove(u, z, MyColor, 0); //Calculate and 'write'(if its the greatest till now) on board(in the specific slot we found) the result score of this possible move.
 									
-								/*	//Building message
-									mymove[0] = 'M';
-									mymove[1] = 'M';
-									mymove[2] = '\x20';
-									mymove[3] = u+65;
-									mymove[4] = (z+1)+'0';
-									mymove[5] = '\r';
-									Transmit(mymove,0,6);*/
+									CheckMove(u, z, MyColor, 0); //Calculate and 'write'(if its the greatest till now) on board(in the specific slot we found) the result score of this possible move.
+
 									break;
 								}
 
 								z+= ystep;
 								u+= istep;
 							}
-							//if a solution is found
-							/*
-							if(!skip) 
-							{
-								u=i;
-								z=j;
-								//Same iteration, this time we color the path
-								while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
-								{
-									if(M[u*8 + z] == MyColor )
-										break;
-									M[u*8 + z] = MyColor;
-									
-									z+= ystep;
-									u+= istep;
-								}
-								
-								move_done=1;
-								Board(); //Board Visualization
-								Transmit(mymove,0,6); //Transmit our Move
-								if(move_done)
-									break;
-							}
-							*/
 							
 						}//if check neighbors
 					}//j for
@@ -759,48 +340,9 @@ void Algo(void)
 	}//for mi
 	if(move_done)
 	{
-	/*			mymove[0] = 'A';
-				mymove[1] = 'A';
-				mymove[2] = '\x20';
-				mymove[3] = vi_final+65;
-				mymove[4] = (vj_final+1)+'0';
-				mymove[5] = '\r';
-		Transmit(mymove,0,6);
-		
-		*/
+
 		simulate_opponent();
-/*
-_delay_ms(10);
-				mymove[0] = 'B';
-				mymove[1] = 'B';
-				mymove[2] = '\x20';
-				mymove[3] = vi_final+65;
-				mymove[4] = (vj_final+1)+'0';
-				mymove[5] = '\r';
-				Transmit(mymove,0,6);
-*/
-		//vi_final and vj_final are the final move decision after the speculation 
-		/*						mymove[0] = 'A';
-								mymove[1] = 'A';
-								mymove[2] = vi1_max+65;
-								mymove[3] = vj1_max+1+'0';
-								mymove[4] = '\r';
-								Transmit(mymove,0,6);
-								_delay_ms(10);
-								mymove[0] = 'A';
-								mymove[1] = 'A';
-								mymove[2] = vi2_max+65;
-								mymove[3] = vj2_max+1+'0';
-								mymove[4] = '\r';
-								Transmit(mymove,0,6);
-								_delay_ms(10);
-								mymove[0] = 'A';
-								mymove[1] = 'A';
-								mymove[2] = vi3_max+65;
-								mymove[3] = vj3_max+1+'0';
-								mymove[4] = '\r';
-								Transmit(mymove,0,6);
-								_delay_ms(10);*/
+
 		
 		CheckMove(vi_final, vj_final, MyColor ,1); // Paint the best possible slot
 		mymove[0] = 'M';
@@ -809,14 +351,12 @@ _delay_ms(10);
 		mymove[3] = vi_final+65;
 		mymove[4] = (vj_final+1)+'0';
 		mymove[5] = '\r';
-		Board();
+		//Board();
 		Transmit(mymove,0,6); //Transmit our Move
 		
 	}
 
 	
-
-
 	
 	//if move_done == 0 , that means that we cant find solution, we pass                           
 	//while loop until 'OK' response
@@ -834,7 +374,7 @@ _delay_ms(10);
 				}
 			}
 			
-			if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75) //Respone ok for our MM
+			if(myrxbuffer[rxReadPos] == 79 && myrxbuffer[rxReadPos+1] == 75) //Response ok for our MM
 			{
 				init_timer();
 				rxReadPos=rxWritePos;
@@ -860,9 +400,6 @@ _delay_ms(10);
 	
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////  CHECK MOVE  /////////////////////////////////////////////////////////////////////
@@ -963,31 +500,8 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 
 			}
 			else
-			{/*
-										mymove[0] = 'C';
-										mymove[1] = 'C';
-										mymove[2] = u+65;
-										mymove[3] = z+1+'0';
-										mymove[4] = '\r';
-										Transmit(mymove,0,5);
-										M[mi*8 + my] = color;
-				
-				_delay_ms(10)
-										mymove[0] = 'D';
-										mymove[1] = 'D';
-										mymove[2] = ibar+'0';
-										mymove[3] = ybar+'0';
-										mymove[4] = '\r';
-										Transmit(mymove,0,5);
-					_delay_ms(10)					
-										mymove[0] = 'E';
-										mymove[1] = 'E';
-										mymove[2] = istep+'0';
-										mymove[3] = ystep+'0';
-										mymove[4] = '\r';
-										Transmit(mymove,0,5);
-										
-								_delay_ms(10)	*/	
+			{
+	
 				while((u != (ibar+istep))&&(z != (ybar+ystep)))
 				{
 					//check	
@@ -1033,18 +547,18 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 	}	  //x for
 	if(paint == 0)
 	{
-		
+		//Finding our top 3 moves
 		if(v1_max < pcounter + 14 + V[mi*8 +my])
 		{
-						v3_max  =   v2_max 	;
-						vi3_max = 	vi2_max	;
-						vj3_max  =	vj2_max	;
+			v3_max  =   v2_max 	;
+			vi3_max = 	vi2_max	;
+			vj3_max  =	vj2_max	;
 			
 			
 			
-						v2_max  =   v1_max 	;
-						vi2_max = 	vi1_max	;
-						vj2_max  =	vj1_max	;
+			v2_max  =   v1_max 	;
+			vi2_max = 	vi1_max	;
+			vj2_max  =	vj1_max	;
 						
 			
 
@@ -1056,46 +570,22 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 		else if ( v2_max < pcounter + 14 + V[mi*8 +my]  )
 		{
 			
-						v3_max  =   v2_max 	;
-						vi3_max = 	vi2_max	;
-						vj3_max  =	vj2_max	;
-			
-			/*						mymove[0] = mi+'0';
-									mymove[1] =  my+'0';
-									mymove[2] ='\x20';
-									mymove[3] =  M[mi*8 + my]+'0';
-									mymove[4] = '\n';
-									Transmit(mymove,0,5);*/
+			v3_max  =   v2_max 	;
+			vi3_max = 	vi2_max	;
+			vj3_max  =	vj2_max	;
+	
 			v2_max  = pcounter + 14 + V[mi*8 +my];
 			vi2_max = mi;
 			vj2_max  = my;
-
 
 		}
 		else if ( v3_max < pcounter + 14 + V[mi*8 +my]  )
 		{
 			
-		/*						mymove[0] = mi+'0';
-									mymove[1] =  my+'0';
-									mymove[2] ='\x20';
-									mymove[3] =  M[mi*8 + my]+'0';
-									mymove[4] = '\n';
-									Transmit(mymove,0,5);*/
 			v3_max  = pcounter + 14 + V[mi*8 +my];
 			vi3_max = mi;
 			vj3_max  = my;
 		}
-
-		/*
-		if(M[vi_max*8 + vj_max] <= pcounter +14 + V[mi*8 +my]) //14: OFFSET FOR OUR VALUE TABLE
-		{
-			M[mi*8 + my] = pcounter +14 + V[mi*8 +my];   //remember on our board the latest max move.(there is no reason to save a value on board if its not the max)
-			if(M[vi_max*8 + vj_max] > 2)	
-				M[vi_max*8 + vj_max] = 2;
-			vi_max = mi;
-			vj_max = my;
-		}
-		*/
 	}
 
 	if(found == 1)
@@ -1103,6 +593,370 @@ uint8_t CheckMove(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
 	return 0;	
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+/////////////////////////////////////////////////////////////////////////// SIMULATION /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+void algo_sim(void)
+{
+
+	uint8_t mi,my,i,j,u,z,ibar,ybar,skip;
+	uint8_t istep,ystep;
+	myTurn = 1;		//Important - collision with  init_timer
+	
+	vi_max=3;
+	vj_max=3;
+
+	char mymove[6];
+	
+	
+	for(mi=0;mi<=7;mi++)
+	{
+		for(my=0; my<=7; my++)
+		{
+
+			if(M[mi*8+my] == !MyColor)
+			{
+				//The next 2 for loops find scanning the 8 slots/positions around the pawn we found.
+				for(i = mi - 1; i<=(mi+1); ++i)
+				{
+					if(i<0||i>7) //Matrix out of border protection
+					continue;
+					for(j = my - 1; j<=(my+1); ++j)
+					{
+						if(j<0||j>7) //Matrix out of border protection
+						continue;
+
+						//so we will find the borders+direction we need to search
+						if((M[i*8 + j] == MyColor))
+						{
+
+							//Setting up i barrier (board)
+							if(i > mi)
+							ibar = 7 ;
+							else if(i == mi)
+							ibar = 10;   //big enough, so the other axis will break while below
+							else
+							ibar = 0;
+							
+							//Setting up y barrier
+							if(j > my)
+							ybar = 7;
+							else if(j == my)
+							ybar = 10;
+							else
+							ybar = 0;
+
+							//setting up steps, (for the loops)
+							istep = i - mi;
+							ystep = j - my;
+							
+							//start from the accepted neighbor
+							u=i;
+							z=j;
+							
+
+
+							skip = 1;//reset
+
+							//Now,its gonna find a valid path(which will get colorized accordingly)
+							while((u != (ibar+istep))&&(z != (ybar+ystep)))
+							{
+								if(M[u*8 + z] == !MyColor ) //Break, because we need empty slot(to put our move in it)
+								{
+									break;
+								}
+								
+								if( M[u*8 + z] == 2){			//We found a valid empty slot
+									skip = 0;
+									move_done=1;
+									
+									checkmove_sim(u, z, !MyColor, 0); //Calculate and 'write'(if its the greatest till now) on board(in the specific slot we found) the result score of this possible move.
+									break;
+								}
+
+								z+= ystep;
+								u+= istep;
+							}
+							
+						}//if check neighbors
+					}//j for
+
+				}//i for
+			}//if  (find our pawn)
+
+		}//for my
+
+	}//for mi
+
+	if(move_done)
+	{
+		return;
+	}
+	else
+	v_max=0;
+	return;
+
+
+	
+}
+
+
+uint8_t checkmove_sim(uint8_t mi,uint8_t my,uint8_t color, uint8_t paint)
+{
+	volatile int i,j;
+	uint8_t u,z,found,ibar,ybar,skip,pcounter;
+	uint8_t istep,ystep;
+	char mymove[6];
+	pcounter=0;
+	
+	found = 0;//init before main loop
+	for(i = mi - 1; i<=(mi+1); ++i)
+	{
+		if(i<0||i>7)
+		continue;
+		for(j = my - 1; j<=(my+1); ++j)
+		{
+			if(j<0||j>7)
+			continue;
+			if((M[i*8 + j] == color)||(M[i*8 + j] >= 2))
+			;
+			else
+			{
+				//Setting up i barrier
+				if(i > mi)
+				ibar = 7 ;
+				else if(i == mi)
+				ibar = 9;
+				else
+				ibar = 0;
+				
+				//Setting up y barrier
+				if(j > my)
+				ybar = 7;
+				else if(j == my)
+				ybar = 9;
+				else
+				ybar = 0;
+
+				//setting up steps, (for the loops)
+				istep = i - mi;
+				ystep = j - my;
+				//start from the accepted neighbor
+				u=i;
+				z=j;
+
+				skip = 1;
+				
+				
+				
+				if(paint == 0) //just for finding the best slot
+				{
+					while((u != (ibar+istep))&&(z != (ybar+ystep)))
+					{
+						//check
+						if( M[u*8 + z] >= 2)
+						break;
+						
+
+						if(M[u*8 + z] == color )
+						{
+
+							
+							//mark that it is a legal move
+							found = 1;
+							skip = 0;
+							break;
+						}
+						z+= ystep;
+						u+= istep;
+						
+					}
+					
+					if(!skip) //if a solution is found
+					{
+						u=i;
+						z=j;
+						while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
+						{
+							if((M[u*8 + z] >= 2)||(M[u*8 + z] == color ))
+							break;
+
+							
+							pcounter++;
+							z+= ystep;
+							u+= istep;
+						}
+					}
+
+				}
+				else
+				{
+					while((u != (ibar+istep))&&(z != (ybar+ystep)))
+					{
+						//check
+						if( M[u*8 + z] >= 2)
+						break;
+						
+						
+						if(M[u*8 + z] == color )
+						{
+							
+							M[mi*8 + my] = color;
+							
+							//mark that it is a legal move
+							found = 1;
+							skip = 0;
+							break;
+						}
+						z+= ystep;
+						u+= istep;
+						
+					}
+					
+					if(!skip) //if a solution is found
+					{
+						u=i;
+						z=j;
+						while((u!=ibar)&&(z!=ybar))//barriers will never get reached.
+						{
+							if((M[u*8 + z] >= 2)||(M[u*8 + z] == color ))
+							break;
+
+							M[u*8 + z] = color;
+							z+= ystep;
+							u+= istep;
+						}
+					}
+				}//if paint
+				
+			}//if check
+		}	  //y for
+	}	  //x for
+	if(paint == 0)
+	{
+		//Searching for the OPPONENT'S best move for the current scenario
+
+
+		if(M[vi_max*8 + vj_max] <= pcounter +14 + V[mi*8 +my]) //14: OFFSET FOR OUR VALUE TABLE , + the weight of the slot
+		{
+			//remember on the board the latest max move.
+			M[mi*8 + my] = pcounter +14 + V[mi*8 +my];
+
+			// reset the last note of the max score on the board (there is no reason to save a value on board if its not the max)
+			if(M[vi_max*8 + vj_max] > 2)
+			M[vi_max*8 + vj_max] = 2;
+			
+			//Save the latest move()
+			vi_max = mi;
+			vj_max = my;
+			v_max = pcounter +14 + V[mi*8 +my];
+			
+		}
+	}
+
+	if(found == 1)
+	return 1;//Legal
+	return 0;
+}
+
+
+
+void simulate_opponent(void)
+{
+	char mymove[6];
+	
+
+	uint8_t worst_op_move_value;
+	
+	if( v1_max > 0 ) //if we have an answer for opponent's last move(top of the 3)
+	{
+		
+		//Backing up our main board, because the current state of our board will be used to speculate and decide
+		for(uint8_t i=0; i<8; i++){
+			for(uint8_t j=0; j<8; j++){
+				MB[i*8+j]=M[i*8+j];
+			}
+		}
+
+		// we make 1 of our best 3 possible moves(we are actual plating our move in the 1st scenario)
+		checkmove_sim(vi1_max, vj1_max, MyColor, 1);
+		//finding the best possible solution for opponent(without speculation), according to our move(1 of the 3 top moves)
+		algo_sim();
+		//the v#1,v#j are the i,j for v1_max value(ours),
+		//and we save his move as the worst for now(there are 3 scenarios, we find HIS best move for each scenario and we pick the worst of the 3)
+		vi_final = vi1_max;
+		vj_final = vj1_max;
+		worst_op_move_value = v_max;
+
+
+
+	}
+	if( v2_max > 0 )  //if we have an answer for opponent's last move(2nd best)
+	{
+		for(uint8_t i=0; i<8; i++){
+			for(uint8_t j=0; j<8; j++){
+				M[i*8+j]=MB[i*8+j];
+			}
+		}
+
+		checkmove_sim(vi2_max, vj2_max, MyColor, 1);
+
+		algo_sim();
+		if(worst_op_move_value > v_max)
+		{
+			vi_final = vi2_max;
+			vj_final = vj2_max;
+			worst_op_move_value = v_max;
+		}
+	}
+	if( v3_max > 0 )
+	{
+		for(uint8_t i=0; i<8; i++){
+			for(uint8_t j=0; j<8; j++){
+				M[i*8+j]=MB[i*8+j];
+			}
+		}
+		checkmove_sim(vi3_max, vj3_max, MyColor, 1);
+		algo_sim();
+		if(worst_op_move_value > v_max)
+		{
+			vi_final = vi3_max;
+			vj_final = vj3_max;
+			worst_op_move_value = v_max;
+		}
+	}
+
+	//Restoring the board(so we can make our final-decided move)
+	for(uint8_t i=0; i<8; i++){
+		for(uint8_t j=0; j<8; j++){
+			M[i*8+j]=MB[i*8+j];
+		}
+	}
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //Visualization of the board
 void Board(){
@@ -1396,14 +1250,13 @@ ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
 
  ISR (TIMER1_OVF_vect)    // Timer1 ISR
  {
-	 time_tmp--;
+	 //Every time we sub 1 from the count cycles(e.g. 6 sec, 
+	 //we need to sub 1 from time_tmp 6 times so the counter will count up to 1 sec 6 times back to back until we let him send 'IT')
+	 time_tmp--; 
 	 if(time_tmp==0){
 		 time_tmp=Time;
-		 if(myTurn==1){
-			 // coming soon 
-			 //last sec MM will save the day..eventually.		 
+		 if(myTurn==1){		     					 
 			 myTurn =0;
-			// move_done = 1;
 		 } 
 		 else if(myTurn == 0){
 			  Transmit("IT\r",0,strlen("IT\r"));
@@ -1412,7 +1265,7 @@ ISR (USART_TXC_vect) { //  Interrupts for completed transmit data
 		 }	 
 	 }
 	 
-	TCNT1 = 65536-(8000000/1024);//3036;//x=number of seconds  //2^16 = 65536 - X(10,000,000/1024)
+	TCNT1 = 65536-(10000000/1024);//3036;//x=number of seconds  //2^16 = 65536 - X(10,000,000/1024)
 	TCCR1A = 0x00; //Default - Cleared
 		 
  }
@@ -1461,7 +1314,7 @@ void init_timer(){
 		so we can take advantage of ISR
 	 */
 	//if the result is negative, we will need to two timers (or one timer used 2 times)
-	TCNT1 = 65536-(8000000/1024);//3036;//x=number of seconds  //2^16 = 65536 - X(10,000,000/1024) 
+	TCNT1 = 65536-(10000000/1024);//3036;//x=number of seconds  //2^16 = 65536 - X(10,000,000/1024) 
 	TCCR1A = 0x00; //Default - Cleared
 
 	/*	The CLK/64 
